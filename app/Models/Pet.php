@@ -28,6 +28,18 @@ class Pet extends Model
         return $this->belongsTo(Pemilik::class, 'idpemilik', 'idpemilik');
     }
 
+    public function user()
+    {
+        return $this->hasOneThrough(
+            User::class,        
+            Pemilik::class,    
+            'idpemilik',        
+            'iduser',           
+            'idpemilik',        
+            'iduser'            
+        );
+    }
+
     public function rasHewan()
     {
         return $this->belongsTo(RasHewan::class, 'idras_hewan', 'idras_hewan');

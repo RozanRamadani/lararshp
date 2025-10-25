@@ -36,7 +36,7 @@
                                 <x-icon type="vet" size="w-8 h-8" class="text-green-600" />
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $users->whereHas('roles', function($q) { $q->where('nama_role', 'admin'); })->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $users->filter(function($user) { return $user->roles->contains('nama_role', 'admin'); })->count() }}</h4>
                                 <p class="text-sm text-gray-600">Admin</p>
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                                 <x-icon type="pet" size="w-8 h-8" class="text-purple-600" />
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $users->whereHas('roles', function($q) { $q->whereIn('nama_role', ['owner', 'user']); })->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $users->filter(function($user) { return $user->roles->whereIn('nama_role', ['owner', 'user'])->isNotEmpty(); })->count() }}</h4>
                                 <p class="text-sm text-gray-600">Pet Owner</p>
                             </div>
                         </div>
@@ -132,7 +132,7 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $user->created_at->format('d M Y') }}
+                                        {{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}
                                     </td>
                                 </tr>
                                 @empty

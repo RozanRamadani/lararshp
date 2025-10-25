@@ -21,12 +21,12 @@ class JenisHewan extends Model
     public function pets()
     {
         return $this->hasManyThrough(
-            Pet::class,           // Final model
-            RasHewan::class,      // Intermediate model
-            'idjenis_hewan',      // Foreign key on ras_hewan table
-            'idras_hewan',        // Foreign key on pet table
-            'idjenis_hewan',      // Local key on jenis_hewan table
-            'idras_hewan'         // Local key on ras_hewan table
+            Pet::class,          
+            RasHewan::class,      
+            'idjenis_hewan',      
+            'idras_hewan',        
+            'idjenis_hewan',      
+            'idras_hewan'  
         );
     }
 }

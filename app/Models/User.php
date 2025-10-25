@@ -64,6 +64,18 @@ class User extends Authenticatable
         return $this->hasOne(Pemilik::class, 'iduser', 'iduser');
     }
 
+    public function pets()
+    {
+        return $this->hasManyThrough(
+            Pet::class,         
+            Pemilik::class,     
+            'iduser',           
+            'idpemilik',        
+            'iduser',           
+            'idpemilik'         
+        );
+    }
+
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_user', 'iduser', 'idrole')

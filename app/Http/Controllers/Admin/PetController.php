@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pet;
 use App\Models\RasHewan;
-use App\Models\User;
+use App\Models\Pemilik;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -28,9 +28,9 @@ class PetController extends Controller
     public function create(): View
     {
         $rasHewan = RasHewan::with('jenisHewan')->get();
-        $users = User::all();
+        $pemilikList = Pemilik::with('user')->get();
         
-        return view('admin.pet.create', compact('rasHewan', 'users'));
+        return view('admin.pet.create', compact('rasHewan', 'pemilikList'));
     }
 
     /**
@@ -44,10 +44,20 @@ class PetController extends Controller
             'warna' => 'nullable|string|max:255',
             'tanggal_lahir' => 'nullable|date',
             'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
-            'iduser' => 'required|exists:users,id',
+            'idpemilik' => 'required|exists:pemilik,idpemilik',
         ]);
 
-        Pet::create($validated);
+        // Map field names to match Pet model fillable
+        $petData = [
+            'nama' => $validated['nama_pet'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'warna_tanda' => $validated['warna'] ?? null,
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'idras_hewan' => $validated['idras_hewan'],
+            'idpemilik' => $validated['idpemilik'],
+        ];
+
+        Pet::create($petData);
 
         return redirect()
             ->route('admin.pet.index')
@@ -70,9 +80,9 @@ class PetController extends Controller
     public function edit(Pet $pet): View
     {
         $rasHewan = RasHewan::with('jenisHewan')->get();
-        $users = User::all();
+        $pemilikList = Pemilik::with('user')->get();
         
-        return view('admin.pet.edit', compact('pet', 'rasHewan', 'users'));
+        return view('admin.pet.edit', compact('pet', 'rasHewan', 'pemilikList'));
     }
 
     /**
@@ -86,10 +96,20 @@ class PetController extends Controller
             'warna' => 'nullable|string|max:255',
             'tanggal_lahir' => 'nullable|date',
             'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
-            'iduser' => 'required|exists:users,id',
+            'idpemilik' => 'required|exists:pemilik,idpemilik',
         ]);
 
-        $pet->update($validated);
+        // Map field names to match Pet model fillable
+        $petData = [
+            'nama' => $validated['nama_pet'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'warna_tanda' => $validated['warna'] ?? null,
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'idras_hewan' => $validated['idras_hewan'],
+            'idpemilik' => $validated['idpemilik'],
+        ];
+
+        $pet->update($petData);
 
         return redirect()
             ->route('admin.pet.index')
