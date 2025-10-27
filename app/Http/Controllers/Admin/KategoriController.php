@@ -10,33 +10,31 @@ use Illuminate\View\View;
 
 class KategoriController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
+    // Menampilkan daftar kategori
     public function index(): View
     {
+        // Mengambil semua kategori beserta jumlah kode tindakan terapi terkait
         $kategori = Kategori::withCount('kodeTindakanTerapi')->get();
         
         return view('admin.kategori.index', compact('kategori'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Menampilkan form untuk membuat kategori baru
     public function create(): View
     {
         return view('admin.kategori.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Menyimpan kategori baru ke dalam database
     public function store(Request $request): RedirectResponse
     {
+        // Validasi input
         $validated = $request->validate([
             'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori',
         ]);
 
+        // Simpan kategori baru
         Kategori::create($validated);
 
         return redirect()
@@ -44,29 +42,25 @@ class KategoriController extends Controller
             ->with('success', 'Kategori berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Menampilkan detail kategori beserta kode tindakan terapi terkait
     public function show(Kategori $kategori): View
     {
+        // Muat relasi kode tindakan terapi terkait
         $kategori->load(['kodeTindakanTerapi']);
         
         return view('admin.kategori.show', compact('kategori'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Menampilkan form untuk mengedit kategori
     public function edit(Kategori $kategori): View
     {
         return view('admin.kategori.edit', compact('kategori'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Memperbarui data kategori di database
     public function update(Request $request, Kategori $kategori): RedirectResponse
     {
+        // Validasi input
         $validated = $request->validate([
             'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori,' . $kategori->idkategori . ',idkategori',
         ]);

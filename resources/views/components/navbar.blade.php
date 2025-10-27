@@ -40,7 +40,7 @@
                                     <div class="py-1">
                                         <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
                                         <a href="{{ route('admin.jenis-hewan.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Data Jenis Hewan</a>
-                                        <a href="{{ route('admin.pemilik.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Data Pemilik</a>
+                                        <a href="{{ route('resepsionis.pemilik.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Data Pemilik</a>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +152,7 @@
                 <div class="border-t border-teal-500 pt-2 mt-2">
                     <div class="px-3 py-2 text-sm font-medium text-teal-100">Menu Admin:</div>
                     <a href="{{ route('admin.jenis-hewan.index') }}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-teal-500 hover:text-white">Data Jenis Hewan</a>
-                    <a href="{{ route('admin.pemilik.index') }}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-teal-500 hover:text-white">Data Pemilik</a>
+                    <a href="{{ route('resepsionis.pemilik.index') }}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-teal-500 hover:text-white">Data Pemilik</a>
                 </div>
             @endauth
         </div>

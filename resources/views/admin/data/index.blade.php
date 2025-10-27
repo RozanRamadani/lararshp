@@ -262,7 +262,7 @@
                 </a>
 
                 <!-- Pet -->
-                <a href="{{ route('admin.pet.index') }}" class="group bg-white overflow-hidden shadow-lg sm:rounded-2xl hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+                <a href="{{ route('resepsionis.pet.index') }}" class="group bg-white overflow-hidden shadow-lg sm:rounded-2xl hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
@@ -357,7 +357,7 @@
                     <x-icon type="pet" size="w-4 h-4" class="mr-3" />
                     Tambah Jenis Hewan
                 </a>
-                <a href="{{ route('admin.pet.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
+                <a href="{{ route('resepsionis.pet.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
                     <x-icon type="pet" size="w-4 h-4" class="mr-3" />
                     Tambah Pet Baru
                 </a>

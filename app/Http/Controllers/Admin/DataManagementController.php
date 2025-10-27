@@ -15,9 +15,8 @@ use Illuminate\View\View;
 
 class DataManagementController extends Controller
 {
-    /**
-     * Display the data management dashboard.
-     */
+    
+    // Menampilkan dashboard manajemen data
     public function index(): View
     {
         $stats = [
@@ -31,6 +30,7 @@ class DataManagementController extends Controller
             'users' => User::count(),
         ];
 
+        // Kirim data statistik ke view
         return view('admin.data.index', compact('stats'));
     }
 }

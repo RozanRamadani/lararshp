@@ -14,6 +14,7 @@ class Role extends Model
         'nama_role'
     ];
 
+    // Relationship dengan user melalui tabel pivot role_user
     public function users()
     {
         return $this->belongsToMany(User::class, 'role_user', 'idrole', 'iduser')

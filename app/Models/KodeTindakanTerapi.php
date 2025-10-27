@@ -17,11 +17,13 @@ class KodeTindakanTerapi extends Model
         'idkategori_klinis'
     ];
 
+    // Relationship dengan kategori
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'idkategori', 'idkategori');
     }
 
+    // Relationship dengan kategori klinis
     public function kategoriKlinis()
     {
         return $this->belongsTo(KategoriKlinis::class, 'idkategori_klinis', 'idkategori_klinis');

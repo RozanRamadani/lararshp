@@ -15,9 +15,52 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.data.index')" :active="request()->routeIs('admin.data.*') || request()->routeIs('admin.jenis-hewan.*') || request()->routeIs('admin.ras-hewan.*') || request()->routeIs('admin.kategori.*') || request()->routeIs('admin.kategori-klinis.*') || request()->routeIs('admin.kode-tindakan-terapi.*') || request()->routeIs('admin.pet.*') || request()->routeIs('admin.role.*') || request()->routeIs('admin.user.*')">
-                        {{ __('Data Management') }}
-                    </x-nav-link>
+                    
+                    @auth
+                        {{-- Administrator Menu --}}
+                        @if(auth()->user()->hasRole('Administrator'))
+                            <x-nav-link :href="route('admin.data.index')" :active="request()->routeIs('admin.*')">
+                                {{ __('Data Management') }}
+                            </x-nav-link>
+                        @endif
+
+                        {{-- Resepsionis Menu --}}
+                        @if(auth()->user()->hasRole('Resepsionis'))
+                            <x-nav-link :href="route('resepsionis.pemilik.index')" :active="request()->routeIs('resepsionis.pemilik.*')">
+                                {{ __('Owners') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('resepsionis.pet.index')" :active="request()->routeIs('resepsionis.pet.*')">
+                                {{ __('Pets') }}
+                            </x-nav-link>
+                        @endif
+
+                        {{-- Dokter Menu --}}
+                        @if(auth()->user()->hasAnyRole(['Dokter']))
+                            <x-nav-link :href="route('dokter.pasien.index')" :active="request()->routeIs('dokter.pasien.*')">
+                                {{ __('Patients') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('dokter.rekam-medis.index')" :active="request()->routeIs('dokter.rekam-medis.*')">
+                                {{ __('Medical Records') }}
+                            </x-nav-link>
+                        @endif
+
+                        {{-- Perawat Menu --}}
+                        @if(auth()->user()->hasAnyRole(['Perawat']))
+                            <x-nav-link :href="route('perawat.pasien.index')" :active="request()->routeIs('perawat.pasien.*')">
+                                {{ __('Patient Care') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('perawat.rekam-medis.index')" :active="request()->routeIs('perawat.rekam-medis.*')">
+                                {{ __('Medical Records') }}
+                            </x-nav-link>
+                        @endif
+
+                        {{-- Pemilik Menu --}}
+                        @if(auth()->user()->hasRole('Pemilik'))
+                            <x-nav-link :href="route('pemilik.my-pets')" :active="request()->routeIs('pemilik.my-pets*')">
+                                {{ __('My Pets') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
@@ -73,9 +116,52 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('admin.data.index')" :active="request()->routeIs('admin.data.*') || request()->routeIs('admin.jenis-hewan.*') || request()->routeIs('admin.ras-hewan.*') || request()->routeIs('admin.kategori.*') || request()->routeIs('admin.kategori-klinis.*') || request()->routeIs('admin.kode-tindakan-terapi.*') || request()->routeIs('admin.pet.*') || request()->routeIs('admin.role.*') || request()->routeIs('admin.user.*')">
-                {{ __('Data Management') }}
-            </x-responsive-nav-link>
+            
+            @auth
+                {{-- Administrator Menu --}}
+                @if(auth()->user()->hasRole('Administrator'))
+                    <x-responsive-nav-link :href="route('admin.data.index')" :active="request()->routeIs('admin.*')">
+                        {{ __('Data Management') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                {{-- Resepsionis Menu --}}
+                @if(auth()->user()->hasRole('Resepsionis'))
+                    <x-responsive-nav-link :href="route('resepsionis.pemilik.index')" :active="request()->routeIs('resepsionis.pemilik.*')">
+                        {{ __('Owners') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('resepsionis.pet.index')" :active="request()->routeIs('resepsionis.pet.*')">
+                        {{ __('Pets') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                {{-- Dokter Menu --}}
+                @if(auth()->user()->hasAnyRole(['Administrator', 'Dokter']))
+                    <x-responsive-nav-link :href="route('dokter.pasien.index')" :active="request()->routeIs('dokter.pasien.*')">
+                        {{ __('Patients') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('dokter.rekam-medis.index')" :active="request()->routeIs('dokter.rekam-medis.*')">
+                        {{ __('Medical Records') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                {{-- Perawat Menu --}}
+                @if(auth()->user()->hasAnyRole(['Administrator', 'Perawat']))
+                    <x-responsive-nav-link :href="route('perawat.pasien.index')" :active="request()->routeIs('perawat.pasien.*')">
+                        {{ __('Patient Care') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('perawat.rekam-medis.index')" :active="request()->routeIs('perawat.rekam-medis.*')">
+                        {{ __('Medical Records') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                {{-- Pemilik Menu --}}
+                @if(auth()->user()->hasRole('Pemilik'))
+                    <x-responsive-nav-link :href="route('pemilik.my-pets')" :active="request()->routeIs('pemilik.my-pets*')">
+                        {{ __('My Pets') }}
+                    </x-responsive-nav-link>
+                @endif
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->

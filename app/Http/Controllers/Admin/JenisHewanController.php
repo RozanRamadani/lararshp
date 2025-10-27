@@ -10,33 +10,31 @@ use Illuminate\View\View;
 
 class JenisHewanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+    // Menampilkan daftar jenis hewan
     public function index(): View
     {
+        // Mengambil semua jenis hewan beserta jumlah hewan terkait
         $jenisHewan = JenisHewan::withCount('pets')->get();
         
         return view('admin.jenis-hewan.index', compact('jenisHewan'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
+    // Menampilkan form untuk membuat jenis hewan baru
     public function create(): View
     {
         return view('admin.jenis-hewan.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Menyimpan jenis hewan baru ke dalam database
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan',
         ]);
 
+        // Simpan jenis hewan baru
         JenisHewan::create($validated);
 
         return redirect()
@@ -44,33 +42,30 @@ class JenisHewanController extends Controller
             ->with('success', 'Jenis hewan berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Menampilkan detail jenis hewan beserta ras dan hewan terkait
     public function show(JenisHewan $jenisHewan): View
     {
+        // Muat relasi ras hewan dan hewan terkait
         $jenisHewan->load(['rasHewan.pets']);
         
         return view('admin.jenis-hewan.show', compact('jenisHewan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Menampilkan form untuk mengedit jenis hewan
     public function edit(JenisHewan $jenisHewan): View
     {
         return view('admin.jenis-hewan.edit', compact('jenisHewan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Memperbarui data jenis hewan di database
     public function update(Request $request, JenisHewan $jenisHewan): RedirectResponse
     {
+        // Validasi input
         $validated = $request->validate([
             'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan,' . $jenisHewan->idjenis_hewan . ',idjenis_hewan',
         ]);
 
+        // Perbarui data jenis hewan
         $jenisHewan->update($validated);
 
         return redirect()
@@ -78,18 +73,17 @@ class JenisHewanController extends Controller
             ->with('success', 'Jenis hewan berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Menghapus jenis hewan dari database
     public function destroy(JenisHewan $jenisHewan): RedirectResponse
     {
-        // Check if there are any related ras_hewan
+        // Cek apakah ada ras hewan terkait sebelum menghapus
         if ($jenisHewan->rasHewan()->exists()) {
             return redirect()
                 ->route('admin.jenis-hewan.index')
                 ->with('error', 'Tidak dapat menghapus jenis hewan yang masih memiliki ras hewan.');
         }
 
+        // Hapus jenis hewan
         $jenisHewan->delete();
 
         return redirect()

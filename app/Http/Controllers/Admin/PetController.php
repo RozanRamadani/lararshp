@@ -127,4 +127,34 @@ class PetController extends Controller
             ->route('admin.pet.index')
             ->with('success', 'Pet berhasil dihapus.');
     }
+
+    /**
+     * Display pets owned by authenticated user (Pemilik only)
+     */
+    public function myPets(): View
+    {
+        $user = auth()->user();
+        
+        // Get pets milik user yang login
+        $myPets = $user->pets()->with(['jenis_hewan', 'ras_hewan'])->get();
+        
+        return view('pemilik.my-pets', compact('myPets'));
+    }
+
+    /**
+     * Display single pet detail owned by authenticated user (Pemilik only)
+     */
+    public function showMyPet(Pet $pet): View
+    {
+        $user = auth()->user();
+        
+        // Pastikan pet ini milik user yang login
+        if (!$user->pets()->where('idpet', $pet->idpet)->exists()) {
+            abort(403, 'Anda tidak memiliki akses ke data pet ini.');
+        }
+        
+        $pet->load(['jenis_hewan', 'ras_hewan', 'pemilik.user']);
+        
+        return view('pemilik.my-pet-detail', compact('pet'));
+    }
 }

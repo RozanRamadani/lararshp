@@ -1,8 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard Admin RSHP') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Dashboard') }} - {{ Auth::user()->getPrimaryRoleName() ?? 'User' }}
+            </h2>
+            <div class="flex items-center space-x-2">
+                @foreach(Auth::user()->getActiveRoleNames() as $role)
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full 
+                        @if($role === 'Administrator') bg-red-100 text-red-800
+                        @elseif($role === 'Dokter') bg-blue-100 text-blue-800
+                        @elseif($role === 'Perawat') bg-green-100 text-green-800
+                        @elseif($role === 'Resepsionis') bg-purple-100 text-purple-800
+                        @elseif($role === 'Pemilik') bg-yellow-100 text-yellow-800
+                        @else bg-gray-100 text-gray-800
+                        @endif">
+                        {{ $role }}
+                    </span>
+                @endforeach
+            </div>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -10,58 +26,107 @@
             <!-- Welcome Card -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-semibold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h3>
-                    <p class="text-gray-600">Anda telah berhasil masuk ke sistem administrasi Rumah Sakit Hewan UNAIR.</p>
+                    <h3 class="text-lg font-semibold mb-2">Selamat Datang, {{ Auth::user()->nama }}!</h3>
+                    <p class="text-gray-600">
+                        @if(Auth::user()->hasRole('Administrator'))
+                            Anda masuk sebagai Administrator dengan akses penuh ke sistem.
+                        @elseif(Auth::user()->hasRole('Dokter'))
+                            Anda masuk sebagai Dokter. Kelola rekam medis dan diagnosis hewan.
+                        @elseif(Auth::user()->hasRole('Perawat'))
+                            Anda masuk sebagai Perawat. Bantu monitoring dan perawatan hewan.
+                        @elseif(Auth::user()->hasRole('Resepsionis'))
+                            Anda masuk sebagai Resepsionis. Kelola registrasi dan data pemilik.
+                        @elseif(Auth::user()->hasRole('Pemilik'))
+                            Anda masuk sebagai Pemilik. Lihat informasi hewan peliharaan Anda.
+                        @else
+                            Anda telah berhasil masuk ke sistem Rumah Sakit Hewan UNAIR.
+                        @endif
+                    </p>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <!-- Total Pemilik -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl shadow-sm">
-                                <x-icon type="owner" size="w-8 h-8" class="text-teal-600" />
-                            </div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pemilik::count() }}</h4>
-                                <p class="text-sm text-gray-600">Total Pemilik</p>
+            <!-- Stats Grid - Show based on role -->
+            @if(Auth::user()->hasAnyRole(['Administrator', 'Resepsionis']))
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <!-- Total Pemilik -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl shadow-sm">
+                                    <x-icon type="owner" size="w-8 h-8" class="text-teal-600" />
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pemilik::count() }}</h4>
+                                    <p class="text-sm text-gray-600">Total Pemilik</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Total Hewan -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                <x-icon type="pet" size="w-8 h-8" class="text-blue-600" />
-                            </div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pet::count() }}</h4>
-                                <p class="text-sm text-gray-600">Total Hewan</p>
+                    <!-- Total Hewan -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
+                                    <x-icon type="pet" size="w-8 h-8" class="text-blue-600" />
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pet::count() }}</h4>
+                                    <p class="text-sm text-gray-600">Total Hewan</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Jenis Hewan -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                <x-icon type="statistics" size="w-8 h-8" class="text-green-600" />
-                            </div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\JenisHewan::count() }}</h4>
-                                <p class="text-sm text-gray-600">Jenis Hewan</p>
+                    <!-- Jenis Hewan -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
+                                    <x-icon type="statistics" size="w-8 h-8" class="text-green-600" />
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\JenisHewan::count() }}</h4>
+                                    <p class="text-sm text-gray-600">Jenis Hewan</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endif
+
+            @if(Auth::user()->hasRole('Pemilik'))
+                <!-- Stats for Pemilik -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
+                                    <x-icon type="pet" size="w-8 h-8" class="text-blue-600" />
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-semibold text-gray-900">{{ Auth::user()->pets()->count() }}</h4>
+                                    <p class="text-sm text-gray-600">Hewan Peliharaan Saya</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
+                                    <x-icon type="calendar" size="w-8 h-8" class="text-green-600" />
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-semibold text-gray-900">0</h4>
+                                    <p class="text-sm text-gray-600">Appointment Mendatang</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <!-- Quick Actions -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -84,7 +149,7 @@
                             </div>
                             <span class="text-sm font-medium">Kelola Jenis Hewan</span>
                         </a>
-                        <a href="{{ route('admin.pemilik.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
+                        <a href="{{ route('resepsionis.pemilik.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
                             <div class="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg mr-3">
                                 <x-icon type="owner" size="w-6 h-6" class="text-blue-600" />
                             </div>

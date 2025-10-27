@@ -14,6 +14,7 @@ class Kategori extends Model
         'nama_kategori'
     ];
 
+    // Relationship dengan kode tindakan terapi
     public function kodeTindakanTerapi()
     {
         return $this->hasMany(KodeTindakanTerapi::class, 'idkategori', 'idkategori');

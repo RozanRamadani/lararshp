@@ -37,25 +37,36 @@
                 <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">Navigasi</h3>
                 <ul class="space-y-3">
                     <li>
-                        <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
-                            Dashboard
+                        <a href="{{ route('home') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
+                            Home
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.data.index') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
-                            Data Management
+                        <a href="{{ route('layanan') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
+                            Layanan
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ route('admin.jenis-hewan.index') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
-                            Jenis Hewan
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.pet.index') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
-                            Pets
-                        </a>
-                    </li>
+                    @auth
+                        <li>
+                            <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
+                                Dashboard
+                            </a>
+                        </li>
+                        @if(auth()->user()->hasRole('Administrator'))
+                            <li>
+                                <a href="{{ route('admin.data.index') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
+                                    Data Management
+                                </a>
+                            </li>
+                        @endif
+                        @if(auth()->user()->hasRole('Resepsionis'))
+                            <li>
+                                <a href="{{ route('resepsionis.pemilik.index') }}" class="text-gray-600 hover:text-teal-600 transition-colors duration-200 text-sm">
+                                    Owners
+                                </a>
+                            </li>
+                        @endif
+                    @endauth
                 </ul>
             </div>
 
