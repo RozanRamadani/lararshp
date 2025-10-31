@@ -11,6 +11,12 @@ class JenisHewan extends Model
     public $timestamps = false;
     protected $fillable = ['nama_jenis_hewan'];
 
+    // Fungsi aksesor untuk mendapatkan nama jenis hewan
+    public function getNamaJenisAttribute()
+    {
+        return $this->attributes['nama_jenis_hewan'] ?? null;
+    }
+
     // Relationship dengan ras hewan
     public function rasHewan()
     {

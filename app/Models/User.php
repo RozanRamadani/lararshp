@@ -21,7 +21,7 @@ class User extends Authenticatable
     protected $primaryKey = 'iduser';
     public $timestamps = false; // Disable Laravel timestamps if table doesn't have created_at/updated_at
     protected $fillable = [
-        'nama',  // Field name in custom table is 'nama', not 'name'
+        'nama',
         'email',
         'password',
     ];
@@ -29,7 +29,7 @@ class User extends Authenticatable
     // Aksesor dan Mutator untuk nama
     public function getNameAttribute()
     {
-        return $this->attributes['nama'];
+        return $this->attributes['nama'] ?? null;
     }
 
     // Mutator untuk nama
@@ -70,12 +70,12 @@ class User extends Authenticatable
     public function pets()
     {
         return $this->hasManyThrough(
-            Pet::class,         
-            Pemilik::class,     
-            'iduser',           
-            'idpemilik',        
-            'iduser',           
-            'idpemilik'         
+            Pet::class,
+            Pemilik::class,
+            'iduser',
+            'idpemilik',
+            'iduser',
+            'idpemilik'
         );
     }
 
@@ -86,12 +86,7 @@ class User extends Authenticatable
                     ->withPivot('status');
     }
 
-    /**
-     * Cek apakah user memiliki role tertentu (aktif)
-     * 
-     * @param string $roleName - Nama role (contoh: 'Administrator', 'Dokter')
-     * @return bool
-     */
+    // Cek apakah user memiliki role tertentu (aktif)
     public function hasRole(string $roleName): bool
     {
         return $this->roles()
@@ -100,12 +95,7 @@ class User extends Authenticatable
             ->exists();
     }
 
-    /**
-     * Cek apakah user memiliki salah satu dari beberapa role (aktif)
-     * 
-     * @param array $roleNames - Array nama role (contoh: ['Administrator', 'Dokter'])
-     * @return bool
-     */
+    // Cek apakah user memiliki salah satu dari beberapa role (aktif)
     public function hasAnyRole(array $roleNames): bool
     {
         return $this->roles()
@@ -114,12 +104,7 @@ class User extends Authenticatable
             ->exists();
     }
 
-    /**
-     * Cek apakah user memiliki semua role yang disebutkan (aktif)
-     * 
-     * @param array $roleNames - Array nama role
-     * @return bool
-     */
+    // Cek apakah user memiliki semua role yang disebutkan (aktif)
     public function hasAllRoles(array $roleNames): bool
     {
         $userRoles = $this->roles()
@@ -131,11 +116,7 @@ class User extends Authenticatable
         return count($userRoles) === count($roleNames);
     }
 
-    /**
-     * Ambil nama role pertama yang aktif (untuk display)
-     * 
-     * @return string|null
-     */
+    // Ambil nama role pertama yang aktif
     public function getPrimaryRoleName(): ?string
     {
         $role = $this->roles()
@@ -145,11 +126,7 @@ class User extends Authenticatable
         return $role ? $role->nama_role : null;
     }
 
-    /**
-     * Ambil semua nama role yang aktif
-     * 
-     * @return array
-     */
+    // Ambil semua nama role yang aktif
     public function getActiveRoleNames(): array
     {
         return $this->roles()

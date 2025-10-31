@@ -22,7 +22,7 @@
                                 <x-icon type="pet" size="w-8 h-8" class="text-blue-600" />
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $pets->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $totalPets ?? $pets->count() }}</h4>
                                 <p class="text-sm text-gray-600">Total Pet</p>
                             </div>
                         </div>
@@ -36,7 +36,7 @@
                                 <x-icon type="owner" size="w-8 h-8" class="text-green-600" />
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $pets->unique('iduser')->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $totalOwners ?? $pets->unique('iduser')->count() }}</h4>
                                 <p class="text-sm text-gray-600">Total Owner</p>
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                                 <x-icon type="dog" size="w-8 h-8" class="text-purple-600" />
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $pets->where('jenis_kelamin', 'Jantan')->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $petJantan ?? $pets->where('jenis_kelamin', 'Jantan')->count() }}</h4>
                                 <p class="text-sm text-gray-600">Pet Jantan</p>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                 <x-icon type="cat" size="w-8 h-8" class="text-pink-600" />
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $pets->where('jenis_kelamin', 'Betina')->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $petBetina ?? $pets->where('jenis_kelamin', 'Betina')->count() }}</h4>
                                 <p class="text-sm text-gray-600">Pet Betina</p>
                             </div>
                         </div>
@@ -122,7 +122,8 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         @if($pet->tanggal_lahir)
-                                            {{ \Carbon\Carbon::parse($pet->tanggal_lahir)->age }} tahun
+                                            {{-- Use model helper to show years or months/days when < 1 year --}}
+                                            {{ $pet->age_readable }}
                                         @else
                                             <span class="text-gray-400">-</span>
                                         @endif

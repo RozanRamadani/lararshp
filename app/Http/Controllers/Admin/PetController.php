@@ -17,9 +17,19 @@ class PetController extends Controller
      */
     public function index(): View
     {
+        // Load pets for table
         $pets = Pet::with(['user', 'rasHewan.jenisHewan'])->get();
-        
-        return view('admin.pet.index', compact('pets'));
+
+        // Compute statistics explicitly (DB queries or optimized counts)
+        $totalPets = Pet::count();
+
+        // Count unique owners referenced by pets (unique idpemilik)
+        $totalOwners = Pet::distinct('idpemilik')->count('idpemilik');
+
+        $petJantan = Pet::where('jenis_kelamin', 'Jantan')->count();
+        $petBetina = Pet::where('jenis_kelamin', 'Betina')->count();
+
+        return view('admin.pet.index', compact('pets', 'totalPets', 'totalOwners', 'petJantan', 'petBetina'));
     }
 
     /**

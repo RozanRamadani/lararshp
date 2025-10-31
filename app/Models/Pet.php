@@ -85,4 +85,82 @@ class Pet extends Model
     {
         return $this->rekamMedis();
     }
+
+    /**
+     * Accessor to provide legacy attribute `nama_pet` used in views.
+     * Returns a friendly fallback when the name is empty.
+     */
+    public function getNamaPetAttribute()
+    {
+        $name = $this->attributes['nama'] ?? null;
+
+        // Normalize empty string to null and provide a readable fallback
+        if ($name === null || $name === '') {
+            return 'Tidak diketahui';
+        }
+
+        return $name;
+    }
+
+    /**
+     * Accessor to map `warna` used in views to `warna_tanda` column.
+     */
+    public function getWarnaAttribute()
+    {
+        return $this->attributes['warna_tanda'] ?? null;
+    }
+
+    /**
+     * Readable age helper. Returns integer years or null if tanggal_lahir missing.
+     */
+    public function getAgeAttribute()
+    {
+        if (empty($this->tanggal_lahir)) {
+            return null;
+        }
+
+        return \Carbon\Carbon::parse($this->tanggal_lahir)->age;
+    }
+
+    // Fungsi untuk mendapatkan umur dalam format yang lebih mudah dibaca
+    public function getAgeReadableAttribute()
+    {
+        // Jika tanggal_lahir kosong, kembalikan null
+        if (empty($this->tanggal_lahir)) {
+            return null;
+        }
+
+        // Hitung selisih tanggal lahir dengan tanggal sekarang
+        $dob = \Carbon\Carbon::parse($this->tanggal_lahir);
+        $now = now();
+
+        // Komputasi tahun
+        $years = $dob->diffInYears($now);
+        if ($years >= 1) {
+            return $years . ' tahun';
+        }
+
+        // Untuk <1 tahun, hitung bulan dan hari
+        // Gunakan floatDiffInMonths jika tersedia, jika tidak, perkiraan menggunakan days/30
+        if (method_exists($dob, 'floatDiffInMonths')) {
+            $monthsFloat = $dob->floatDiffInMonths($now);
+        } else {
+            $days = $dob->diffInDays($now);
+            $monthsFloat = $days / 30.0;
+        }
+
+        // Bulatkan ke bulan terdekat
+        $monthsRounded = (int) round($monthsFloat);
+        if ($monthsRounded >= 1) {
+            return $monthsRounded . ' bulan';
+        }
+
+        // Jika kurang dari 1 bulan, hitung hari
+        $days = $dob->diffInDays($now);
+        if ($days >= 1) {
+            return $days . ' hari';
+        }
+
+        return '<1 hari';
+    }
 }

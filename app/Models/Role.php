@@ -9,7 +9,7 @@ class Role extends Model
     protected $table = 'role';
     protected $primaryKey = 'idrole';
     public $timestamps = false;
-    
+
     protected $fillable = [
         'nama_role'
     ];
@@ -21,3 +21,4 @@ class Role extends Model
                     ->withPivot('status');
     }
 }
+

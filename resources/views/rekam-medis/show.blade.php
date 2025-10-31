@@ -68,11 +68,11 @@
                                     <p class="text-base text-gray-900 font-semibold">{{ $rekamMedis->pet->nama ?? '-' }}</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500">Species</label>
+                                    <label class="block text-sm font-medium text-gray-500">Species (Jenis Hewan)</label>
                                     <p class="text-base text-gray-900">{{ $rekamMedis->pet->jenis_hewan->nama_jenis ?? '-' }}</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500">Breed</label>
+                                    <label class="block text-sm font-medium text-gray-500">Breed (Ras Hewan)</label>
                                     <p class="text-base text-gray-900">{{ $rekamMedis->pet->ras_hewan->nama_ras ?? '-' }}</p>
                                 </div>
                                 <div>
