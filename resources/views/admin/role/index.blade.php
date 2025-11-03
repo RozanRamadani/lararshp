@@ -5,7 +5,7 @@
                 {{ __('Data Role') }}
             </h2>
             <a href="{{ route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <x-icon type="activity" size="w-4 h-4" class="mr-2" />
+                <x-lordicon icon="activity" trigger="hover" size="16" class=" mr-2" />
                 Kembali ke Dashboard
             </a>
         </div>
@@ -19,7 +19,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl shadow-sm">
-                                <x-icon type="vet" size="w-8 h-8" class="text-indigo-600" />
+                                <x-lordicon icon="vet" trigger="hover" size="32" class=" text-indigo-600" />
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $roles->count() }}</h4>
@@ -33,7 +33,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                <x-icon type="owner" size="w-8 h-8" class="text-green-600" />
+                                <x-lordicon icon="owner" trigger="hover" size="32" class=" text-green-600" />
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $roles->sum('users_count') }}</h4>
@@ -47,7 +47,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl shadow-sm">
-                                <x-icon type="statistics" size="w-8 h-8" class="text-purple-600" />
+                                <x-lordicon icon="statistics" trigger="hover" size="32" class=" text-purple-600" />
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $roles->where('users_count', '>', 0)->count() }}</h4>
@@ -82,11 +82,11 @@
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center">
                                                     @if(strtolower($role->nama_role) == 'admin')
-                                                        <x-icon type="vet" size="w-6 h-6" class="text-indigo-600" />
+                                                        <x-lordicon icon="vet" trigger="hover" size="24" class=" text-indigo-600" />
                                                     @elseif(strtolower($role->nama_role) == 'owner' || strtolower($role->nama_role) == 'user')
-                                                        <x-icon type="owner" size="w-6 h-6" class="text-indigo-600" />
+                                                        <x-lordicon icon="owner" trigger="hover" size="24" class=" text-indigo-600" />
                                                     @else
-                                                        <x-icon type="vet" size="w-6 h-6" class="text-indigo-600" />
+                                                        <x-lordicon icon="vet" trigger="hover" size="24" class=" text-indigo-600" />
                                                     @endif
                                                 </div>
                                             </div>

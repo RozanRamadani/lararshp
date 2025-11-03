@@ -10,17 +10,49 @@ use Illuminate\View\View;
 
 class JenisHewanController extends Controller
 {
+    /**
+     * Helper: Pesan validasi kustom dalam Bahasa Indonesia
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'nama_jenis_hewan.required' => 'Nama jenis hewan wajib diisi.',
+            'nama_jenis_hewan.string' => 'Nama jenis hewan harus berupa teks.',
+            'nama_jenis_hewan.max' => 'Nama jenis hewan maksimal 255 karakter.',
+            'nama_jenis_hewan.unique' => 'Nama jenis hewan sudah terdaftar.',
+        ];
+    }
+
+    /**
+     * Helper: Aturan validasi untuk store
+     */
+    private function storeValidationRules(): array
+    {
+        return [
+            'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan',
+        ];
+    }
+
+    /**
+     * Helper: Aturan validasi untuk update
+     */
+    private function updateValidationRules(JenisHewan $jenisHewan): array
+    {
+        return [
+            'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan,' . $jenisHewan->idjenis_hewan . ',idjenis_hewan',
+        ];
+    }
 
     // Menampilkan daftar jenis hewan
     public function index(): View
     {
         // Mengambil semua jenis hewan beserta jumlah hewan terkait
         $jenisHewan = JenisHewan::withCount('pets')->get();
-        
+
         return view('admin.jenis-hewan.index', compact('jenisHewan'));
     }
 
-    
+
     // Menampilkan form untuk membuat jenis hewan baru
     public function create(): View
     {
@@ -30,9 +62,10 @@ class JenisHewanController extends Controller
     // Menyimpan jenis hewan baru ke dalam database
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan',
-        ]);
+        $validated = $request->validate(
+            $this->storeValidationRules(),
+            $this->validationMessages()
+        );
 
         // Simpan jenis hewan baru
         JenisHewan::create($validated);
@@ -47,7 +80,7 @@ class JenisHewanController extends Controller
     {
         // Muat relasi ras hewan dan hewan terkait
         $jenisHewan->load(['rasHewan.pets']);
-        
+
         return view('admin.jenis-hewan.show', compact('jenisHewan'));
     }
 
@@ -61,9 +94,10 @@ class JenisHewanController extends Controller
     public function update(Request $request, JenisHewan $jenisHewan): RedirectResponse
     {
         // Validasi input
-        $validated = $request->validate([
-            'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan,' . $jenisHewan->idjenis_hewan . ',idjenis_hewan',
-        ]);
+        $validated = $request->validate(
+            $this->updateValidationRules($jenisHewan),
+            $this->validationMessages()
+        );
 
         // Perbarui data jenis hewan
         $jenisHewan->update($validated);

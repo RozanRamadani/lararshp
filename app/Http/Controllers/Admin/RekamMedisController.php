@@ -19,13 +19,13 @@ class RekamMedisController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Sementara tampilkan semua data untuk testing
         // TODO: Filter berdasarkan dokter setelah tahu struktur kolom yang benar
         $rekamMedis = RekamMedis::with(['pet.pemilik', 'pet.jenis_hewan', 'dokter', 'perawat'])
-            ->orderBy('tanggal_kunjungan', 'desc')
+            ->orderBy('idrekam_medis', 'desc') // Using primary key instead of tanggal_kunjungan
             ->paginate(15);
-        
+
         return view('rekam-medis.index', compact('rekamMedis'));
     }
 
@@ -39,13 +39,13 @@ class RekamMedisController extends Controller
         $dokters = User::whereHas('roles', function($query) {
             $query->where('nama_role', 'Dokter');
         })->get();
-        
+
         $selectedPet = null;
         if ($request->has('idpet')) {
             $selectedPet = Pet::with(['pemilik', 'jenis_hewan', 'ras_hewan'])
                 ->findOrFail($request->idpet);
         }
-        
+
         return view('rekam-medis.create', compact('pets', 'dokters', 'selectedPet'));
     }
 
@@ -58,7 +58,7 @@ class RekamMedisController extends Controller
         $validated = $request->validate([
             'idpet' => 'required|exists:pet,idpet',
             'iddokter' => 'nullable|exists:users,iduser',
-            'tanggal_kunjungan' => 'required|date',
+            // 'tanggal_kunjungan' => 'required|date', // TODO: Verify if this column exists in DB
             'anamnesa' => 'nullable|string',
             'pemeriksaan_fisik' => 'nullable|string',
             'suhu' => 'nullable|numeric|between:0,99.99',
@@ -68,11 +68,11 @@ class RekamMedisController extends Controller
             'resep_obat' => 'nullable|string',
             'catatan' => 'nullable|string',
             'status' => 'required|in:menunggu,dalam_perawatan,selesai,rujukan',
-            'tanggal_kontrol' => 'nullable|date|after:tanggal_kunjungan',
+            'tanggal_kontrol' => 'nullable|date', // Removed |after:tanggal_kunjungan
         ]);
 
         $validated['idperawat'] = Auth::id();
-        
+
         RekamMedis::create($validated);
 
         return redirect()->route('perawat.rekam-medis.index')
@@ -87,10 +87,10 @@ class RekamMedisController extends Controller
     public function show(RekamMedis $rekamMedis)
     {
         $rekamMedis->load(['pet.pemilik', 'pet.jenis_hewan', 'pet.ras_hewan', 'dokter', 'perawat']);
-        
+
         $user = Auth::user();
         $isReadOnly = $user->hasRole('Dokter');
-        
+
         return view('rekam-medis.show', compact('rekamMedis', 'isReadOnly'));
     }
 
@@ -105,7 +105,7 @@ class RekamMedisController extends Controller
         $dokters = User::whereHas('roles', function($query) {
             $query->where('nama_role', 'Dokter');
         })->get();
-        
+
         return view('rekam-medis.edit', compact('rekamMedis', 'pets', 'dokters'));
     }
 
@@ -118,7 +118,7 @@ class RekamMedisController extends Controller
         $validated = $request->validate([
             'idpet' => 'required|exists:pet,idpet',
             'iddokter' => 'nullable|exists:users,iduser',
-            'tanggal_kunjungan' => 'required|date',
+            // 'tanggal_kunjungan' => 'required|date', // TODO: Verify if this column exists in DB
             'anamnesa' => 'nullable|string',
             'pemeriksaan_fisik' => 'nullable|string',
             'suhu' => 'nullable|numeric|between:0,99.99',
@@ -128,7 +128,7 @@ class RekamMedisController extends Controller
             'resep_obat' => 'nullable|string',
             'catatan' => 'nullable|string',
             'status' => 'required|in:menunggu,dalam_perawatan,selesai,rujukan',
-            'tanggal_kontrol' => 'nullable|date|after:tanggal_kunjungan',
+            'tanggal_kontrol' => 'nullable|date', // Removed |after:tanggal_kunjungan
         ]);
 
         $rekamMedis->update($validated);
@@ -156,7 +156,7 @@ class RekamMedisController extends Controller
     public function petRecords($idpet)
     {
         $pet = Pet::with(['pemilik', 'jenis_hewan', 'ras_hewan'])->findOrFail($idpet);
-        
+
         // Verify ownership for Pemilik role
         $user = Auth::user();
         if ($user->hasRole('Pemilik')) {
@@ -164,12 +164,12 @@ class RekamMedisController extends Controller
                 abort(403, 'Unauthorized access to pet records.');
             }
         }
-        
+
         $rekamMedis = RekamMedis::with(['dokter', 'perawat'])
             ->where('idpet', $idpet)
-            ->orderBy('tanggal_kunjungan', 'desc')
+            ->orderBy('idrekam_medis', 'desc') // Using primary key instead of tanggal_kunjungan
             ->paginate(10);
-        
+
         return view('rekam-medis.pet-records', compact('pet', 'rekamMedis'));
     }
 }

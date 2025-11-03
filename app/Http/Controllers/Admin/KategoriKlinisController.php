@@ -11,12 +11,45 @@ use Illuminate\View\View;
 class KategoriKlinisController extends Controller
 {
     /**
+     * Mendapatkan pesan validasi kustom dalam bahasa Indonesia
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'nama_kategori_klinis.required' => 'Nama kategori klinis wajib diisi.',
+            'nama_kategori_klinis.string' => 'Nama kategori klinis harus berupa teks.',
+            'nama_kategori_klinis.max' => 'Nama kategori klinis maksimal 255 karakter.',
+            'nama_kategori_klinis.unique' => 'Nama kategori klinis sudah digunakan.',
+        ];
+    }
+
+    /**
+     * Mendapatkan aturan validasi untuk store
+     */
+    private function storeValidationRules(): array
+    {
+        return [
+            'nama_kategori_klinis' => 'required|string|max:255|unique:kategori_klinis,nama_kategori_klinis',
+        ];
+    }
+
+    /**
+     * Mendapatkan aturan validasi untuk update
+     */
+    private function updateValidationRules(KategoriKlinis $kategoriKlini): array
+    {
+        return [
+            'nama_kategori_klinis' => 'required|string|max:255|unique:kategori_klinis,nama_kategori_klinis,' . $kategoriKlini->idkategori_klinis . ',idkategori_klinis',
+        ];
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(): View
     {
         $kategoriKlinis = KategoriKlinis::withCount('kodeTindakanTerapi')->get();
-        
+
         return view('admin.kategori-klinis.index', compact('kategoriKlinis'));
     }
 
@@ -33,9 +66,10 @@ class KategoriKlinisController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'nama_kategori_klinis' => 'required|string|max:255|unique:kategori_klinis,nama_kategori_klinis',
-        ]);
+        $validated = $request->validate(
+            $this->storeValidationRules(),
+            $this->validationMessages()
+        );
 
         KategoriKlinis::create($validated);
 
@@ -50,7 +84,7 @@ class KategoriKlinisController extends Controller
     public function show(KategoriKlinis $kategoriKlini): View
     {
         $kategoriKlini->load(['kodeTindakanTerapi']);
-        
+
         return view('admin.kategori-klinis.show', compact('kategoriKlini'));
     }
 
@@ -67,9 +101,10 @@ class KategoriKlinisController extends Controller
      */
     public function update(Request $request, KategoriKlinis $kategoriKlini): RedirectResponse
     {
-        $validated = $request->validate([
-            'nama_kategori_klinis' => 'required|string|max:255|unique:kategori_klinis,nama_kategori_klinis,' . $kategoriKlini->idkategori_klinis . ',idkategori_klinis',
-        ]);
+        $validated = $request->validate(
+            $this->updateValidationRules($kategoriKlini),
+            $this->validationMessages()
+        );
 
         $kategoriKlini->update($validated);
 

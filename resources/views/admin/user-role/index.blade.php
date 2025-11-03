@@ -5,7 +5,7 @@
                 {{ __('Data User dengan Role') }}
             </h2>
             <a href="{{ route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <x-icon type="activity" size="w-4 h-4" class="mr-2" />
+                <x-lordicon icon="activity" trigger="hover" size="16" class=" mr-2" />
                 Kembali ke Dashboard
             </a>
         </div>
@@ -19,7 +19,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                <x-icon type="owner" size="w-8 h-8" class="text-blue-600" />
+                                <x-lordicon icon="owner" trigger="hover" size="32" class=" text-blue-600" />
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $users->count() }}</h4>
@@ -33,7 +33,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                <x-icon type="vet" size="w-8 h-8" class="text-green-600" />
+                                <x-lordicon icon="vet" trigger="hover" size="32" class=" text-green-600" />
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $users->filter(function($user) { return $user->roles->contains('nama_role', 'admin'); })->count() }}</h4>
@@ -47,7 +47,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl shadow-sm">
-                                <x-icon type="pet" size="w-8 h-8" class="text-purple-600" />
+                                <x-lordicon icon="pet" trigger="hover" size="32" class=" text-purple-600" />
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $users->filter(function($user) { return $user->roles->whereIn('nama_role', ['owner', 'user'])->isNotEmpty(); })->count() }}</h4>
@@ -61,7 +61,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl shadow-sm">
-                                <x-icon type="statistics" size="w-8 h-8" class="text-yellow-600" />
+                                <x-lordicon icon="statistics" trigger="hover" size="32" class=" text-yellow-600" />
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $users->whereNotNull('email_verified_at')->count() }}</h4>
@@ -97,7 +97,7 @@
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                                    <x-icon type="owner" size="w-6 h-6" class="text-blue-600" />
+                                                    <x-lordicon icon="owner" trigger="hover" size="24" class=" text-blue-600" />
                                                 </div>
                                             </div>
                                             <div class="ml-4">

@@ -12,6 +12,9 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
+        <!-- Lordicon -->
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -24,8 +27,8 @@
                 <div class="text-center mb-8">
                     <a href="/" class="inline-block">
                         <div class="flex items-center justify-center mb-4">
-                            <img src="/assets/images/RSHP.png" 
-                                 alt="RSHP UNAIR Logo" 
+                            <img src="/assets/images/RSHP.png"
+                                 alt="RSHP UNAIR Logo"
                                  class="w-16 h-16 mr-3">
                             <div class="text-left">
                                 <h1 class="text-2xl font-bold text-gray-900">RSHP UNAIR</h1>
@@ -44,7 +47,7 @@
                         <div class="px-8 py-8">
                             {{ $slot }}
                         </div>
-                        
+
                         <!-- Footer -->
                         <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
                             <p class="text-xs text-center text-gray-500">
@@ -52,7 +55,7 @@
                             </p>
                         </div>
                     </div>
-                    
+
                     <!-- Back to Homepage -->
                     <div class="mt-6 text-center">
                         <a href="/" class="inline-flex items-center text-teal-600 hover:text-teal-700 text-sm font-medium transition duration-200">
@@ -63,7 +66,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Features/Trust indicators -->
                 <div class="mt-12 text-center">
                     <div class="flex justify-center space-x-8 text-xs text-gray-500">

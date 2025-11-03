@@ -53,7 +53,7 @@
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="p-3 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl shadow-sm">
-                                    <x-icon type="owner" size="w-8 h-8" class="text-teal-600" />
+                                    <x-lordicon icon="owner" trigger="hover" size="32" class=" text-teal-600" />
                                 </div>
                                 <div class="ml-4">
                                     <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pemilik::count() }}</h4>
@@ -68,7 +68,7 @@
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                    <x-icon type="pet" size="w-8 h-8" class="text-blue-600" />
+                                    <x-lordicon icon="pet" trigger="hover" size="32" class=" text-blue-600" />
                                 </div>
                                 <div class="ml-4">
                                     <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pet::count() }}</h4>
@@ -83,7 +83,7 @@
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                    <x-icon type="statistics" size="w-8 h-8" class="text-green-600" />
+                                    <x-lordicon icon="statistics" trigger="hover" size="32" class=" text-green-600" />
                                 </div>
                                 <div class="ml-4">
                                     <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\JenisHewan::count() }}</h4>
@@ -102,7 +102,7 @@
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                    <x-icon type="pet" size="w-8 h-8" class="text-blue-600" />
+                                    <x-lordicon icon="pet" trigger="hover" size="32" class=" text-blue-600" />
                                 </div>
                                 <div class="ml-4">
                                     <h4 class="text-lg font-semibold text-gray-900">{{ Auth::user()->pets()->count() }}</h4>
@@ -116,7 +116,7 @@
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                    <x-icon type="calendar" size="w-8 h-8" class="text-green-600" />
+                                    <x-lordicon icon="calendar" trigger="hover" size="32" class=" text-green-600" />
                                 </div>
                                 <div class="ml-4">
                                     <h4 class="text-lg font-semibold text-gray-900">0</h4>
@@ -132,32 +132,32 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <x-icon type="activity" size="w-6 h-6" class="mr-2 text-teal-600" />
+                        <x-lordicon icon="activity" trigger="hover" size="24" class=" mr-2 text-teal-600" />
                         Aksi Cepat
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Data Management Access -->
                         <a href="{{ route('admin.data.index') }}" class="flex items-center p-4 border-2 border-gradient-to-r from-purple-300 to-purple-400 rounded-lg bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
                             <div class="p-2 bg-gradient-to-br from-purple-200 to-purple-300 rounded-lg mr-3">
-                                <x-icon type="statistics" size="w-6 h-6" class="text-purple-700" />
+                                <x-lordicon icon="statistics" trigger="hover" size="24" class=" text-purple-700" />
                             </div>
                             <span class="text-sm font-semibold text-purple-800">Data Management</span>
                         </a>
                         <a href="{{ route('admin.jenis-hewan.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
                             <div class="p-2 bg-gradient-to-br from-teal-100 to-teal-200 rounded-lg mr-3">
-                                <x-icon type="cat" size="w-6 h-6" class="text-teal-600" />
+                                <x-lordicon icon="cat" trigger="hover" size="24" class=" text-teal-600" />
                             </div>
                             <span class="text-sm font-medium">Kelola Jenis Hewan</span>
                         </a>
                         <a href="{{ route('resepsionis.pemilik.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
                             <div class="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg mr-3">
-                                <x-icon type="owner" size="w-6 h-6" class="text-blue-600" />
+                                <x-lordicon icon="owner" trigger="hover" size="24" class=" text-blue-600" />
                             </div>
                             <span class="text-sm font-medium">Kelola Data Pemilik</span>
                         </a>
                         <a href="#" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
                             <div class="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-lg mr-3">
-                                <x-icon type="report" size="w-6 h-6" class="text-green-600" />
+                                <x-lordicon icon="report" trigger="hover" size="24" class=" text-green-600" />
                             </div>
                             <span class="text-sm font-medium">Laporan Harian</span>
                         </a>
@@ -169,7 +169,7 @@
             <div class="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <x-icon type="calendar" size="w-6 h-6" class="mr-2 text-teal-600" />
+                        <x-lordicon icon="calendar" trigger="hover" size="24" class=" mr-2 text-teal-600" />
                         Aktivitas Terbaru
                     </h3>
                     <div class="space-y-4">
@@ -180,7 +180,7 @@
                         <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <div class="flex-shrink-0">
                                 <div class="h-10 w-10 bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center shadow-sm">
-                                    <x-icon type="owner" size="w-6 h-6" class="text-teal-600" />
+                                    <x-lordicon icon="owner" trigger="hover" size="24" class=" text-teal-600" />
                                 </div>
                             </div>
                             <div class="flex-1 min-w-0">
@@ -197,7 +197,7 @@
                         </div>
                         @empty
                         <div class="text-center py-8">
-                            <x-icon type="activity" size="w-12 h-12" class="mx-auto mb-3 text-gray-300" />
+                            <x-lordicon icon="activity" trigger="hover" size="48" class=" mx-auto mb-3 text-gray-300" />
                             <p class="text-gray-500 text-sm">Belum ada aktivitas terbaru</p>
                         </div>
                         @endforelse

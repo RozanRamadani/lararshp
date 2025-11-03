@@ -9,12 +9,13 @@ class RekamMedis extends Model
 {
     protected $table = 'rekam_medis';
     protected $primaryKey = 'idrekam_medis';
-    
+    public $timestamps = true; // Enable timestamps (created_at, updated_at)
+
     protected $fillable = [
         'idpet',
         'iddokter',
         'idperawat',
-        'tanggal_kunjungan',
+        // 'tanggal_kunjungan', // TODO: Verify if this column exists in DB
         'anamnesa',
         'pemeriksaan_fisik',
         'suhu',
@@ -28,7 +29,7 @@ class RekamMedis extends Model
     ];
 
     protected $casts = [
-        'tanggal_kunjungan' => 'date',
+        // 'tanggal_kunjungan' => 'date', // TODO: Verify if this column exists in DB
         'tanggal_kontrol' => 'date',
         'suhu' => 'decimal:2',
         'berat_badan' => 'integer',
@@ -84,5 +85,20 @@ class RekamMedis extends Model
             'rujukan' => 'red',
             default => 'gray',
         };
+    }
+
+    /**
+     * Accessor for tanggal_kunjungan - fallback to created_at
+     * This is a temporary solution until the actual column is confirmed
+     */
+    public function getTanggalKunjunganAttribute()
+    {
+        // If the column exists in DB, return it
+        if (isset($this->attributes['tanggal_kunjungan'])) {
+            return \Carbon\Carbon::parse($this->attributes['tanggal_kunjungan']);
+        }
+
+        // Fallback to created_at timestamp
+        return $this->created_at;
     }
 }

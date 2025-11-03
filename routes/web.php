@@ -129,3 +129,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Freepik proxy (used by icon fallback)
+use App\Http\Controllers\FreepikController;
+Route::get('/freepik/proxy', [FreepikController::class, 'proxy'])->name('freepik.proxy')->middleware('throttle:30,1');
