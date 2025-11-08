@@ -36,6 +36,49 @@ class PetController extends Controller
     }
 
     /**
+     * Helper: pesan validasi kustom
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'nama_pet.required' => 'Nama pet wajib diisi.',
+            'nama_pet.string' => 'Nama pet harus berupa teks.',
+            'nama_pet.min' => 'Nama pet minimal 2 karakter.',
+            'nama_pet.max' => 'Nama pet maksimal 255 karakter.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'jenis_kelamin.in' => 'Jenis kelamin tidak valid.',
+            'idras_hewan.required' => 'Ras hewan wajib dipilih.',
+            'idras_hewan.exists' => 'Ras hewan tidak ditemukan.',
+            'idpemilik.required' => 'Pemilik wajib dipilih.',
+            'idpemilik.exists' => 'Pemilik tidak ditemukan.',
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi store
+     */
+    private function storeValidationRules(): array
+    {
+        return [
+            'nama_pet' => 'required|string|min:2|max:255',
+            'jenis_kelamin' => 'required|in:Jantan,Betina',
+            'warna' => 'nullable|string|max:255',
+            'tanggal_lahir' => 'nullable|date|before_or_equal:today',
+            'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
+            'idpemilik' => 'required|exists:pemilik,idpemilik',
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi update
+     */
+    private function updateValidationRules(Pet $pet): array
+    {
+        // Sama dengan store untuk kasus ini
+        return $this->storeValidationRules();
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create(): View
@@ -52,25 +95,18 @@ class PetController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // Validasi
-        $request->validate([
-            'nama_pet' => 'required|string|min:2|max:255',
-            'jenis_kelamin' => 'required|in:Jantan,Betina',
-            'warna' => 'nullable|string|max:255',
-            'tanggal_lahir' => 'nullable|date|before_or_equal:today',
-            'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
-            'idpemilik' => 'required|exists:pemilik,idpemilik',
-        ]);
+        $validated = $request->validate($this->storeValidationRules(), $this->validationMessages());
 
         try {
             DB::beginTransaction();
 
             Pet::create([
-                'nama' => ucwords(strtolower($request->nama_pet)),
-                'jenis_kelamin' => $request->jenis_kelamin,
-                'warna_tanda' => $request->warna,
-                'tanggal_lahir' => $request->tanggal_lahir,
-                'idras_hewan' => $request->idras_hewan,
-                'idpemilik' => $request->idpemilik,
+                'nama' => ucwords(strtolower($validated['nama_pet'])),
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'warna_tanda' => $validated['warna'] ?? null,
+                'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+                'idras_hewan' => $validated['idras_hewan'],
+                'idpemilik' => $validated['idpemilik'],
             ]);
 
             DB::commit();
@@ -110,25 +146,18 @@ class PetController extends Controller
     public function update(Request $request, Pet $pet): RedirectResponse
     {
         // Validasi
-        $request->validate([
-            'nama_pet' => 'required|string|min:2|max:255',
-            'jenis_kelamin' => 'required|in:Jantan,Betina',
-            'warna' => 'nullable|string|max:255',
-            'tanggal_lahir' => 'nullable|date|before_or_equal:today',
-            'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
-            'idpemilik' => 'required|exists:pemilik,idpemilik',
-        ]);
+        $validated = $request->validate($this->updateValidationRules($pet), $this->validationMessages());
 
         try {
             DB::beginTransaction();
 
             $pet->update([
-                'nama' => ucwords(strtolower($request->nama_pet)),
-                'jenis_kelamin' => $request->jenis_kelamin,
-                'warna_tanda' => $request->warna,
-                'tanggal_lahir' => $request->tanggal_lahir,
-                'idras_hewan' => $request->idras_hewan,
-                'idpemilik' => $request->idpemilik,
+                'nama' => ucwords(strtolower($validated['nama_pet'])),
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'warna_tanda' => $validated['warna'] ?? null,
+                'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+                'idras_hewan' => $validated['idras_hewan'],
+                'idpemilik' => $validated['idpemilik'],
             ]);
 
             DB::commit();

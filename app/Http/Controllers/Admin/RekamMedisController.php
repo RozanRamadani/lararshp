@@ -55,21 +55,7 @@ class RekamMedisController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'idpet' => 'required|exists:pet,idpet',
-            'iddokter' => 'nullable|exists:users,iduser',
-            // 'tanggal_kunjungan' => 'required|date', // TODO: Verify if this column exists in DB
-            'anamnesa' => 'nullable|string',
-            'pemeriksaan_fisik' => 'nullable|string',
-            'suhu' => 'nullable|numeric|between:0,99.99',
-            'berat_badan' => 'nullable|integer|min:0',
-            'diagnosis' => 'nullable|string',
-            'tindakan' => 'nullable|string',
-            'resep_obat' => 'nullable|string',
-            'catatan' => 'nullable|string',
-            'status' => 'required|in:menunggu,dalam_perawatan,selesai,rujukan',
-            'tanggal_kontrol' => 'nullable|date', // Removed |after:tanggal_kunjungan
-        ]);
+        $validated = $request->validate($this->storeValidationRules(), $this->validationMessages());
 
         $validated['idperawat'] = Auth::id();
 
@@ -115,21 +101,7 @@ class RekamMedisController extends Controller
      */
     public function update(Request $request, RekamMedis $rekamMedis)
     {
-        $validated = $request->validate([
-            'idpet' => 'required|exists:pet,idpet',
-            'iddokter' => 'nullable|exists:users,iduser',
-            // 'tanggal_kunjungan' => 'required|date', // TODO: Verify if this column exists in DB
-            'anamnesa' => 'nullable|string',
-            'pemeriksaan_fisik' => 'nullable|string',
-            'suhu' => 'nullable|numeric|between:0,99.99',
-            'berat_badan' => 'nullable|integer|min:0',
-            'diagnosis' => 'nullable|string',
-            'tindakan' => 'nullable|string',
-            'resep_obat' => 'nullable|string',
-            'catatan' => 'nullable|string',
-            'status' => 'required|in:menunggu,dalam_perawatan,selesai,rujukan',
-            'tanggal_kontrol' => 'nullable|date', // Removed |after:tanggal_kunjungan
-        ]);
+        $validated = $request->validate($this->updateValidationRules($rekamMedis), $this->validationMessages());
 
         $rekamMedis->update($validated);
 
@@ -171,5 +143,49 @@ class RekamMedisController extends Controller
             ->paginate(10);
 
         return view('rekam-medis.pet-records', compact('pet', 'rekamMedis'));
+    }
+
+    /**
+     * Helper: pesan validasi kustom untuk rekam medis
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'idpet.required' => 'Pilih pet terlebih dahulu.',
+            'idpet.exists' => 'Pet tidak ditemukan.',
+            'status.required' => 'Status wajib diisi.',
+            'status.in' => 'Status tidak valid.',
+            // Tambah pesan lain jika perlu
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi store
+     */
+    private function storeValidationRules(): array
+    {
+        return [
+            'idpet' => 'required|exists:pet,idpet',
+            'iddokter' => 'nullable|exists:users,iduser',
+            'anamnesa' => 'nullable|string',
+            'pemeriksaan_fisik' => 'nullable|string',
+            'suhu' => 'nullable|numeric|between:0,99.99',
+            'berat_badan' => 'nullable|integer|min:0',
+            'diagnosis' => 'nullable|string',
+            'tindakan' => 'nullable|string',
+            'resep_obat' => 'nullable|string',
+            'catatan' => 'nullable|string',
+            'status' => 'required|in:menunggu,dalam_perawatan,selesai,rujukan',
+            'tanggal_kontrol' => 'nullable|date',
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi update
+     */
+    private function updateValidationRules(RekamMedis $rekamMedis): array
+    {
+        // Saat ini sama dengan store
+        return $this->storeValidationRules();
     }
 }

@@ -16,7 +16,7 @@ class RoleController extends Controller
     public function index(): View
     {
         $roles = Role::withCount('users')->get();
-        
+
         return view('admin.role.index', compact('roles'));
     }
 
@@ -33,9 +33,7 @@ class RoleController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'nama_role' => 'required|string|max:255|unique:role,nama_role',
-        ]);
+        $validated = $request->validate($this->storeValidationRules(), $this->validationMessages());
 
         Role::create($validated);
 
@@ -50,7 +48,7 @@ class RoleController extends Controller
     public function show(Role $role): View
     {
         $role->load(['users']);
-        
+
         return view('admin.role.show', compact('role'));
     }
 
@@ -67,9 +65,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role): RedirectResponse
     {
-        $validated = $request->validate([
-            'nama_role' => 'required|string|max:255|unique:role,nama_role,' . $role->idrole . ',idrole',
-        ]);
+        $validated = $request->validate($this->updateValidationRules($role), $this->validationMessages());
 
         $role->update($validated);
 
@@ -95,5 +91,38 @@ class RoleController extends Controller
         return redirect()
             ->route('admin.role.index')
             ->with('success', 'Role berhasil dihapus.');
+    }
+
+    /**
+     * Helper: pesan validasi kustom
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'nama_role.required' => 'Nama role wajib diisi.',
+            'nama_role.string' => 'Nama role harus berupa teks.',
+            'nama_role.max' => 'Nama role maksimal 255 karakter.',
+            'nama_role.unique' => 'Nama role sudah terdaftar.',
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi untuk store
+     */
+    private function storeValidationRules(): array
+    {
+        return [
+            'nama_role' => 'required|string|max:255|unique:role,nama_role',
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi untuk update
+     */
+    private function updateValidationRules(Role $role): array
+    {
+        return [
+            'nama_role' => 'required|string|max:255|unique:role,nama_role,' . $role->idrole . ',idrole',
+        ];
     }
 }

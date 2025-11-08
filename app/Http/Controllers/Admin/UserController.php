@@ -19,7 +19,7 @@ class UserController extends Controller
     public function index(): View
     {
         $users = User::with(['roles'])->withCount('pets')->get();
-        
+
         return view('admin.user-role.index', compact('users'));
     }
 
@@ -29,7 +29,7 @@ class UserController extends Controller
     public function create(): View
     {
         $roles = Role::all();
-        
+
         return view('admin.user-role.create', compact('roles'));
     }
 
@@ -38,13 +38,7 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'roles' => 'required|array',
-            'roles.*' => 'exists:role,idrole',
-        ]);
+        $validated = $request->validate($this->storeValidationRules(), $this->validationMessages());
 
         $user = User::create([
             'name' => $validated['name'],
@@ -67,7 +61,7 @@ class UserController extends Controller
     public function show(User $user): View
     {
         $user->load(['roles', 'pets.rasHewan.jenisHewan']);
-        
+
         return view('admin.user-role.show', compact('user'));
     }
 
@@ -78,7 +72,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $user->load('roles');
-        
+
         return view('admin.user-role.edit', compact('user', 'roles'));
     }
 
@@ -87,13 +81,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'roles' => 'required|array',
-            'roles.*' => 'exists:role,idrole',
-        ]);
+        $validated = $request->validate($this->updateValidationRules($user), $this->validationMessages());
 
         $updateData = [
             'name' => $validated['name'],
@@ -128,11 +116,56 @@ class UserController extends Controller
 
         // Detach roles
         $user->roles()->detach();
-        
+
         $user->delete();
 
         return redirect()
             ->route('admin.user.index')
             ->with('success', 'User berhasil dihapus.');
+    }
+
+    /**
+     * Helper: pesan validasi kustom
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'name.required' => 'Nama wajib diisi.',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'roles.required' => 'Role wajib dipilih.',
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi store
+     */
+    private function storeValidationRules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'roles' => 'required|array',
+            'roles.*' => 'exists:role,idrole',
+        ];
+    }
+
+    /**
+     * Helper: aturan validasi update
+     */
+    private function updateValidationRules(User $user): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'roles' => 'required|array',
+            'roles.*' => 'exists:role,idrole',
+        ];
     }
 }
