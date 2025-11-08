@@ -10,39 +10,6 @@ use Illuminate\View\View;
 
 class KategoriController extends Controller
 {
-    /**
-     * Mendapatkan pesan validasi kustom dalam bahasa Indonesia
-     */
-    private function validationMessages(): array
-    {
-        return [
-            'nama_kategori.required' => 'Nama kategori wajib diisi.',
-            'nama_kategori.string' => 'Nama kategori harus berupa teks.',
-            'nama_kategori.max' => 'Nama kategori maksimal 255 karakter.',
-            'nama_kategori.unique' => 'Nama kategori sudah digunakan.',
-        ];
-    }
-
-    /**
-     * Mendapatkan aturan validasi untuk store
-     */
-    private function storeValidationRules(): array
-    {
-        return [
-            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori',
-        ];
-    }
-
-    /**
-     * Mendapatkan aturan validasi untuk update
-     */
-    private function updateValidationRules(Kategori $kategori): array
-    {
-        return [
-            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori,' . $kategori->idkategori . ',idkategori',
-        ];
-    }
-
     // Menampilkan daftar kategori
     public function index(): View
     {
@@ -61,13 +28,15 @@ class KategoriController extends Controller
     // Menyimpan kategori baru ke dalam database
     public function store(Request $request): RedirectResponse
     {
-        // Validasi input
-        $validated = $request->validate(
-            $this->storeValidationRules(),
-            $this->validationMessages()
-        );
+        $validated = $request->validate([
+            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori',
+        ], [
+            'nama_kategori.required' => 'Nama kategori wajib diisi.',
+            'nama_kategori.string' => 'Nama kategori harus berupa teks.',
+            'nama_kategori.max' => 'Nama kategori maksimal 255 karakter.',
+            'nama_kategori.unique' => 'Nama kategori sudah digunakan.',
+        ]);
 
-        // Simpan kategori baru
         Kategori::create($validated);
 
         return redirect()
@@ -93,11 +62,14 @@ class KategoriController extends Controller
     // Memperbarui data kategori di database
     public function update(Request $request, Kategori $kategori): RedirectResponse
     {
-        // Validasi input
-        $validated = $request->validate(
-            $this->updateValidationRules($kategori),
-            $this->validationMessages()
-        );
+        $validated = $request->validate([
+            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori,' . $kategori->idkategori . ',idkategori',
+        ], [
+            'nama_kategori.required' => 'Nama kategori wajib diisi.',
+            'nama_kategori.string' => 'Nama kategori harus berupa teks.',
+            'nama_kategori.max' => 'Nama kategori maksimal 255 karakter.',
+            'nama_kategori.unique' => 'Nama kategori sudah digunakan.',
+        ]);
 
         $kategori->update($validated);
 

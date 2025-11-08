@@ -9,6 +9,9 @@ use App\Models\Pemilik;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class PetController extends Controller
 {
@@ -39,7 +42,7 @@ class PetController extends Controller
     {
         $rasHewan = RasHewan::with('jenisHewan')->get();
         $pemilikList = Pemilik::with('user')->get();
-        
+
         return view('admin.pet.create', compact('rasHewan', 'pemilikList'));
     }
 
@@ -48,30 +51,36 @@ class PetController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'nama_pet' => 'required|string|max:255',
+        // Validasi
+        $request->validate([
+            'nama_pet' => 'required|string|min:2|max:255',
             'jenis_kelamin' => 'required|in:Jantan,Betina',
             'warna' => 'nullable|string|max:255',
-            'tanggal_lahir' => 'nullable|date',
+            'tanggal_lahir' => 'nullable|date|before_or_equal:today',
             'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
             'idpemilik' => 'required|exists:pemilik,idpemilik',
         ]);
 
-        // Map field names to match Pet model fillable
-        $petData = [
-            'nama' => $validated['nama_pet'],
-            'jenis_kelamin' => $validated['jenis_kelamin'],
-            'warna_tanda' => $validated['warna'] ?? null,
-            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
-            'idras_hewan' => $validated['idras_hewan'],
-            'idpemilik' => $validated['idpemilik'],
-        ];
+        try {
+            DB::beginTransaction();
 
-        Pet::create($petData);
+            Pet::create([
+                'nama' => ucwords(strtolower($request->nama_pet)),
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'warna_tanda' => $request->warna,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'idras_hewan' => $request->idras_hewan,
+                'idpemilik' => $request->idpemilik,
+            ]);
 
-        return redirect()
-            ->route('admin.pet.index')
-            ->with('success', 'Pet berhasil ditambahkan.');
+            DB::commit();
+            return redirect()->route('admin.pet.index')->with('success', 'Pet berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to create pet: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal menambahkan pet.');
+        }
     }
 
     /**
@@ -80,7 +89,7 @@ class PetController extends Controller
     public function show(Pet $pet): View
     {
         $pet->load(['user', 'rasHewan.jenisHewan']);
-        
+
         return view('admin.pet.show', compact('pet'));
     }
 
@@ -91,7 +100,7 @@ class PetController extends Controller
     {
         $rasHewan = RasHewan::with('jenisHewan')->get();
         $pemilikList = Pemilik::with('user')->get();
-        
+
         return view('admin.pet.edit', compact('pet', 'rasHewan', 'pemilikList'));
     }
 
@@ -100,30 +109,36 @@ class PetController extends Controller
      */
     public function update(Request $request, Pet $pet): RedirectResponse
     {
-        $validated = $request->validate([
-            'nama_pet' => 'required|string|max:255',
+        // Validasi
+        $request->validate([
+            'nama_pet' => 'required|string|min:2|max:255',
             'jenis_kelamin' => 'required|in:Jantan,Betina',
             'warna' => 'nullable|string|max:255',
-            'tanggal_lahir' => 'nullable|date',
+            'tanggal_lahir' => 'nullable|date|before_or_equal:today',
             'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
             'idpemilik' => 'required|exists:pemilik,idpemilik',
         ]);
 
-        // Map field names to match Pet model fillable
-        $petData = [
-            'nama' => $validated['nama_pet'],
-            'jenis_kelamin' => $validated['jenis_kelamin'],
-            'warna_tanda' => $validated['warna'] ?? null,
-            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
-            'idras_hewan' => $validated['idras_hewan'],
-            'idpemilik' => $validated['idpemilik'],
-        ];
+        try {
+            DB::beginTransaction();
 
-        $pet->update($petData);
+            $pet->update([
+                'nama' => ucwords(strtolower($request->nama_pet)),
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'warna_tanda' => $request->warna,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'idras_hewan' => $request->idras_hewan,
+                'idpemilik' => $request->idpemilik,
+            ]);
 
-        return redirect()
-            ->route('admin.pet.index')
-            ->with('success', 'Pet berhasil diperbarui.');
+            DB::commit();
+            return redirect()->route('admin.pet.index')->with('success', 'Pet berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update pet: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal memperbarui pet.');
+        }
     }
 
     /**
@@ -131,11 +146,13 @@ class PetController extends Controller
      */
     public function destroy(Pet $pet): RedirectResponse
     {
-        $pet->delete();
-
-        return redirect()
-            ->route('admin.pet.index')
-            ->with('success', 'Pet berhasil dihapus.');
+        try {
+            $pet->delete();
+            return redirect()->route('admin.pet.index')->with('success', 'Pet berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Failed to delete pet: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus pet.');
+        }
     }
 
     /**
@@ -143,11 +160,7 @@ class PetController extends Controller
      */
     public function myPets(): View
     {
-        $user = auth()->user();
-        
-        // Get pets milik user yang login
-        $myPets = $user->pets()->with(['jenis_hewan', 'ras_hewan'])->get();
-        
+        $myPets = auth()->user()->pets()->with(['jenis_hewan', 'ras_hewan'])->get();
         return view('pemilik.my-pets', compact('myPets'));
     }
 
@@ -156,15 +169,11 @@ class PetController extends Controller
      */
     public function showMyPet(Pet $pet): View
     {
-        $user = auth()->user();
-        
-        // Pastikan pet ini milik user yang login
-        if (!$user->pets()->where('idpet', $pet->idpet)->exists()) {
+        if (!auth()->user()->pets()->where('idpet', $pet->idpet)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke data pet ini.');
         }
-        
+
         $pet->load(['jenis_hewan', 'ras_hewan', 'pemilik.user']);
-        
         return view('pemilik.my-pet-detail', compact('pet'));
     }
 }

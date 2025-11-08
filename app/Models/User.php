@@ -24,6 +24,9 @@ class User extends Authenticatable
         'nama',
         'email',
         'password',
+        'no_wa',
+        'kota',
+        'idrole',
     ];
 
     // Aksesor dan Mutator untuk nama
