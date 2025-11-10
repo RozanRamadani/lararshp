@@ -133,3 +133,8 @@ require __DIR__.'/auth.php';
 // Freepik proxy (used by icon fallback)
 use App\Http\Controllers\FreepikController;
 Route::get('/freepik/proxy', [FreepikController::class, 'proxy'])->name('freepik.proxy')->middleware('throttle:30,1');
+
+// Icon test page (untuk debug Flaticon)
+Route::get('/test-icons', function () {
+    return view('test-icons');
+})->name('test-icons');

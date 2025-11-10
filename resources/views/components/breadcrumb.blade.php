@@ -5,7 +5,7 @@
         <!-- Dashboard (Home) -->
         <li class="inline-flex items-center">
             <a href="{{ route('dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                <x-lordicon icon="home" trigger="hover" size="16" class=" mr-2" />
+                <i class="fi fi-rr-home mr-2" style="font-size: 16px;"></i>
                 Dashboard
             </a>
         </li>

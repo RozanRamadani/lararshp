@@ -1,3 +1,11 @@
+/*
+ * Flaticon UIcons - Icon library untuk seluruh project
+ * Package: @flaticon/flaticon-uicons
+ * Import semua icon families (regular, bold, solid, thin, brands)
+ * PENTING: @import harus sebelum @tailwind directives
+ */
+@import "@flaticon/flaticon-uicons/css/all/all.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

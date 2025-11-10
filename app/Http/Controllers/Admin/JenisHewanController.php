@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\JenisHewan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -36,18 +36,21 @@ class JenisHewanController extends Controller
     /**
      * Helper: Aturan validasi untuk update
      */
-    private function updateValidationRules(JenisHewan $jenisHewan): array
+    private function updateValidationRules($id): array
     {
         return [
-            'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan,' . $jenisHewan->idjenis_hewan . ',idjenis_hewan',
+            // $id is the idjenis_hewan value
+            'nama_jenis_hewan' => 'required|string|max:255|unique:jenis_hewan,nama_jenis_hewan,' . (int) $id . ',idjenis_hewan',
         ];
     }
 
     // Menampilkan daftar jenis hewan
     public function index(): View
     {
-        // Mengambil semua jenis hewan beserta jumlah hewan terkait
-        $jenisHewan = JenisHewan::withCount('pets')->get();
+        // Mengambil semua jenis_hewan beserta jumlah pets terkait (melalui ras_hewan)
+        $jenisHewan = DB::table('jenis_hewan')
+            ->select('jenis_hewan.*', DB::raw('(select count(*) from pet join ras_hewan on pet.idras_hewan = ras_hewan.idras_hewan where ras_hewan.idjenis_hewan = jenis_hewan.idjenis_hewan) as pets_count'))
+            ->get();
 
         return view('admin.jenis-hewan.index', compact('jenisHewan'));
     }
@@ -67,8 +70,10 @@ class JenisHewanController extends Controller
             $this->validationMessages()
         );
 
-        // Simpan jenis hewan baru
-        JenisHewan::create($validated);
+        // Simpan jenis hewan baru menggunakan Query Builder
+        DB::table('jenis_hewan')->insert([
+            'nama_jenis_hewan' => $validated['nama_jenis_hewan']
+        ]);
 
         return redirect()
             ->route('admin.jenis-hewan.index')
@@ -76,31 +81,64 @@ class JenisHewanController extends Controller
     }
 
     // Menampilkan detail jenis hewan beserta ras dan hewan terkait
-    public function show(JenisHewan $jenisHewan): View
+    public function show($id): View
     {
-        // Muat relasi ras hewan dan hewan terkait
-        $jenisHewan->load(['rasHewan.pets']);
+        // Ambil jenis hewan
+        $jenisHewan = DB::table('jenis_hewan')->where('idjenis_hewan', $id)->first();
+        if (! $jenisHewan) {
+            abort(404);
+        }
+
+        // Muat relasi ras_hewan dan masing-masing pets (simple eager-loading)
+        $ras = DB::table('ras_hewan')->where('idjenis_hewan', $id)->get();
+        // attach pets collection to each ras
+        $ras = $ras->map(function ($r) {
+            $r->pets = DB::table('pet')->where('idras_hewan', $r->idras_hewan)->get();
+            return $r;
+        });
+
+        // attach property name expected by views
+        $jenisHewan->rasHewan = $ras;
 
         return view('admin.jenis-hewan.show', compact('jenisHewan'));
     }
 
     // Menampilkan form untuk mengedit jenis hewan
-    public function edit(JenisHewan $jenisHewan): View
+    public function edit($id): View
     {
+        $jenisHewan = DB::table('jenis_hewan')
+            ->select('jenis_hewan.*', DB::raw('(select count(*) from pet join ras_hewan on pet.idras_hewan = ras_hewan.idras_hewan where ras_hewan.idjenis_hewan = jenis_hewan.idjenis_hewan) as pets_count'))
+            ->where('idjenis_hewan', $id)
+            ->first();
+
+        if (! $jenisHewan) {
+            abort(404);
+        }
+
         return view('admin.jenis-hewan.edit', compact('jenisHewan'));
     }
 
     // Memperbarui data jenis hewan di database
-    public function update(Request $request, JenisHewan $jenisHewan): RedirectResponse
+    public function update(Request $request, $id): RedirectResponse
     {
+        // Pastikan jenis hewan ada
+        $existing = DB::table('jenis_hewan')->where('idjenis_hewan', $id)->first();
+        if (! $existing) {
+            abort(404);
+        }
+
         // Validasi input
         $validated = $request->validate(
-            $this->updateValidationRules($jenisHewan),
+            $this->updateValidationRules($id),
             $this->validationMessages()
         );
 
         // Perbarui data jenis hewan
-        $jenisHewan->update($validated);
+        DB::table('jenis_hewan')
+            ->where('idjenis_hewan', $id)
+            ->update([
+                'nama_jenis_hewan' => $validated['nama_jenis_hewan']
+            ]);
 
         return redirect()
             ->route('admin.jenis-hewan.index')
@@ -108,17 +146,17 @@ class JenisHewanController extends Controller
     }
 
     // Menghapus jenis hewan dari database
-    public function destroy(JenisHewan $jenisHewan): RedirectResponse
+    public function destroy($id): RedirectResponse
     {
-        // Cek apakah ada ras hewan terkait sebelum menghapus
-        if ($jenisHewan->rasHewan()->exists()) {
+        // Cek apakah ada ras_hewan terkait sebelum menghapus
+        if (DB::table('ras_hewan')->where('idjenis_hewan', $id)->exists()) {
             return redirect()
                 ->route('admin.jenis-hewan.index')
                 ->with('error', 'Tidak dapat menghapus jenis hewan yang masih memiliki ras hewan.');
         }
 
         // Hapus jenis hewan
-        $jenisHewan->delete();
+        DB::table('jenis_hewan')->where('idjenis_hewan', $id)->delete();
 
         return redirect()
             ->route('admin.jenis-hewan.index')

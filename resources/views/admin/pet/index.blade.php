@@ -5,7 +5,7 @@
                 {{ __('Data Pet') }}
             </h2>
             <a href="{{ route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <x-lordicon icon="activity" trigger="hover" size="16" class=" mr-2" />
+                <i class="fi fi-rr-chart-line mr-2" style="font-size: 16px;"></i>
                 Kembali ke Dashboard
             </a>
         </div>
@@ -19,7 +19,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="pet" trigger="hover" size="32" class=" text-blue-600" />
+                                <i class="fi fi-rr-paw text-blue-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $totalPets ?? $pets->count() }}</h4>
@@ -33,7 +33,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="owner" trigger="hover" size="32" class=" text-green-600" />
+                                <i class="fi fi-rr-user text-green-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $totalOwners ?? $pets->unique('iduser')->count() }}</h4>
@@ -47,7 +47,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="dog" trigger="hover" size="32" class=" text-purple-600" />
+                                <i class="fi fi-rr-dog text-purple-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $petJantan ?? $pets->where('jenis_kelamin', 'Jantan')->count() }}</h4>
@@ -61,7 +61,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="cat" trigger="hover" size="32" class=" text-pink-600" />
+                                <i class="fi fi-rr-cat text-pink-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $petBetina ?? $pets->where('jenis_kelamin', 'Betina')->count() }}</h4>
@@ -97,7 +97,7 @@
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                                    <x-lordicon icon="pet" trigger="hover" size="24" class=" text-blue-600" />
+                                                    <i class="fi fi-rr-paw text-blue-600" style="font-size: 24px;"></i>
                                                 </div>
                                             </div>
                                             <div class="ml-4">

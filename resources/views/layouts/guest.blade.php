@@ -12,9 +12,6 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
-        <!-- Lordicon -->
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
-
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>

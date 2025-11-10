@@ -11,8 +11,7 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Lordicon -->
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])

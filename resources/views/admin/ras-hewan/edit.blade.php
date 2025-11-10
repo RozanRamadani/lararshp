@@ -75,7 +75,7 @@
                         <div class="mb-6 p-4 bg-blue-50 rounded-lg">
                             <div class="flex">
                                 <div class="flex-shrink-0">
-                                    <x-lordicon icon="pet" trigger="hover" size="20" class="text-blue-400" />
+                                    <i class="fi fi-rr-paw text-blue-400" style="font-size: 20px;"></i>
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm text-blue-700">
@@ -91,7 +91,7 @@
                                 Batal
                             </a>
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    <x-lordicon icon="check" trigger="morph" size="16" class="mr-2 text-white" />
+                                    <i class="fi fi-rr-check mr-2 text-white" style="font-size: 16px;"></i>
                                 Update
                             </button>
                         </div>

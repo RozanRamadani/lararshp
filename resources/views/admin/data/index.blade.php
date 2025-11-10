@@ -28,7 +28,7 @@
                         </div>
                         <div class="hidden md:block">
                             <div class="bg-white/20 rounded-full p-4">
-                                <x-lordicon icon="vet" trigger="hover" size="48" class=" text-white" />
+                                <i class="fi fi-rr-stethoscope text-white" style="font-size: 48px;"></i>
                             </div>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-4 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="pet" trigger="hover" size="32" class=" text-teal-600" />
+                                <i class="fi fi-rr-paw text-teal-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4 flex-1">
                                 <h4 class="text-2xl font-bold text-gray-900">{{ $stats['jenis_hewan'] }}</h4>
@@ -58,7 +58,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-4 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="cat" trigger="hover" size="32" class=" text-blue-600" />
+                                <i class="fi fi-rr-dog text-blue-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4 flex-1">
                                 <h4 class="text-2xl font-bold text-gray-900">{{ $stats['ras_hewan'] }}</h4>
@@ -75,7 +75,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-4 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="dog" trigger="hover" size="32" class=" text-green-600" />
+                                <i class="fi fi-rr-dog text-green-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4 flex-1">
                                 <h4 class="text-2xl font-bold text-gray-900">{{ $stats['pets'] }}</h4>
@@ -92,7 +92,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-4 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="users" trigger="hover" size="32" class=" text-purple-600" />
+                                <i class="fi fi-rr-users text-purple-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4 flex-1">
                                 <h4 class="text-2xl font-bold text-gray-900">{{ $stats['users'] }}</h4>
@@ -111,7 +111,7 @@
                 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                     <div class="text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full mb-4">
-                            <x-lordicon icon="category" trigger="hover" size="32" class=" text-indigo-600" />
+                            <i class="fi fi-rr-doctor text-indigo-600" style="font-size: 32px;"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-900">{{ $stats['kategori'] + $stats['kategori_klinis'] }}</h3>
                         <p class="text-gray-600">Medical Categories</p>
@@ -121,7 +121,7 @@
                 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                     <div class="text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full mb-4">
-                            <x-lordicon icon="medicine" trigger="hover" size="32" class=" text-emerald-600" />
+                            <i class="fi fi-rr-prescription-bottle text-emerald-600" style="font-size: 32px;"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-900">{{ $stats['kode_tindakan_terapi'] }}</h3>
                         <p class="text-gray-600">Treatment Codes</p>
@@ -131,7 +131,7 @@
                 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                     <div class="text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-full mb-4">
-                            <x-lordicon icon="shield" trigger="hover" size="32" class=" text-pink-600" />
+                            <i class="fi fi-rr-shield text-pink-600" style="font-size: 32px;"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-900">{{ $stats['roles'] }}</h3>
                         <p class="text-gray-600">System Roles</p>
@@ -146,7 +146,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="pet" trigger="hover" size="32" class=" text-teal-600" />
+                                <i class="fi fi-rr-paw text-teal-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
@@ -170,7 +170,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="cat" trigger="hover" size="32" class=" text-blue-600" />
+                                <i class="fi fi-rr-cat text-blue-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -194,7 +194,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="category" trigger="hover" size="32" class=" text-indigo-600" />
+                                <i class="fi fi-rr-apps text-indigo-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
@@ -218,7 +218,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="stethoscope" trigger="hover" size="32" class=" text-emerald-600" />
+                                <i class="fi fi-rr-stethoscope text-emerald-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
@@ -242,7 +242,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="list" trigger="hover" size="32" class=" text-purple-600" />
+                                <i class="fi fi-rr-list text-purple-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
@@ -266,7 +266,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="dog" trigger="hover" size="32" class=" text-green-600" />
+                                <i class="fi fi-rr-dog text-green-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -290,7 +290,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="shield" trigger="hover" size="32" class=" text-red-600" />
+                                <i class="fi fi-rr-shield text-red-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -314,7 +314,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                                <x-lordicon icon="user-check" trigger="hover" size="32" class=" text-gray-600" />
+                                <i class="fi fi-rr-user-check text-gray-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -349,20 +349,20 @@
             <!-- Quick Action Menu -->
             <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute bottom-16 right-0 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
                 <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
-                    <x-lordicon icon="home" trigger="hover" size="16" class=" mr-3" />
+                    <i class="fi fi-rr-home mr-3" style="font-size: 16px;"></i>
                     Dashboard Utama
                 </a>
                 <div class="border-t border-gray-100 my-1"></div>
                 <a href="{{ route('admin.jenis-hewan.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
-                    <x-lordicon icon="pet" trigger="hover" size="16" class=" mr-3" />
+                    <i class="fi fi-rr-paw mr-3" style="font-size: 16px;"></i>
                     Tambah Jenis Hewan
                 </a>
                 <a href="{{ route('resepsionis.pet.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
-                    <x-lordicon icon="pet" trigger="hover" size="16" class=" mr-3" />
+                    <i class="fi fi-rr-paw mr-3" style="font-size: 16px;"></i>
                     Tambah Pet Baru
                 </a>
                 <a href="{{ route('admin.user.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
-                    <x-lordicon icon="owner" trigger="hover" size="16" class=" mr-3" />
+                    <i class="fi fi-rr-user mr-3" style="font-size: 16px;"></i>
                     Tambah User Baru
                 </a>
             </div>

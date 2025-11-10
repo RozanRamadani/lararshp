@@ -5,7 +5,7 @@
                 {{ __('Data Kategori Klinis') }}
             </h2>
             <a href="{{ route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <x-lordicon icon="activity" trigger="hover" size="16" class=" mr-2" />
+                <i class="fi fi-rr-chart-line mr-2" style="font-size: 16px;"></i>
                 Kembali ke Dashboard
             </a>
         </div>
@@ -17,7 +17,7 @@
             @if(session('success'))
                 <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                     <div class="flex items-center">
-                        <x-lordicon icon="check" trigger="hover" size="20" class=" mr-2" />
+                        <i class="fi fi-rr-check mr-2" style="font-size: 20px;"></i>
                         <span>{{ session('success') }}</span>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
             @if(session('error'))
                 <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <div class="flex items-center">
-                        <x-lordicon icon="x" trigger="hover" size="20" class=" mr-2" />
+                        <i class="fi fi-rr-cross mr-2" style="font-size: 20px;"></i>
                         <span>{{ session('error') }}</span>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="clinic" trigger="hover" size="32" class=" text-teal-600" />
+                                <i class="fi fi-rr-hospital text-teal-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $kategoriKlinis->count() }}</h4>
@@ -52,7 +52,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="medical" trigger="hover" size="32" class=" text-green-600" />
+                                <i class="fi fi-rr-prescription-bottle text-green-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $kategoriKlinis->sum('kode_tindakan_count') }}</h4>
@@ -66,7 +66,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="statistics" trigger="hover" size="32" class=" text-purple-600" />
+                                <i class="fi fi-rr-chart-line text-purple-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $kategoriKlinis->where('kode_tindakan_count', '>', 0)->count() }}</h4>
@@ -84,7 +84,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-semibold text-gray-900">Daftar Kategori Klinis</h3>
                         <a href="{{ route('admin.kategori-klinis.create') }}" class="inline-flex items-center px-4 py-2 bg-teal-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-teal-700 focus:bg-teal-700 active:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            <x-lordicon icon="plus" trigger="hover" size="16" class=" mr-2" />
+                            <i class="fi fi-rr-plus mr-2" style="font-size: 16px;"></i>
                             Tambah Kategori Klinis
                         </a>
                     </div>
@@ -110,7 +110,7 @@
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center">
-                                                    <x-lordicon icon="clinic" trigger="hover" size="24" class=" text-teal-600" />
+                                                    <i class="fi fi-rr-hospital text-teal-600" style="font-size: 24px;"></i>
                                                 </div>
                                             </div>
                                             <div class="ml-4">
@@ -131,13 +131,13 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                         <div class="flex justify-center space-x-2">
                                             <a href="{{ route('admin.kategori-klinis.edit', $katKlinis->idkategori_klinis) }}" class="text-blue-600 hover:text-blue-900" title="Edit">
-                                                <x-lordicon icon="edit" trigger="hover" size="20" class="" />
+                                                <i class="fi fi-rr-edit " style="font-size: 20px;"></i>
                                             </a>
                                             <form action="{{ route('admin.kategori-klinis.destroy', $katKlinis->idkategori_klinis) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori klinis ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus" {{ $katKlinis->kode_tindakan_count > 0 ? 'disabled' : '' }}>
-                                                    <x-lordicon icon="trash" trigger="hover" size="20" class="" />
+                                                    <i class="fi fi-rr-trash " style="font-size: 20px;"></i>
                                                 </button>
                                             </form>
                                         </div>

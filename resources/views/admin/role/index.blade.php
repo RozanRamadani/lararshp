@@ -5,7 +5,7 @@
                 {{ __('Data Role') }}
             </h2>
             <a href="{{ route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <x-lordicon icon="activity" trigger="hover" size="16" class=" mr-2" />
+                <i class="fi fi-rr-chart-line mr-2" style="font-size: 16px;"></i>
                 Kembali ke Dashboard
             </a>
         </div>
@@ -19,7 +19,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="vet" trigger="hover" size="32" class=" text-indigo-600" />
+                                <i class="fi fi-rr-stethoscope text-indigo-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $roles->count() }}</h4>
@@ -33,7 +33,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="owner" trigger="hover" size="32" class=" text-green-600" />
+                                <i class="fi fi-rr-user text-green-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $roles->sum('users_count') }}</h4>
@@ -47,7 +47,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl shadow-sm">
-                                <x-lordicon icon="statistics" trigger="hover" size="32" class=" text-purple-600" />
+                                <i class="fi fi-rr-chart-line text-purple-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $roles->where('users_count', '>', 0)->count() }}</h4>
@@ -82,11 +82,11 @@
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center">
                                                     @if(strtolower($role->nama_role) == 'admin')
-                                                        <x-lordicon icon="vet" trigger="hover" size="24" class=" text-indigo-600" />
+                                                        <i class="fi fi-rr-stethoscope text-indigo-600" style="font-size: 24px;"></i>
                                                     @elseif(strtolower($role->nama_role) == 'owner' || strtolower($role->nama_role) == 'user')
-                                                        <x-lordicon icon="owner" trigger="hover" size="24" class=" text-indigo-600" />
+                                                        <i class="fi fi-rr-user text-indigo-600" style="font-size: 24px;"></i>
                                                     @else
-                                                        <x-lordicon icon="vet" trigger="hover" size="24" class=" text-indigo-600" />
+                                                        <i class="fi fi-rr-stethoscope text-indigo-600" style="font-size: 24px;"></i>
                                                     @endif
                                                 </div>
                                             </div>
