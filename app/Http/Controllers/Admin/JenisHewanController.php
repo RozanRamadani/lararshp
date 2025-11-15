@@ -44,7 +44,7 @@ class JenisHewanController extends Controller
         ];
     }
 
-    // Menampilkan daftar jenis hewan
+    // Menampilkan daftar jenis hewan (query builder)
     public function index(): View
     {
         // Mengambil semua jenis_hewan beserta jumlah pets terkait (melalui ras_hewan)
@@ -54,6 +54,8 @@ class JenisHewanController extends Controller
 
         return view('admin.jenis-hewan.index', compact('jenisHewan'));
     }
+
+
 
 
     // Menampilkan form untuk membuat jenis hewan baru

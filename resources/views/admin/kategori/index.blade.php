@@ -5,7 +5,7 @@
                 {{ __('Data Kategori') }}
             </h2>
             <a href="{{ route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                <i class="fi fi-rr-chart-line mr-2" style="font-size: 16px;"></i>
+                       <i class="fi fi-rr-chart-line mr-2" style="font-size: 16px;"></i>
                 Kembali ke Dashboard
             </a>
         </div>
@@ -66,7 +66,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl shadow-sm">
-                                <i class="fi fi-rr-chart-line text-purple-600" style="font-size: 32px;"></i>
+                                <i class="fi fi-rr-category-alt text-purple-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900">{{ $kategori->where('kode_tindakan_count', '>', 0)->count() }}</h4>
@@ -138,9 +138,7 @@
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus" {{ $kat->kode_tindakan_count > 0 ? 'disabled' : '' }}>
                                                     <i class="fi fi-rr-trash " style="font-size: 20px;"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+          </div>
                                     </td>
                                 </tr>
                                 @empty
