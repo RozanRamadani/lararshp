@@ -4,101 +4,120 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
+use App\Models\RoleUser;
 
 class RekamMedis extends Model
 {
     protected $table = 'rekam_medis';
     protected $primaryKey = 'idrekam_medis';
-    public $timestamps = true; // Enable timestamps (created_at, updated_at)
+    // The `rekam_medis` table in the SQL dump contains only a subset of fields.
+    // Keep timestamps disabled to avoid Eloquent expecting `updated_at`.
+    public $timestamps = false;
 
+    // Fillable columns should reflect the actual DB columns (see database dump)
     protected $fillable = [
-        'idpet',
-        'iddokter',
-        'idperawat',
-        // 'tanggal_kunjungan', // TODO: Verify if this column exists in DB
-        'anamnesa',
-        'pemeriksaan_fisik',
-        'suhu',
-        'berat_badan',
-        'diagnosis',
-        'tindakan',
-        'resep_obat',
-        'catatan',
-        'status',
-        'tanggal_kontrol',
+        'idreservasi_dokter',
+        'anamesis',
+        'temuan_klinis',
+        'diagnosa',
+        'dokter_pemeriksa',
     ];
 
     protected $casts = [
-        // 'tanggal_kunjungan' => 'date', // TODO: Verify if this column exists in DB
-        'tanggal_kontrol' => 'date',
-        'suhu' => 'decimal:2',
-        'berat_badan' => 'integer',
+        'created_at' => 'datetime',
     ];
 
     /**
-     * Get the pet that owns the rekam medis.
+     * Relation to the `temu_dokter` (reservation) record.
+     * `rekam_medis.idreservasi_dokter` -> `temu_dokter.idreservasi_dokter`.
      */
-    public function pet(): BelongsTo
+    public function temuDokter(): BelongsTo
     {
-        return $this->belongsTo(Pet::class, 'idpet', 'idpet');
+        return $this->belongsTo(TemuDokter::class, 'idreservasi_dokter', 'idreservasi_dokter');
     }
 
     /**
-     * Get the dokter (user) for this rekam medis.
+     * Relation to detail rekam medis (treatments/procedures)
      */
-    public function dokter(): BelongsTo
+    public function details()
     {
-        return $this->belongsTo(User::class, 'iddokter', 'iduser');
+        return $this->hasMany(DetailRekamMedis::class, 'idrekam_medis', 'idrekam_medis');
     }
 
     /**
-     * Get the perawat (user) for this rekam medis.
-     */
-    public function perawat(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'idperawat', 'iduser');
-    }
-
-    /**
-     * Get status label with color
-     */
-    public function getStatusLabelAttribute(): string
-    {
-        return match($this->status) {
-            'menunggu' => 'Menunggu',
-            'dalam_perawatan' => 'Dalam Perawatan',
-            'selesai' => 'Selesai',
-            'rujukan' => 'Rujukan',
-            default => 'Unknown',
-        };
-    }
-
-    /**
-     * Get status color for badge
-     */
-    public function getStatusColorAttribute(): string
-    {
-        return match($this->status) {
-            'menunggu' => 'yellow',
-            'dalam_perawatan' => 'blue',
-            'selesai' => 'green',
-            'rujukan' => 'red',
-            default => 'gray',
-        };
-    }
-
-    /**
-     * Accessor for tanggal_kunjungan - fallback to created_at
-     * This is a temporary solution until the actual column is confirmed
+     * Accessor for "tanggal_kunjungan" convenience attribute.
+     * rekam_medis doesn't have a dedicated tanggal_kunjungan column in the dump,
+     * so fallback to `created_at` which exists.
      */
     public function getTanggalKunjunganAttribute()
     {
-        // If the column exists in DB, return it
-        if (isset($this->attributes['tanggal_kunjungan'])) {
-            return \Carbon\Carbon::parse($this->attributes['tanggal_kunjungan']);
-        }
-
-        // Fallback to created_at timestamp
         return $this->created_at;
     }
+    /**
+     * Backwards-compatible accessors for view/older attribute names.
+     * These map the view-expected property names to the real DB columns.
+     */
+    public function getAnamnesaAttribute()
+    {
+        return $this->anamesis;
+    }
+
+    public function getPemeriksaanFisikAttribute()
+    {
+        return $this->temuan_klinis;
+    }
+
+    public function getDiagnosisAttribute()
+    {
+        return $this->diagnosa;
+    }
+
+    public function getCatatanAttribute()
+    {
+        return $this->attributes['catatan'] ?? null;
+    }
+
+    public function getResepObatAttribute()
+    {
+        return $this->attributes['resep_obat'] ?? null;
+    }
+
+    /**
+     * Convenience accessors that surface related data for views.
+     */
+    public function getPetAttribute()
+    {
+        return $this->temuDokter?->pet ?? null;
+    }
+
+    public function getOwnerAttribute()
+    {
+        $pet = $this->pet;
+        return $pet?->pemilik ?? null;
+    }
+
+    public function getDokterAttribute()
+    {
+        // Prefer temuDokter->roleUser -> user
+        if ($this->temuDokter && $this->temuDokter->roleUser) {
+            return $this->temuDokter->roleUser->user ?? $this->temuDokter->roleUser;
+        }
+
+        // Fallback: dokter_pemeriksa references role_user.idrole_user (per schema)
+        if (!empty($this->dokter_pemeriksa)) {
+            $ru = RoleUser::find($this->dokter_pemeriksa);
+            return $ru?->user ?? $ru;
+        }
+
+        return null;
+    }
+
+    public function getPerawatAttribute()
+    {
+        // No dedicated perawat column in `rekam_medis` in the current schema.
+        // If needed, this can map via `temuDokter` or `role_user` later.
+        return null;
+    }
+
 }

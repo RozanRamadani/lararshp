@@ -22,7 +22,7 @@ class RekamMedisController extends Controller
 
         // Sementara tampilkan semua data untuk testing
         // TODO: Filter berdasarkan dokter setelah tahu struktur kolom yang benar
-        $rekamMedis = RekamMedis::with(['pet.pemilik', 'pet.jenis_hewan', 'dokter', 'perawat'])
+        $rekamMedis = RekamMedis::with(['temuDokter.pet.pemilik', 'temuDokter.roleUser'])
             ->orderBy('idrekam_medis', 'desc') // Using primary key instead of tanggal_kunjungan
             ->paginate(15);
 
@@ -35,6 +35,8 @@ class RekamMedisController extends Controller
      */
     public function create(Request $request)
     {
+        // Provide pets and doctors for the form. The controller will map the selected
+        // pet to an existing `temu_dokter` reservation when storing the record.
         $pets = Pet::with(['pemilik', 'jenis_hewan', 'ras_hewan'])->get();
         $dokters = User::whereHas('roles', function($query) {
             $query->where('nama_role', 'Dokter');
@@ -57,9 +59,45 @@ class RekamMedisController extends Controller
     {
         $validated = $request->validate($this->storeValidationRules(), $this->validationMessages());
 
-        $validated['idperawat'] = Auth::id();
+        // We need to associate the RekamMedis with an existing temu_dokter (reservation).
+        // Prefer using the latest reservation for the selected pet.
+        $petId = $validated['idpet'] ?? null;
+        if (!$petId) {
+            return back()->withInput()->with('error', 'Pet harus dipilih dan memiliki reservasi temu dokter.');
+        }
 
-        RekamMedis::create($validated);
+        $temu = \App\Models\TemuDokter::where('idpet', $petId)->latest('waktu_daftar')->first();
+        if (!$temu) {
+            return back()->withInput()->with('error', 'Tidak ditemukan reservasi (temu_dokter) untuk pet ini. Buat appointment terlebih dahulu.');
+        }
+
+        // Determine dokter_pemeriksa as role_user id. If the form provided a user id (iddokter),
+        // map it to role_user.idrole_user; otherwise use temu_dokter.idrole_user.
+        $dokterRoleUserId = $temu->idrole_user;
+        if (!empty($validated['iddokter'])) {
+            $role = \Illuminate\Support\Facades\DB::table('role_user')->where('iduser', $validated['iddokter'])->where('idrole', 2)->first(); // 2 == Dokter
+            if ($role) {
+                $dokterRoleUserId = $role->idrole_user;
+            } else {
+                // fallback: take any role_user for the user
+                $roleAny = \Illuminate\Support\Facades\DB::table('role_user')->where('iduser', $validated['iddokter'])->first();
+                if ($roleAny) {
+                    $dokterRoleUserId = $roleAny->idrole_user;
+                }
+            }
+        }
+
+        // Map form inputs to actual DB columns
+        $payload = [
+            'idreservasi_dokter' => $temu->idreservasi_dokter,
+            'anamesis' => $validated['anamnesa'] ?? null,
+            'temuan_klinis' => $validated['pemeriksaan_fisik'] ?? null,
+            'diagnosa' => $validated['diagnosis'] ?? null,
+            'dokter_pemeriksa' => $dokterRoleUserId,
+            'created_at' => now(),
+        ];
+
+        RekamMedis::create($payload);
 
         return redirect()->route('perawat.rekam-medis.index')
             ->with('success', 'Rekam medis berhasil ditambahkan.');
@@ -72,7 +110,7 @@ class RekamMedisController extends Controller
      */
     public function show(RekamMedis $rekamMedis)
     {
-        $rekamMedis->load(['pet.pemilik', 'pet.jenis_hewan', 'pet.ras_hewan', 'dokter', 'perawat']);
+        $rekamMedis->load(['temuDokter.pet.pemilik', 'temuDokter.pet.rasHewan', 'temuDokter.roleUser']);
 
         $user = Auth::user();
         $isReadOnly = $user->hasRole('Dokter');
@@ -86,7 +124,7 @@ class RekamMedisController extends Controller
      */
     public function edit(RekamMedis $rekamMedis)
     {
-        $rekamMedis->load(['pet.pemilik']);
+        $rekamMedis->load(['temuDokter.pet.pemilik']);
         $pets = Pet::with(['pemilik', 'jenis_hewan', 'ras_hewan'])->get();
         $dokters = User::whereHas('roles', function($query) {
             $query->where('nama_role', 'Dokter');
@@ -103,7 +141,14 @@ class RekamMedisController extends Controller
     {
         $validated = $request->validate($this->updateValidationRules($rekamMedis), $this->validationMessages());
 
-        $rekamMedis->update($validated);
+        // Map update fields similarly to store
+        $payload = [
+            'anamesis' => $validated['anamnesa'] ?? $rekamMedis->anamesis,
+            'temuan_klinis' => $validated['pemeriksaan_fisik'] ?? $rekamMedis->temuan_klinis,
+            'diagnosa' => $validated['diagnosis'] ?? $rekamMedis->diagnosa,
+        ];
+
+        $rekamMedis->update($payload);
 
         return redirect()->route('perawat.rekam-medis.index')
             ->with('success', 'Rekam medis berhasil diperbarui.');
@@ -137,8 +182,10 @@ class RekamMedisController extends Controller
             }
         }
 
-        $rekamMedis = RekamMedis::with(['dokter', 'perawat'])
-            ->where('idpet', $idpet)
+        $rekamMedis = RekamMedis::with(['temuDokter.roleUser'])
+            ->whereHas('temuDokter', function($q) use ($idpet) {
+                $q->where('idpet', $idpet);
+            })
             ->orderBy('idrekam_medis', 'desc') // Using primary key instead of tanggal_kunjungan
             ->paginate(10);
 
@@ -153,8 +200,8 @@ class RekamMedisController extends Controller
         return [
             'idpet.required' => 'Pilih pet terlebih dahulu.',
             'idpet.exists' => 'Pet tidak ditemukan.',
-            'status.required' => 'Status wajib diisi.',
-            'status.in' => 'Status tidak valid.',
+            // Status is handled via temu_dokter/role_user in this schema
+            'iddokter.exists' => 'Dokter tidak ditemukan.',
             // Tambah pesan lain jika perlu
         ];
     }
@@ -175,7 +222,6 @@ class RekamMedisController extends Controller
             'tindakan' => 'nullable|string',
             'resep_obat' => 'nullable|string',
             'catatan' => 'nullable|string',
-            'status' => 'required|in:menunggu,dalam_perawatan,selesai,rujukan',
             'tanggal_kontrol' => 'nullable|date',
         ];
     }

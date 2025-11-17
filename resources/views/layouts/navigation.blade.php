@@ -15,7 +15,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    
+
                     @auth
                         {{-- Administrator Menu --}}
                         @if(auth()->user()->hasRole('Administrator'))
@@ -26,6 +26,9 @@
 
                         {{-- Resepsionis Menu --}}
                         @if(auth()->user()->hasRole('Resepsionis'))
+                            <x-nav-link :href="route('resepsionis.temu-dokter.index')" :active="request()->routeIs('resepsionis.temu-dokter.*')">
+                                {{ __('📅 Appointments') }}
+                            </x-nav-link>
                             <x-nav-link :href="route('resepsionis.pemilik.index')" :active="request()->routeIs('resepsionis.pemilik.*')">
                                 {{ __('Owners') }}
                             </x-nav-link>
@@ -116,7 +119,7 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            
+
             @auth
                 {{-- Administrator Menu --}}
                 @if(auth()->user()->hasRole('Administrator'))
@@ -127,6 +130,9 @@
 
                 {{-- Resepsionis Menu --}}
                 @if(auth()->user()->hasRole('Resepsionis'))
+                    <x-responsive-nav-link :href="route('resepsionis.temu-dokter.index')" :active="request()->routeIs('resepsionis.temu-dokter.*')">
+                        {{ __('📅 Appointments') }}
+                    </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('resepsionis.pemilik.index')" :active="request()->routeIs('resepsionis.pemilik.*')">
                         {{ __('Owners') }}
                     </x-responsive-nav-link>

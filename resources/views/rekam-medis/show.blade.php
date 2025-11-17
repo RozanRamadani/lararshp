@@ -4,14 +4,8 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Medical Record Details
             </h2>
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                @if($rekamMedis->status_color == 'yellow') bg-yellow-100 text-yellow-800
-                @elseif($rekamMedis->status_color == 'blue') bg-blue-100 text-blue-800
-                @elseif($rekamMedis->status_color == 'green') bg-green-100 text-green-800
-                @elseif($rekamMedis->status_color == 'red') bg-red-100 text-red-800
-                @else bg-gray-100 text-gray-800
-                @endif">
-                {{ $rekamMedis->status_label }}
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                {{ $rekamMedis->temuDokter->status_label ?? '-' }}
             </span>
         </div>
     </x-slot>
@@ -61,27 +55,27 @@
                                 </svg>
                                 Patient Information
                             </h3>
-                            
+
                             <div class="space-y-3">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Pet Name</label>
-                                    <p class="text-base text-gray-900 font-semibold">{{ $rekamMedis->pet->nama ?? '-' }}</p>
+                                    <p class="text-base text-gray-900 font-semibold">{{ $rekamMedis->temuDokter->pet->nama ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Species (Jenis Hewan)</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->pet->jenis_hewan->nama_jenis ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->jenis_hewan->nama_jenis ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Breed (Ras Hewan)</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->pet->ras_hewan->nama_ras ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->ras_hewan->nama_ras ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Gender</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->pet->jenis_kelamin ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->jenis_kelamin ?? '-' }}</p>
                                 </div>
                                 <div class="pt-3 border-t border-gray-200">
                                     <label class="block text-sm font-medium text-gray-500">Owner</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->pet->pemilik->nama ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->pemilik->nama ?? '-' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -96,26 +90,20 @@
                                 </svg>
                                 Medical Staff
                             </h3>
-                            
+
                             <div class="space-y-3">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Doctor</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->dokter->name ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->roleUser->nama ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Nurse</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->perawat->name ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">-</p>
                                 </div>
                                 <div class="pt-3 border-t border-gray-200">
                                     <label class="block text-sm font-medium text-gray-500">Visit Date</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->tanggal_kunjungan->format('d F Y') }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->created_at?->format('d F Y') ?? '-' }}</p>
                                 </div>
-                                @if($rekamMedis->tanggal_kontrol)
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-500">Follow-up Date</label>
-                                        <p class="text-base text-gray-900">{{ $rekamMedis->tanggal_kontrol->format('d F Y') }}</p>
-                                    </div>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -129,16 +117,16 @@
                                 </svg>
                                 Vital Signs
                             </h3>
-                            
+
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="text-center p-3 bg-blue-50 rounded-lg">
                                     <p class="text-xs text-gray-500 mb-1">Temperature</p>
-                                    <p class="text-2xl font-bold text-blue-600">{{ $rekamMedis->suhu ?? '-' }}</p>
+                                    <p class="text-2xl font-bold text-blue-600">-</p>
                                     <p class="text-xs text-gray-500">°C</p>
                                 </div>
                                 <div class="text-center p-3 bg-green-50 rounded-lg">
                                     <p class="text-xs text-gray-500 mb-1">Weight</p>
-                                    <p class="text-2xl font-bold text-green-600">{{ $rekamMedis->berat_badan ?? '-' }}</p>
+                                    <p class="text-2xl font-bold text-green-600">-</p>
                                     <p class="text-xs text-gray-500">kg</p>
                                 </div>
                             </div>
@@ -152,7 +140,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-3">Anamnesa / Chief Complaint</h3>
-                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->anamnesa ?? 'Not recorded' }}</p>
+                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->anamesis ?? 'Not recorded' }}</p>
                         </div>
                     </div>
 
@@ -160,7 +148,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-3">Physical Examination</h3>
-                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->pemeriksaan_fisik ?? 'Not recorded' }}</p>
+                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->temuan_klinis ?? 'Not recorded' }}</p>
                         </div>
                     </div>
 
@@ -168,7 +156,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-3">Diagnosis</h3>
-                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->diagnosis ?? 'Not recorded' }}</p>
+                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->diagnosa ?? 'Not recorded' }}</p>
                         </div>
                     </div>
 
@@ -176,7 +164,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-3">Treatment / Procedure</h3>
-                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->tindakan ?? 'Not recorded' }}</p>
+                            <p class="text-gray-700 whitespace-pre-line">Not recorded</p>
                         </div>
                     </div>
 
@@ -184,12 +172,12 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-3">Prescription</h3>
-                            <p class="text-gray-700 whitespace-pre-line">{{ $rekamMedis->resep_obat ?? 'No prescription' }}</p>
+                            <p class="text-gray-700 whitespace-pre-line">No prescription</p>
                         </div>
                     </div>
 
                     <!-- Additional Notes -->
-                    @if($rekamMedis->catatan)
+                    @if(!empty($rekamMedis->catatan))
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             <div class="p-6">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-3">Additional Notes</h3>

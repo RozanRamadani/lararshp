@@ -69,6 +69,16 @@ class User extends Authenticatable
         return $this->hasOne(Pemilik::class, 'iduser', 'iduser');
     }
 
+    // Relationship dengan dokter
+    public function dokter() {
+        return $this->hasOne(Dokter::class, 'id_user', 'iduser');
+    }
+
+    // Relationship dengan perawat
+    public function perawat() {
+        return $this->hasOne(Perawat::class, 'id_user', 'iduser');
+    }
+
     // Relationship dengan pet/hewan melalui pemilik
     public function pets()
     {

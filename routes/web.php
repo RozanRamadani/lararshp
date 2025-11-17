@@ -15,6 +15,11 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DataManagementController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RekamMedisController;
+use App\Http\Controllers\Admin\TemuDokterController;
+use App\Http\Controllers\Admin\AppointmentTransactionController;
+use App\Http\Controllers\Admin\DokterController;
+use App\Http\Controllers\Admin\PerawatController;
+use App\Http\Controllers\Admin\ResepsionisController;
 
 // Public Site Routes
 Route::get('/', [SiteController::class, 'index'])->name('home');
@@ -30,6 +35,13 @@ Route::middleware(['auth', 'verified', 'role:Administrator'])
     ->group(function () {
         // User & Role Management
         Route::resource('user', UserController::class);
+
+        // User Role Management routes
+        Route::get('user/{user}/manage-roles', [UserController::class, 'manageRoles'])->name('user.manage-roles');
+        Route::post('user/{user}/attach-role', [UserController::class, 'attachRole'])->name('user.attach-role');
+        Route::patch('user/{user}/role/{roleUser}/status', [UserController::class, 'updateRoleStatus'])->name('user.update-role-status');
+        Route::delete('user/{user}/role/{roleUser}', [UserController::class, 'detachRole'])->name('user.detach-role');
+
         Route::resource('role', RoleController::class);
 
         // Data Master Management (Full CRUD)
@@ -40,6 +52,14 @@ Route::middleware(['auth', 'verified', 'role:Administrator'])
         Route::resource('kode-tindakan-terapi', KodeTindakanTerapiController::class);
         Route::resource('pet', PetController::class);
         Route::resource('pemilik', PemilikController::class);
+
+        // Staff Management (Dokter, Perawat & Resepsionis)
+        Route::resource('dokter', DokterController::class);
+        Route::resource('perawat', PerawatController::class);
+        Route::resource('resepsionis', ResepsionisController::class);
+
+        // Upgrade user to pemilik
+        Route::post('pemilik/upgrade-user', [PemilikController::class, 'upgradeUser'])->name('pemilik.upgrade-user');
 
         // Data Management Dashboard
         Route::get('/data', [DataManagementController::class, 'index'])->name('data.index');
@@ -79,6 +99,8 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Perawat'])
 
         // Full CRUD Rekam Medis
         Route::resource('rekam-medis', RekamMedisController::class);
+        // Transactional endpoint to complete an appointment and create RekamMedis
+        Route::post('rekam-medis/{idreservasi}/complete', [AppointmentTransactionController::class, 'complete'])->name('rekam-medis.complete');
         Route::get('pasien/{pet}/rekam-medis', [RekamMedisController::class, 'petRecords'])->name('pasien.rekam-medis');
     });
 
@@ -94,8 +116,8 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Resepsionis'])
         // Manajemen Pet (CRUD)
         Route::resource('pet', PetController::class);
 
-        // Manajemen Reservasi
-        // Route::resource('reservasi', ReservasiController::class);
+        // Manajemen Appointment/Reservasi
+        Route::resource('temu-dokter', TemuDokterController::class);
     });
 
 // 5. PEMILIK/OWNER ROUTES (Role ID: 5)
@@ -111,8 +133,8 @@ Route::middleware(['auth', 'verified', 'role:Pemilik'])
         // View Only - Rekam Medis Pet Sendiri
         Route::get('my-pets/{pet}/rekam-medis', [RekamMedisController::class, 'petRecords'])->name('my-pets.rekam-medis');
 
-        // TODO: View Only - Reservasi Sendiri
-        // Route::get('my-reservasi', [ReservasiController::class, 'myReservasi'])->name('my-reservasi');
+        // View Only - Appointment Sendiri
+        Route::get('my-appointments', [TemuDokterController::class, 'myAppointments'])->name('my-appointments');
     });
 
 Route::get('/cek-koneksi', [SiteController::class, 'cekKoneksi'])->name('cek-koneksi');

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Pemilik;
 use App\Models\Pet;
 use App\Models\User;
+use App\Models\Role;
+use App\Models\RoleUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -35,7 +37,61 @@ class PemilikController extends Controller
      */
     public function create()
     {
-        return view('admin.pemilik.create');
+        // Get all users that don't have Pemilik role yet
+        $availableUsers = User::whereDoesntHave('roles', function($q) {
+            $q->where('nama_role', 'Pemilik');
+        })->get();
+
+        return view('admin.pemilik.create', compact('availableUsers'));
+    }
+
+    /**
+     * Upgrade existing user to Pemilik role
+     */
+    public function upgradeUser(Request $request)
+    {
+        $validated = $request->validate([
+            'iduser' => 'required|exists:user,iduser',
+            'no_wa' => 'required|string|regex:/^((\+?62)|0)[0-9]{9,12}$/',
+            'alamat' => 'required|string|min:10|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $user = User::findOrFail($validated['iduser']);
+
+            // Check if already has Pemilik role
+            if ($user->hasRole('Pemilik')) {
+                return back()->with('error', 'User ini sudah memiliki role Pemilik.');
+            }
+
+            // Get Pemilik role
+            $pemilikRole = Role::where('nama_role', 'Pemilik')->firstOrFail();
+
+            // Assign Pemilik role
+            RoleUser::create([
+                'iduser' => $user->iduser,
+                'idrole' => $pemilikRole->idrole,
+                'status' => 1,
+            ]);
+
+            // Create pemilik record
+            Pemilik::create([
+                'no_wa' => $validated['no_wa'],
+                'alamat' => trim($validated['alamat']),
+                'iduser' => $user->iduser,
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.pemilik.index')
+                ->with('success', 'User berhasil di-upgrade menjadi Pemilik.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to upgrade user to pemilik: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal upgrade user: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -49,16 +105,26 @@ class PemilikController extends Controller
         try {
             DB::beginTransaction();
 
-            // Create user & pemilik
+            // Create user
             $user = User::create([
                 'nama' => $validated['nama_pemilik'],
                 'email' => $validated['email'] ?? 'pemilik_' . time() . '@temp.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make($validated['password'] ?? 'password123'),
                 'no_wa' => $validated['no_telepon'],
                 'kota' => $validated['kota'],
-                'idrole' => 3,
             ]);
 
+            // Get Pemilik role
+            $pemilikRole = Role::where('nama_role', 'Pemilik')->firstOrFail();
+
+            // Assign Pemilik role
+            RoleUser::create([
+                'iduser' => $user->iduser,
+                'idrole' => $pemilikRole->idrole,
+                'status' => 1,
+            ]);
+
+            // Create pemilik record
             Pemilik::create([
                 'no_wa' => $validated['no_telepon'],
                 'alamat' => trim($validated['alamat']),

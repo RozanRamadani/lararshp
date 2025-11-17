@@ -333,6 +333,119 @@
                     </div>
                 </a>
             </div>
+
+            <!-- Staff Management Section -->
+            <div class="mt-8 mb-6">
+                <div class="flex items-center mb-6">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 bg-gradient-to-br from-cyan-100 to-cyan-200 rounded-xl">
+                            <i class="fi fi-rr-users-medical text-cyan-600" style="font-size: 32px;"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-2xl font-bold text-gray-900">Staff Management</h3>
+                        <p class="text-gray-600">Kelola data dokter, perawat, resepsionis, dan pemilik hewan</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Dokter -->
+                    <a href="{{ route('admin.dokter.index') }}" class="group bg-white overflow-hidden shadow-lg sm:rounded-2xl hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fi fi-rr-doctor text-blue-600" style="font-size: 32px;"></i>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Staff
+                                    </span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">Dokter</h3>
+                            <p class="text-sm text-gray-600">Kelola data dokter hewan</p>
+                            <div class="mt-4 flex items-center text-blue-600">
+                                <span class="text-sm font-medium">Kelola Data</span>
+                                <svg class="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Perawat -->
+                    <a href="{{ route('admin.perawat.index') }}" class="group bg-white overflow-hidden shadow-lg sm:rounded-2xl hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fi fi-rr-user-nurse text-purple-600" style="font-size: 32px;"></i>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        Staff
+                                    </span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">Perawat</h3>
+                            <p class="text-sm text-gray-600">Kelola data perawat hewan</p>
+                            <div class="mt-4 flex items-center text-purple-600">
+                                <span class="text-sm font-medium">Kelola Data</span>
+                                <svg class="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Resepsionis -->
+                    <a href="{{ route('admin.resepsionis.index') }}" class="group bg-white overflow-hidden shadow-lg sm:rounded-2xl hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fi fi-rr-headset text-indigo-600" style="font-size: 32px;"></i>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                        Staff
+                                    </span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">Resepsionis</h3>
+                            <p class="text-sm text-gray-600">Kelola data resepsionis</p>
+                            <div class="mt-4 flex items-center text-indigo-600">
+                                <span class="text-sm font-medium">Kelola Data</span>
+                                <svg class="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Pemilik -->
+                    <a href="{{ route('admin.pemilik.index') }}" class="group bg-white overflow-hidden shadow-lg sm:rounded-2xl hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fi fi-rr-user text-pink-600" style="font-size: 32px;"></i>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                        Owner
+                                    </span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-pink-600 transition-colors">Pemilik Hewan</h3>
+                            <p class="text-sm text-gray-600">Kelola data pemilik hewan</p>
+                            <div class="mt-4 flex items-center text-pink-600">
+                                <span class="text-sm font-medium">Kelola Data</span>
+                                <svg class="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -347,23 +460,44 @@
             </button>
 
             <!-- Quick Action Menu -->
-            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute bottom-16 right-0 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
+            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute bottom-16 right-0 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 max-h-96 overflow-y-auto">
                 <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
                     <i class="fi fi-rr-home mr-3" style="font-size: 16px;"></i>
                     Dashboard Utama
                 </a>
                 <div class="border-t border-gray-100 my-1"></div>
+
+                <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase">Quick Add</div>
                 <a href="{{ route('admin.jenis-hewan.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
                     <i class="fi fi-rr-paw mr-3" style="font-size: 16px;"></i>
                     Tambah Jenis Hewan
                 </a>
                 <a href="{{ route('resepsionis.pet.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
-                    <i class="fi fi-rr-paw mr-3" style="font-size: 16px;"></i>
+                    <i class="fi fi-rr-dog mr-3" style="font-size: 16px;"></i>
                     Tambah Pet Baru
                 </a>
                 <a href="{{ route('admin.user.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">
                     <i class="fi fi-rr-user mr-3" style="font-size: 16px;"></i>
                     Tambah User Baru
+                </a>
+
+                <div class="border-t border-gray-100 my-1"></div>
+                <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase">Staff Management</div>
+                <a href="{{ route('admin.dokter.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <i class="fi fi-rr-doctor mr-3" style="font-size: 16px;"></i>
+                    Tambah Dokter
+                </a>
+                <a href="{{ route('admin.perawat.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
+                    <i class="fi fi-rr-user-nurse mr-3" style="font-size: 16px;"></i>
+                    Tambah Perawat
+                </a>
+                <a href="{{ route('admin.resepsionis.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                    <i class="fi fi-rr-headset mr-3" style="font-size: 16px;"></i>
+                    Tambah Resepsionis
+                </a>
+                <a href="{{ route('admin.pemilik.create') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                    <i class="fi fi-rr-user mr-3" style="font-size: 16px;"></i>
+                    Tambah Pemilik
                 </a>
             </div>
         </div>

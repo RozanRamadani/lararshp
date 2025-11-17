@@ -25,20 +25,20 @@
             <form action="{{ route('perawat.rekam-medis.update', $rekamMedis->idrekam_medis) }}" method="POST">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left Column - Patient Info -->
                     <div class="lg:col-span-1">
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                             <div class="p-6">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Patient Information</h3>
-                                
+
                                 <div class="mb-4">
                                     <label for="idpet" class="block text-sm font-medium text-gray-700 mb-2">Select Pet *</label>
                                     <select id="idpet" name="idpet" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         <option value="">-- Select Pet --</option>
                                         @foreach($pets as $pet)
-                                            <option value="{{ $pet->idpet }}" {{ (old('idpet') ?? $rekamMedis->idpet) == $pet->idpet ? 'selected' : '' }}>
+                                            <option value="{{ $pet->idpet }}" {{ (old('idpet') ?? ($rekamMedis->temuDokter->pet->idpet ?? null)) == $pet->idpet ? 'selected' : '' }}>
                                                 {{ $pet->nama }} - {{ $pet->pemilik->nama ?? '' }}
                                             </option>
                                         @endforeach
@@ -47,14 +47,13 @@
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-
                                 <div class="mt-4 p-4 bg-gray-50 rounded-md">
-                                    <h4 class="font-medium text-gray-900 mb-2">{{ $rekamMedis->pet->nama }}</h4>
+                                    <h4 class="font-medium text-gray-900 mb-2">{{ $rekamMedis->temuDokter->pet->nama ?? '-' }}</h4>
                                     <div class="space-y-1 text-sm text-gray-600">
-                                        <p><strong>Species:</strong> {{ $rekamMedis->pet->jenis_hewan->nama_jenis ?? '-' }}</p>
-                                        <p><strong>Breed:</strong> {{ $rekamMedis->pet->ras_hewan->nama_ras ?? '-' }}</p>
-                                        <p><strong>Gender:</strong> {{ $rekamMedis->pet->jenis_kelamin ?? '-' }}</p>
-                                        <p><strong>Owner:</strong> {{ $rekamMedis->pet->pemilik->nama ?? '-' }}</p>
+                                        <p><strong>Species:</strong> {{ $rekamMedis->temuDokter->pet->jenis_hewan->nama_jenis ?? '-' }}</p>
+                                        <p><strong>Breed:</strong> {{ $rekamMedis->temuDokter->pet->ras_hewan->nama_ras ?? '-' }}</p>
+                                        <p><strong>Gender:</strong> {{ $rekamMedis->temuDokter->pet->jenis_kelamin ?? '-' }}</p>
+                                        <p><strong>Owner:</strong> {{ $rekamMedis->temuDokter->pet->pemilik->nama ?? '-' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -63,13 +62,13 @@
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             <div class="p-6">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Medical Staff</h3>
-                                
+
                                 <div class="mb-4">
                                     <label for="iddokter" class="block text-sm font-medium text-gray-700 mb-2">Doctor</label>
                                     <select id="iddokter" name="iddokter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         <option value="">-- Select Doctor --</option>
                                         @foreach($dokters as $dokter)
-                                            <option value="{{ $dokter->iduser }}" {{ (old('iddokter') ?? $rekamMedis->iddokter) == $dokter->iduser ? 'selected' : '' }}>
+                                            <option value="{{ $dokter->iduser }}" {{ (old('iddokter') ?? ($rekamMedis->temuDokter->roleUser->iduser ?? null)) == $dokter->iduser ? 'selected' : '' }}>
                                                 {{ $dokter->name }}
                                             </option>
                                         @endforeach
@@ -81,24 +80,12 @@
 
                                 <div class="mb-4">
                                     <label for="tanggal_kunjungan" class="block text-sm font-medium text-gray-700 mb-2">Visit Date *</label>
-                                    <input type="date" id="tanggal_kunjungan" name="tanggal_kunjungan" value="{{ old('tanggal_kunjungan') ?? $rekamMedis->tanggal_kunjungan->format('Y-m-d') }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="date" id="tanggal_kunjungan" name="tanggal_kunjungan" value="{{ old('tanggal_kunjungan') ?? ($rekamMedis->created_at?->format('Y-m-d') ?? '') }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     @error('tanggal_kunjungan')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
-                                <div>
-                                    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
-                                    <select id="status" name="status" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                        <option value="menunggu" {{ (old('status') ?? $rekamMedis->status) == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
-                                        <option value="dalam_perawatan" {{ (old('status') ?? $rekamMedis->status) == 'dalam_perawatan' ? 'selected' : '' }}>Dalam Perawatan</option>
-                                        <option value="selesai" {{ (old('status') ?? $rekamMedis->status) == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                        <option value="rujukan" {{ (old('status') ?? $rekamMedis->status) == 'rujukan' ? 'selected' : '' }}>Rujukan</option>
-                                    </select>
-                                    @error('status')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
                             </div>
                         </div>
                     </div>

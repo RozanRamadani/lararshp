@@ -9,7 +9,7 @@ class Pet extends Model
     protected $table = 'pet';
     protected $primaryKey = 'idpet';
     public $timestamps = false;
-    
+
     protected $fillable = [
         'nama',
         'tanggal_lahir',
@@ -34,12 +34,12 @@ class Pet extends Model
     public function user()
     {
         return $this->hasOneThrough(
-            User::class,        
-            Pemilik::class,    
-            'idpemilik',        
-            'iduser',           
-            'idpemilik',        
-            'iduser'            
+            User::class,
+            Pemilik::class,
+            'idpemilik',
+            'iduser',
+            'idpemilik',
+            'iduser'
         );
     }
 
@@ -84,6 +84,18 @@ class Pet extends Model
     public function rekam_medis()
     {
         return $this->rekamMedis();
+    }
+
+    // Relationship dengan temu dokter (appointment)
+    public function temuDokter()
+    {
+        return $this->hasMany(TemuDokter::class, 'idpet', 'idpet');
+    }
+
+    // Alias untuk snake_case naming
+    public function temu_dokter()
+    {
+        return $this->temuDokter();
     }
 
     /**
