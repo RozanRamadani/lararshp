@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\AppointmentTransactionController;
 use App\Http\Controllers\Admin\DokterController;
 use App\Http\Controllers\Admin\PerawatController;
 use App\Http\Controllers\Admin\ResepsionisController;
+use App\Http\Controllers\Admin\DetailRekamMedisController;
 
 // Public Site Routes
 Route::get('/', [SiteController::class, 'index'])->name('home');
@@ -85,6 +86,17 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Dokter'])
         Route::get('rekam-medis', [RekamMedisController::class, 'index'])->name('rekam-medis.index');
         Route::get('rekam-medis/{rekamMedis}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
         Route::get('pasien/{pet}/rekam-medis', [RekamMedisController::class, 'petRecords'])->name('pasien.rekam-medis');
+
+        // Full CRUD Detail Rekam Medis (Dokter can add treatments/procedures)
+        Route::prefix('rekam-medis/{rekam_medis}/detail')->name('rekam-medis.detail.')->group(function () {
+            Route::get('/', [DetailRekamMedisController::class, 'index'])->name('index');
+            Route::get('create', [DetailRekamMedisController::class, 'create'])->name('create');
+            Route::post('/', [DetailRekamMedisController::class, 'store'])->name('store');
+            Route::get('{detail}', [DetailRekamMedisController::class, 'show'])->name('show');
+            Route::get('{detail}/edit', [DetailRekamMedisController::class, 'edit'])->name('edit');
+            Route::put('{detail}', [DetailRekamMedisController::class, 'update'])->name('update');
+            Route::delete('{detail}', [DetailRekamMedisController::class, 'destroy'])->name('destroy');
+        });
     });
 
 // 3. PERAWAT ROUTES (Role ID: 3)
@@ -102,6 +114,12 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Perawat'])
         // Transactional endpoint to complete an appointment and create RekamMedis
         Route::post('rekam-medis/{idreservasi}/complete', [AppointmentTransactionController::class, 'complete'])->name('rekam-medis.complete');
         Route::get('pasien/{pet}/rekam-medis', [RekamMedisController::class, 'petRecords'])->name('pasien.rekam-medis');
+
+        // View Only Detail Rekam Medis (Perawat can only view treatments/procedures added by Dokter)
+        Route::prefix('rekam-medis/{rekam_medis}/detail')->name('rekam-medis.detail.')->group(function () {
+            Route::get('/', [DetailRekamMedisController::class, 'index'])->name('index');
+            Route::get('{detail}', [DetailRekamMedisController::class, 'show'])->name('show');
+        });
     });
 
 // 4. RESEPSIONIS ROUTES (Role ID: 4)

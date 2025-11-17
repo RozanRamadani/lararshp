@@ -1,21 +1,22 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center space-x-4">
+            <x-back-button href="{{ route('resepsionis.temu-dokter.index') }}" label="Kembali ke Daftar Appointment" />
+            <x-breadcrumb :items="[
+                ['name' => 'Appointment / Temu Dokter', 'url' => route('resepsionis.temu-dokter.index')],
+                ['name' => 'Detail']
+            ]" />
+        </div>
+    </x-slot>
 
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center text-sm text-gray-600 mb-2">
-            <a href="{{ route('resepsionis.temu-dokter.index') }}" class="hover:text-teal-600">Appointment</a>
-            <span class="mx-2">/</span>
-            <span class="text-gray-900">Detail</span>
-        </div>
-        <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-gray-900">Detail Appointment</h1>
-            <a href="{{ route('resepsionis.temu-dokter.edit', $temuDokter->idreservasi_dokter) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition-colors">
-                <i class="fas fa-edit mr-2"></i>Edit
-            </a>
-        </div>
-    </div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Detail Appointment</h3>
+                <a href="{{ route('resepsionis.temu-dokter.edit', $temuDokter->idreservasi_dokter) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition-colors">
+                    <i class="fas fa-edit mr-2"></i>Edit
+                </a>
+            </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Info -->
@@ -149,6 +150,6 @@
         <a href="{{ route('resepsionis.temu-dokter.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Kembali ke Daftar Appointment
         </a>
+        </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

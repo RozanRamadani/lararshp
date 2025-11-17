@@ -63,11 +63,11 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Species (Jenis Hewan)</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->jenis_hewan->nama_jenis ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->rasHewan->jenisHewan->nama_jenis_hewan ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Breed (Ras Hewan)</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->ras_hewan->nama_ras ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->rasHewan->nama_ras ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Gender</label>
@@ -75,7 +75,7 @@
                                 </div>
                                 <div class="pt-3 border-t border-gray-200">
                                     <label class="block text-sm font-medium text-gray-500">Owner</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->pemilik->nama ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->pet->pemilik->user->nama ?? '-' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                             <div class="space-y-3">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Doctor</label>
-                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->roleUser->nama ?? '-' }}</p>
+                                    <p class="text-base text-gray-900">{{ $rekamMedis->temuDokter->roleUser->user->nama ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Nurse</label>
@@ -160,19 +160,39 @@
                         </div>
                     </div>
 
-                    <!-- Treatment -->
+                    <!-- Detail Rekam Medis (Tindakan & Terapi) -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Treatment / Procedure</h3>
-                            <p class="text-gray-700 whitespace-pre-line">Not recorded</p>
-                        </div>
-                    </div>
-
-                    <!-- Prescription -->
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Prescription</h3>
-                            <p class="text-gray-700 whitespace-pre-line">No prescription</p>
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-lg font-semibold text-gray-900">Detail Tindakan & Terapi</h3>
+                                <a href="{{ auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.detail.index', $rekamMedis->idrekam_medis) : route('perawat.rekam-medis.detail.index', $rekamMedis->idrekam_medis) }}"
+                                   class="text-sm text-indigo-600 hover:text-indigo-900 font-medium">
+                                    Lihat Detail →
+                                </a>
+                            </div>
+                            @php
+                                $detailCount = $rekamMedis->details()->count();
+                            @endphp
+                            @if($detailCount > 0)
+                                <p class="text-gray-700">
+                                    <span class="font-semibold text-indigo-600">{{ $detailCount }}</span> tindakan/terapi tercatat
+                                </p>
+                                <p class="text-sm text-gray-500 mt-2">
+                                    @if(auth()->user()->hasRole('Dokter'))
+                                        Klik "Lihat Detail" untuk menambah atau mengedit tindakan
+                                    @else
+                                        Klik "Lihat Detail" untuk melihat daftar lengkap tindakan
+                                    @endif
+                                </p>
+                            @else
+                                <p class="text-gray-500 italic">Belum ada tindakan/terapi yang tercatat</p>
+                                @if(auth()->user()->hasRole('Dokter'))
+                                    <a href="{{ route('dokter.rekam-medis.detail.create', $rekamMedis->idrekam_medis) }}"
+                                       class="mt-3 inline-flex items-center px-3 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
+                                        Tambah Tindakan/Terapi
+                                    </a>
+                                @endif
+                            @endif
                         </div>
                     </div>
 

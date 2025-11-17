@@ -110,8 +110,6 @@ class PemilikController extends Controller
                 'nama' => $validated['nama_pemilik'],
                 'email' => $validated['email'] ?? 'pemilik_' . time() . '@temp.com',
                 'password' => Hash::make($validated['password'] ?? 'password123'),
-                'no_wa' => $validated['no_telepon'],
-                'kota' => $validated['kota'],
             ]);
 
             // Get Pemilik role
@@ -126,7 +124,7 @@ class PemilikController extends Controller
 
             // Create pemilik record
             Pemilik::create([
-                'no_wa' => $validated['no_telepon'],
+                'no_wa' => $validated['no_wa'],
                 'alamat' => trim($validated['alamat']),
                 'iduser' => $user->iduser,
             ]);
@@ -139,6 +137,15 @@ class PemilikController extends Controller
             Log::error('Failed to create pemilik: ' . $e->getMessage());
             return back()->withInput()->with('error', 'Gagal menambahkan pemilik.');
         }
+    }
+
+    /**
+     * Display the specified pemilik.
+     */
+    public function show(Pemilik $pemilik)
+    {
+        $pemilik->load(['user', 'pets.rasHewan.jenisHewan']);
+        return view('admin.pemilik.show', compact('pemilik'));
     }
 
     /**
@@ -164,12 +171,10 @@ class PemilikController extends Controller
             $pemilik->user->update([
                 'nama' => $validated['nama_pemilik'],
                 'email' => $validated['email'] ?? $pemilik->user->email,
-                'no_wa' => $validated['no_telepon'],
-                'kota' => $validated['kota'],
             ]);
 
             $pemilik->update([
-                'no_wa' => $validated['no_telepon'],
+                'no_wa' => $validated['no_wa'],
                 'alamat' => trim($validated['alamat']),
             ]);
 
@@ -237,9 +242,8 @@ class PemilikController extends Controller
     {
         return [
             'nama_pemilik' => 'required|string|min:3|max:255',
-            'alamat' => 'required|string|min:10|max:500',
-            'kota' => 'required|string|max:100',
-            'no_telepon' => 'required|string|regex:/^((\\+?62)|0)[0-9]{9,12}$/|unique:pemilik,no_wa',
+            'alamat' => 'required|string|min:10|max:255',
+            'no_wa' => 'required|string|regex:/^((\\+?62)|0)[0-9]{9,12}$/|unique:pemilik,no_wa',
             'email' => 'nullable|email|max:255|unique:user,email',
         ];
     }
@@ -251,9 +255,8 @@ class PemilikController extends Controller
     {
         return [
             'nama_pemilik' => 'required|string|min:3|max:255',
-            'alamat' => 'required|string|min:10|max:500',
-            'kota' => 'required|string|max:100',
-            'no_telepon' => 'required|string|regex:/^((\\+?62)|0)[0-9]{9,12}$/|unique:pemilik,no_wa,' . $pemilik->idpemilik . ',idpemilik',
+            'alamat' => 'required|string|min:10|max:255',
+            'no_wa' => 'required|string|regex:/^((\\+?62)|0)[0-9]{9,12}$/|unique:pemilik,no_wa,' . $pemilik->idpemilik . ',idpemilik',
             'email' => 'nullable|email|max:255|unique:user,email,' . $pemilik->iduser . ',iduser',
         ];
     }

@@ -29,6 +29,14 @@ class RekamMedis extends Model
     ];
 
     /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'idrekam_medis';
+    }
+
+    /**
      * Relation to the `temu_dokter` (reservation) record.
      * `rekam_medis.idreservasi_dokter` -> `temu_dokter.idreservasi_dokter`.
      */

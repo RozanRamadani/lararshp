@@ -37,14 +37,14 @@ class RekamMedisController extends Controller
     {
         // Provide pets and doctors for the form. The controller will map the selected
         // pet to an existing `temu_dokter` reservation when storing the record.
-        $pets = Pet::with(['pemilik', 'jenis_hewan', 'ras_hewan'])->get();
+        $pets = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])->get();
         $dokters = User::whereHas('roles', function($query) {
             $query->where('nama_role', 'Dokter');
         })->get();
 
         $selectedPet = null;
         if ($request->has('idpet')) {
-            $selectedPet = Pet::with(['pemilik', 'jenis_hewan', 'ras_hewan'])
+            $selectedPet = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])
                 ->findOrFail($request->idpet);
         }
 
@@ -108,9 +108,15 @@ class RekamMedisController extends Controller
      * Untuk Dokter: Read-only
      * Untuk Perawat: Full access
      */
-    public function show(RekamMedis $rekamMedis)
+    public function show($rekam_medi)
     {
-        $rekamMedis->load(['temuDokter.pet.pemilik', 'temuDokter.pet.rasHewan', 'temuDokter.roleUser']);
+        $rekamMedis = RekamMedis::findOrFail($rekam_medi);
+        $rekamMedis->load([
+            'temuDokter.pet.pemilik.user',
+            'temuDokter.pet.rasHewan.jenisHewan',
+            'temuDokter.roleUser.user',
+            'details.kodeTindakanTerapi'
+        ]);
 
         $user = Auth::user();
         $isReadOnly = $user->hasRole('Dokter');
@@ -122,10 +128,16 @@ class RekamMedisController extends Controller
      * Show the form for editing the specified resource.
      * Hanya untuk Perawat
      */
-    public function edit(RekamMedis $rekamMedis)
+    public function edit($rekam_medi)
     {
-        $rekamMedis->load(['temuDokter.pet.pemilik']);
-        $pets = Pet::with(['pemilik', 'jenis_hewan', 'ras_hewan'])->get();
+        $rekamMedis = RekamMedis::findOrFail($rekam_medi);
+        $rekamMedis->load([
+            'temuDokter.pet.pemilik.user',
+            'temuDokter.pet.rasHewan.jenisHewan',
+            'temuDokter.roleUser.user'
+        ]);
+
+        $pets = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])->get();
         $dokters = User::whereHas('roles', function($query) {
             $query->where('nama_role', 'Dokter');
         })->get();
@@ -137,8 +149,9 @@ class RekamMedisController extends Controller
      * Update the specified resource in storage.
      * Hanya untuk Perawat
      */
-    public function update(Request $request, RekamMedis $rekamMedis)
+    public function update(Request $request, $rekam_medi)
     {
+        $rekamMedis = RekamMedis::findOrFail($rekam_medi);
         $validated = $request->validate($this->updateValidationRules($rekamMedis), $this->validationMessages());
 
         // Map update fields similarly to store
@@ -158,8 +171,14 @@ class RekamMedisController extends Controller
      * Remove the specified resource from storage.
      * Hanya untuk Perawat
      */
-    public function destroy(RekamMedis $rekamMedis)
+    public function destroy($rekam_medi)
     {
+        $rekamMedis = RekamMedis::findOrFail($rekam_medi);
+
+        // Delete all related detail_rekam_medis first
+        $rekamMedis->details()->delete();
+
+        // Then delete the main record
         $rekamMedis->delete();
 
         return redirect()->route('perawat.rekam-medis.index')
@@ -200,9 +219,13 @@ class RekamMedisController extends Controller
         return [
             'idpet.required' => 'Pilih pet terlebih dahulu.',
             'idpet.exists' => 'Pet tidak ditemukan.',
-            // Status is handled via temu_dokter/role_user in this schema
             'iddokter.exists' => 'Dokter tidak ditemukan.',
-            // Tambah pesan lain jika perlu
+            'anamnesa.required' => 'Anamnesa / Anamnesis wajib diisi.',
+            'anamnesa.max' => 'Anamnesa maksimal 1000 karakter.',
+            'pemeriksaan_fisik.required' => 'Temuan klinis wajib diisi.',
+            'pemeriksaan_fisik.max' => 'Temuan klinis maksimal 1000 karakter.',
+            'diagnosis.required' => 'Diagnosa wajib diisi.',
+            'diagnosis.max' => 'Diagnosa maksimal 1000 karakter.',
         ];
     }
 
@@ -213,16 +236,10 @@ class RekamMedisController extends Controller
     {
         return [
             'idpet' => 'required|exists:pet,idpet',
-            'iddokter' => 'nullable|exists:users,iduser',
-            'anamnesa' => 'nullable|string',
-            'pemeriksaan_fisik' => 'nullable|string',
-            'suhu' => 'nullable|numeric|between:0,99.99',
-            'berat_badan' => 'nullable|integer|min:0',
-            'diagnosis' => 'nullable|string',
-            'tindakan' => 'nullable|string',
-            'resep_obat' => 'nullable|string',
-            'catatan' => 'nullable|string',
-            'tanggal_kontrol' => 'nullable|date',
+            'iddokter' => 'nullable|exists:user,iduser',
+            'anamnesa' => 'required|string|max:1000',
+            'pemeriksaan_fisik' => 'required|string|max:1000',
+            'diagnosis' => 'required|string|max:1000',
         ];
     }
 

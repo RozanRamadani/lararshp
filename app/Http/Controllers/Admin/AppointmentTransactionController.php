@@ -44,7 +44,7 @@ class AppointmentTransactionController extends Controller
             );
 
             return redirect()
-                ->route('perawat.rekam-medis.show', $rekam->idrekam_medis)
+                ->route('perawat.rekam-medis.show', ['rekam_medi' => $rekam->idrekam_medis])
                 ->with('success', 'Kunjungan berhasil diselesaikan. Rekam medis telah dibuat.');
         } catch (\Throwable $e) {
             Log::error('Appointment complete failed', [

@@ -14,7 +14,7 @@ class DetailRekamMedis extends Model
     protected $fillable = [
         'idrekam_medis',
         'idkode_tindakan_terapi',
-        'keterangan',
+        'detail',
     ];
 
     /**

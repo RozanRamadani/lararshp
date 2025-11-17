@@ -4,23 +4,23 @@
             <div class="flex items-center space-x-4">
                 <!-- Back to Dashboard Button -->
                 <x-back-button href="{{ route('dashboard') }}" label="Kembali ke Dashboard" />
-                
+
                 <!-- Breadcrumb -->
                 <x-breadcrumb :items="[
                     ['name' => 'Data Pemilik']
                 ]" />
             </div>
-            
+
             <div class="flex items-center space-x-4">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Data Pemilik Hewan') }}
                 </h2>
-                <button class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                <a href="{{ route('admin.pemilik.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     Tambah Pemilik
-                </button>
+                </a>
             </div>
         </div>
     </x-slot>
@@ -190,10 +190,14 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            <button class="text-teal-600 hover:text-teal-900">Edit</button>
-                                            <button class="text-blue-600 hover:text-blue-900">Detail</button>
-                                            <button class="text-purple-600 hover:text-purple-900">Hewan</button>
-                                            <button class="text-red-600 hover:text-red-900">Hapus</button>
+                                            <a href="{{ route('admin.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                            <a href="{{ route('admin.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                            <a href="{{ route('admin.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
+                                            <form action="{{ route('admin.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

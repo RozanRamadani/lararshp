@@ -78,7 +78,7 @@
                                             {{ $record->perawat->name ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                 @if($record->status_color == 'yellow') bg-yellow-100 text-yellow-800
                                                 @elseif($record->status_color == 'blue') bg-blue-100 text-blue-800
                                                 @elseif($record->status_color == 'green') bg-green-100 text-green-800
@@ -91,12 +91,12 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
                                                 @if(auth()->user()->hasRole('Dokter'))
-                                                    <a href="{{ route('dokter.rekam-medis.show', $record->idrekam_medis) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                                    <a href="{{ route('dokter.rekam-medis.show', $record) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
                                                 @else
-                                                    <a href="{{ route('perawat.rekam-medis.show', $record->idrekam_medis) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                                    <a href="{{ route('perawat.rekam-medis.show', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
                                                     @if(auth()->user()->hasAnyRole(['Administrator', 'Perawat']))
-                                                        <a href="{{ route('perawat.rekam-medis.edit', $record->idrekam_medis) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
-                                                        <form action="{{ route('perawat.rekam-medis.destroy', $record->idrekam_medis) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this record?');">
+                                                        <a href="{{ route('perawat.rekam-medis.edit', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
+                                                        <form action="{{ route('perawat.rekam-medis.destroy', ['rekam_medi' => $record->idrekam_medis]) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this record?');">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>

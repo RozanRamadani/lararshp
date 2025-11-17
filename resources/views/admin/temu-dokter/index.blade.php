@@ -1,17 +1,29 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Appointment / Temu Dokter</h1>
-            <p class="text-gray-600 mt-1">Kelola jadwal appointment pasien</p>
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <x-back-button href="{{ route('dashboard') }}" label="Kembali ke Dashboard" />
+                <x-breadcrumb :items="[
+                    ['name' => 'Appointment / Temu Dokter']
+                ]" />
+            </div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Appointment / Temu Dokter') }}
+            </h2>
         </div>
-        <a href="{{ route('resepsionis.temu-dokter.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-colors">
-            <i class="fas fa-plus mr-2"></i>Buat Appointment
-        </a>
-    </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Header Actions -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <p class="text-gray-600">Kelola jadwal appointment pasien</p>
+                </div>
+                <a href="{{ route('resepsionis.temu-dokter.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Buat Appointment
+                </a>
+            </div>
 
     <!-- Success Message -->
     @if(session('success'))
@@ -152,5 +164,6 @@
             </div>
         @endif
     </div>
-</div>
-@endsection
+        </div>
+    </div>
+</x-app-layout>

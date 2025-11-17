@@ -1,16 +1,16 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center text-sm text-gray-600 mb-2">
-            <a href="{{ route('resepsionis.temu-dokter.index') }}" class="hover:text-teal-600">Appointment</a>
-            <span class="mx-2">/</span>
-            <span class="text-gray-900">Edit</span>
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center space-x-4">
+            <x-back-button href="{{ route('resepsionis.temu-dokter.index') }}" label="Kembali ke Daftar Appointment" />
+            <x-breadcrumb :items="[
+                ['name' => 'Appointment / Temu Dokter', 'url' => route('resepsionis.temu-dokter.index')],
+                ['name' => 'Edit']
+            ]" />
         </div>
-        <h1 class="text-3xl font-bold text-gray-900">Edit Appointment #{{ $temuDokter->no_urut }}</h1>
-    </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
     <!-- Error Messages -->
     @if($errors->any())
@@ -47,19 +47,15 @@
                 @enderror
             </div>
 
-            <!-- Nomor Urut -->
+            <!-- Nomor Urut (Read-only) -->
             <div>
-                <label for="no_urut" class="block text-sm font-medium text-gray-700 mb-2">
-                    Nomor Urut <span class="text-red-500">*</span>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Nomor Urut
                 </label>
-                <input type="number" name="no_urut" id="no_urut"
-                    value="{{ old('no_urut', $temuDokter->no_urut) }}"
-                    min="1"
-                    required
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
-                @error('no_urut')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <div class="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-gray-600">
+                    <span class="text-2xl font-bold text-teal-600">{{ $temuDokter->no_urut }}</span>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">🔒 Nomor urut tidak dapat diubah</p>
             </div>
 
             <!-- Waktu Daftar -->
@@ -100,11 +96,12 @@
                     Status <span class="text-red-500">*</span>
                 </label>
                 <select name="status" id="status" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
-                    <option value="0" {{ (old('status', $temuDokter->status) == '0') ? 'selected' : '' }}>Menunggu</option>
-                    <option value="1" {{ (old('status', $temuDokter->status) == '1') ? 'selected' : '' }}>Dalam Proses</option>
-                    <option value="2" {{ (old('status', $temuDokter->status) == '2') ? 'selected' : '' }}>Selesai</option>
-                    <option value="3" {{ (old('status', $temuDokter->status) == '3') ? 'selected' : '' }}>Batal</option>
+                    <option value="0" {{ (old('status', $temuDokter->status) == '0') ? 'selected' : '' }}>🕐 Menunggu</option>
+                    <option value="1" {{ (old('status', $temuDokter->status) == '1') ? 'selected' : '' }}>👨‍⚕️ Dalam Proses</option>
+                    <option value="2" {{ (old('status', $temuDokter->status) == '2') ? 'selected' : '' }}>✅ Selesai</option>
+                    <option value="3" {{ (old('status', $temuDokter->status) == '3') ? 'selected' : '' }}>❌ Batal</option>
                 </select>
+                <p class="mt-1 text-xs text-gray-500">Ubah status sesuai progres appointment</p>
                 @error('status')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -120,6 +117,6 @@
                 <i class="fas fa-save mr-2"></i>Update Appointment
             </button>
         </div>
-    </form>
-</div>
-@endsection
+    </div>
+    </div>
+</x-app-layout>

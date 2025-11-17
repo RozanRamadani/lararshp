@@ -39,7 +39,7 @@
                                         <option value="">-- Select Pet --</option>
                                         @foreach($pets as $pet)
                                             <option value="{{ $pet->idpet }}" {{ (old('idpet') ?? ($rekamMedis->temuDokter->pet->idpet ?? null)) == $pet->idpet ? 'selected' : '' }}>
-                                                {{ $pet->nama }} - {{ $pet->pemilik->nama ?? '' }}
+                                                {{ $pet->nama }} - {{ $pet->pemilik->user->nama ?? '' }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -50,10 +50,10 @@
                                 <div class="mt-4 p-4 bg-gray-50 rounded-md">
                                     <h4 class="font-medium text-gray-900 mb-2">{{ $rekamMedis->temuDokter->pet->nama ?? '-' }}</h4>
                                     <div class="space-y-1 text-sm text-gray-600">
-                                        <p><strong>Species:</strong> {{ $rekamMedis->temuDokter->pet->jenis_hewan->nama_jenis ?? '-' }}</p>
-                                        <p><strong>Breed:</strong> {{ $rekamMedis->temuDokter->pet->ras_hewan->nama_ras ?? '-' }}</p>
+                                        <p><strong>Species:</strong> {{ $rekamMedis->temuDokter->pet->rasHewan->jenisHewan->nama_jenis_hewan ?? '-' }}</p>
+                                        <p><strong>Breed:</strong> {{ $rekamMedis->temuDokter->pet->rasHewan->nama_ras ?? '-' }}</p>
                                         <p><strong>Gender:</strong> {{ $rekamMedis->temuDokter->pet->jenis_kelamin ?? '-' }}</p>
-                                        <p><strong>Owner:</strong> {{ $rekamMedis->temuDokter->pet->pemilik->nama ?? '-' }}</p>
+                                        <p><strong>Owner:</strong> {{ $rekamMedis->temuDokter->pet->pemilik->user->nama ?? '-' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -69,7 +69,7 @@
                                         <option value="">-- Select Doctor --</option>
                                         @foreach($dokters as $dokter)
                                             <option value="{{ $dokter->iduser }}" {{ (old('iddokter') ?? ($rekamMedis->temuDokter->roleUser->iduser ?? null)) == $dokter->iduser ? 'selected' : '' }}>
-                                                {{ $dokter->name }}
+                                                {{ $dokter->nama }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -78,12 +78,10 @@
                                     @enderror
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="tanggal_kunjungan" class="block text-sm font-medium text-gray-700 mb-2">Visit Date *</label>
-                                    <input type="date" id="tanggal_kunjungan" name="tanggal_kunjungan" value="{{ old('tanggal_kunjungan') ?? ($rekamMedis->created_at?->format('Y-m-d') ?? '') }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    @error('tanggal_kunjungan')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                                <div class="p-4 bg-gray-50 rounded-md">
+                                    <p class="text-sm text-gray-600"><strong>Tanggal Kunjungan:</strong></p>
+                                    <p class="text-sm text-gray-800 mt-1">{{ $rekamMedis->created_at?->format('d F Y, H:i') ?? '-' }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">Tanggal kunjungan otomatis diambil saat rekam medis dibuat</p>
                                 </div>
 
                             </div>
@@ -95,79 +93,48 @@
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             <div class="p-6">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Medical Examination</h3>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                        <label for="suhu" class="block text-sm font-medium text-gray-700 mb-2">Temperature (°C)</label>
-                                        <input type="number" id="suhu" name="suhu" value="{{ old('suhu') ?? $rekamMedis->suhu }}" step="0.01" min="0" max="99.99" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="38.5">
-                                        @error('suhu')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
-                                    <div>
-                                        <label for="berat_badan" class="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
-                                        <input type="number" id="berat_badan" name="berat_badan" value="{{ old('berat_badan') ?? $rekamMedis->berat_badan }}" min="0" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="5">
-                                        @error('berat_badan')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div>
+                                <p class="text-sm text-gray-500 mb-4">Update data pemeriksaan medis hewan. Field yang wajib diisi ditandai dengan tanda *.</p>
 
                                 <div class="mb-4">
-                                    <label for="anamnesa" class="block text-sm font-medium text-gray-700 mb-2">Anamnesa / Chief Complaint</label>
-                                    <textarea id="anamnesa" name="anamnesa" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Keluhan utama dan riwayat penyakit...">{{ old('anamnesa') ?? $rekamMedis->anamnesa }}</textarea>
+                                    <label for="anamnesa" class="block text-sm font-medium text-gray-700 mb-2">Anamnesis / Anamnesa <span class="text-red-500">*</span></label>
+                                    <textarea id="anamnesa" name="anamnesa" rows="4" required maxlength="1000" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('anamnesa') border-red-500 @enderror" placeholder="Contoh: Anjing tidak mau makan dan muntah sejak kemarin.">{{ old('anamnesa') ?? $rekamMedis->anamesis }}</textarea>
                                     @error('anamnesa')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
+                                    <p class="mt-1 text-xs text-gray-500">Keluhan utama dan riwayat penyakit (maksimal 1000 karakter)</p>
                                 </div>
 
                                 <div class="mb-4">
-                                    <label for="pemeriksaan_fisik" class="block text-sm font-medium text-gray-700 mb-2">Physical Examination</label>
-                                    <textarea id="pemeriksaan_fisik" name="pemeriksaan_fisik" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Hasil pemeriksaan fisik...">{{ old('pemeriksaan_fisik') ?? $rekamMedis->pemeriksaan_fisik }}</textarea>
+                                    <label for="pemeriksaan_fisik" class="block text-sm font-medium text-gray-700 mb-2">Temuan Klinis <span class="text-red-500">*</span></label>
+                                    <textarea id="pemeriksaan_fisik" name="pemeriksaan_fisik" rows="4" required maxlength="1000" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('pemeriksaan_fisik') border-red-500 @enderror" placeholder="Contoh: Suhu tubuh 40°C, dehidrasi ringan, bulu kusam.">{{ old('pemeriksaan_fisik') ?? $rekamMedis->temuan_klinis }}</textarea>
                                     @error('pemeriksaan_fisik')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
+                                    <p class="mt-1 text-xs text-gray-500">Hasil pemeriksaan fisik dan temuan klinis (maksimal 1000 karakter)</p>
                                 </div>
 
                                 <div class="mb-4">
-                                    <label for="diagnosis" class="block text-sm font-medium text-gray-700 mb-2">Diagnosis</label>
-                                    <textarea id="diagnosis" name="diagnosis" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Diagnosis penyakit...">{{ old('diagnosis') ?? $rekamMedis->diagnosis }}</textarea>
+                                    <label for="diagnosis" class="block text-sm font-medium text-gray-700 mb-2">Diagnosa <span class="text-red-500">*</span></label>
+                                    <textarea id="diagnosis" name="diagnosis" rows="3" required maxlength="1000" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('diagnosis') border-red-500 @enderror" placeholder="Contoh: Gastroenteritis pada Anjing.">{{ old('diagnosis') ?? $rekamMedis->diagnosa }}</textarea>
                                     @error('diagnosis')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
+                                    <p class="mt-1 text-xs text-gray-500">Diagnosis penyakit atau kondisi medis (maksimal 1000 karakter)</p>
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="tindakan" class="block text-sm font-medium text-gray-700 mb-2">Treatment / Procedure</label>
-                                    <textarea id="tindakan" name="tindakan" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Tindakan medis yang dilakukan...">{{ old('tindakan') ?? $rekamMedis->tindakan }}</textarea>
-                                    @error('tindakan')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="resep_obat" class="block text-sm font-medium text-gray-700 mb-2">Prescription</label>
-                                    <textarea id="resep_obat" name="resep_obat" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Resep obat dan dosis...">{{ old('resep_obat') ?? $rekamMedis->resep_obat }}</textarea>
-                                    @error('resep_obat')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="tanggal_kontrol" class="block text-sm font-medium text-gray-700 mb-2">Follow-up Date</label>
-                                    <input type="date" id="tanggal_kontrol" name="tanggal_kontrol" value="{{ old('tanggal_kontrol') ?? $rekamMedis->tanggal_kontrol?->format('Y-m-d') }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    @error('tanggal_kontrol')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="catatan" class="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
-                                    <textarea id="catatan" name="catatan" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Catatan tambahan...">{{ old('catatan') ?? $rekamMedis->catatan }}</textarea>
-                                    @error('catatan')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                                <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+                                    <div class="flex">
+                                        <svg class="h-5 w-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <div class="text-sm text-blue-700">
+                                            <p class="font-medium mb-1">Catatan Penting:</p>
+                                            <ul class="list-disc list-inside space-y-1">
+                                                <li>Detail tindakan/terapi akan dikelola oleh Dokter di menu Detail Rekam Medis</li>
+                                                <li>Pastikan data anamnesis, temuan klinis, dan diagnosa sudah lengkap</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">

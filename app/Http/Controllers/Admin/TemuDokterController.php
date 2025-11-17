@@ -136,6 +136,9 @@ class TemuDokterController extends Controller
         try {
             DB::beginTransaction();
 
+            // Remove no_urut from validated data to prevent updates
+            unset($validated['no_urut']);
+
             $temuDokter->update($validated);
 
             DB::commit();
@@ -239,7 +242,6 @@ class TemuDokterController extends Controller
         return [
             'idpet' => 'required|exists:pet,idpet',
             'idrole_user' => 'nullable|exists:role_user,idrole_user',
-            'no_urut' => 'required|integer|min:1',
             'waktu_daftar' => 'required|date',
             'status' => 'required|in:0,1,2,3',
         ];

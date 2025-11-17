@@ -78,11 +78,11 @@
                                                 {{ $record->tanggal_kunjungan->format('d F Y') }}
                                             </h4>
                                             <p class="text-sm text-gray-600">
-                                                Doctor: {{ $record->dokter->name ?? 'Not assigned' }} | 
+                                                Doctor: {{ $record->dokter->name ?? 'Not assigned' }} |
                                                 Nurse: {{ $record->perawat->name ?? 'Not assigned' }}
                                             </p>
                                         </div>
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                             @if($record->status_color == 'yellow') bg-yellow-100 text-yellow-800
                                             @elseif($record->status_color == 'blue') bg-blue-100 text-blue-800
                                             @elseif($record->status_color == 'green') bg-green-100 text-green-800
@@ -149,15 +149,15 @@
                                                 View Full Details →
                                             </a>
                                         @elseif(auth()->user()->hasRole('Dokter'))
-                                            <a href="{{ route('dokter.rekam-medis.show', $record->idrekam_medis) }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                            <a href="{{ route('dokter.rekam-medis.show', $record) }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                                                 View Full Details →
                                             </a>
                                         @else
                                             <div class="flex space-x-3">
-                                                <a href="{{ route('perawat.rekam-medis.show', $record->idrekam_medis) }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                                <a href="{{ route('perawat.rekam-medis.show', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                                                     View Details
                                                 </a>
-                                                <a href="{{ route('perawat.rekam-medis.edit', $record->idrekam_medis) }}" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">
+                                                <a href="{{ route('perawat.rekam-medis.edit', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">
                                                     Edit
                                                 </a>
                                             </div>

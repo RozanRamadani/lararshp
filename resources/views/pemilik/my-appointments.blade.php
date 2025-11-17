@@ -1,12 +1,18 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center space-x-4">
+            <x-back-button href="{{ route('dashboard') }}" label="Kembali ke Dashboard" />
+            <x-breadcrumb :items="[
+                ['name' => 'Appointment Saya']
+            ]" />
+        </div>
+    </x-slot>
 
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Appointment Saya</h1>
-        <p class="text-gray-600 mt-1">Daftar jadwal appointment untuk hewan peliharaan Anda</p>
-    </div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="mb-6">
+                <p class="text-gray-600">Daftar jadwal appointment untuk hewan peliharaan Anda</p>
+            </div>
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -168,5 +174,6 @@
             {{ $appointments->links() }}
         </div>
     @endif
-</div>
-@endsection
+        </div>
+    </div>
+</x-app-layout>

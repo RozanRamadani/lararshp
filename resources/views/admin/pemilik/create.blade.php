@@ -75,43 +75,24 @@
                             @enderror
                         </div>
 
-                        <!-- Kota -->
+                        <!-- No WhatsApp -->
                         <div class="mb-6">
-                            <label for="kota" class="block text-sm font-medium text-gray-700 mb-2">
-                                Kota <span class="text-red-500">*</span>
+                            <label for="no_wa" class="block text-sm font-medium text-gray-700 mb-2">
+                                No. WhatsApp <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                name="kota"
-                                id="kota"
-                                value="{{ old('kota') }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('kota') border-red-500 @enderror"
-                                placeholder="Contoh: Surabaya"
-                                required
-                            >
-                            @error('kota')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- No Telepon -->
-                        <div class="mb-6">
-                            <label for="no_telepon" class="block text-sm font-medium text-gray-700 mb-2">
-                                No Telepon <span class="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="no_telepon"
-                                id="no_telepon"
-                                value="{{ old('no_telepon') }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('no_telepon') border-red-500 @enderror"
+                                name="no_wa"
+                                id="no_wa"
+                                value="{{ old('no_wa') }}"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('no_wa') border-red-500 @enderror"
                                 placeholder="Contoh: 08123456789"
                                 required
                             >
-                            @error('no_telepon')
+                            @error('no_wa')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                            <p class="mt-1 text-sm text-gray-500">Nomor telepon aktif yang dapat dihubungi</p>
+                            <p class="mt-1 text-sm text-gray-500">Nomor WhatsApp aktif yang dapat dihubungi</p>
                         </div>
 
                         <!-- Email (Optional) -->
@@ -181,21 +162,21 @@
                             <p class="mt-1 text-sm text-gray-500">User yang belum memiliki role Pemilik</p>
                         </div>
 
-                        <!-- No Telepon -->
+                        <!-- No WhatsApp -->
                         <div class="mb-6">
-                            <label for="no_telepon_upgrade" class="block text-sm font-medium text-gray-700 mb-2">
-                                No Telepon <span class="text-red-500">*</span>
+                            <label for="no_wa_upgrade" class="block text-sm font-medium text-gray-700 mb-2">
+                                No. WhatsApp <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                name="no_telepon"
-                                id="no_telepon_upgrade"
-                                value="{{ old('no_telepon') }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('no_telepon') border-red-500 @enderror"
+                                name="no_wa"
+                                id="no_wa_upgrade"
+                                value="{{ old('no_wa') }}"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('no_wa') border-red-500 @enderror"
                                 placeholder="Contoh: 08123456789"
                                 required
                             >
-                            @error('no_telepon')
+                            @error('no_wa')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
