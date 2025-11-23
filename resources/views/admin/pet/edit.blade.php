@@ -8,12 +8,12 @@
                 <!-- Breadcrumb -->
                 <x-breadcrumb :items="[
                     ['name' => 'Data Pet', 'url' => (request()->routeIs('resepsionis.pet.*') || request()->is('resepsionis/*')) ? route('resepsionis.pet.index') : route('admin.pet.index')],
-                    ['name' => 'Tambah Pet']
+                    ['name' => 'Edit Pet']
                 ]" />
             </div>
 
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Tambah Data Pet') }}
+                {{ __('Edit Data Pet') }}
             </h2>
         </div>
     </x-slot>
@@ -22,8 +22,9 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ request()->routeIs('resepsionis.pet.*') ? route('resepsionis.pet.store') : route('admin.pet.store') }}">
+                    <form method="POST" action="{{ request()->routeIs('resepsionis.pet.*') ? route('resepsionis.pet.update', $pet->idpet) : route('admin.pet.update', $pet->idpet) }}">
                         @csrf
+                        @method('PUT')
 
                         <!-- Nama Pet -->
                         <div class="mb-6">
@@ -34,7 +35,7 @@
                                 type="text"
                                 name="nama_pet"
                                 id="nama_pet"
-                                value="{{ old('nama_pet') }}"
+                                value="{{ old('nama_pet', $pet->nama) }}"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('nama_pet') border-red-500 @enderror"
                                 placeholder="Contoh: Bruno, Mimi, Luna"
                                 required
@@ -56,9 +57,8 @@
                                 required
                             >
                                 <option value="">-- Pilih Ras --</option>
-                                <!-- Populate with ras hewan from database -->
                                 @foreach($rasHewan ?? [] as $ras)
-                                    <option value="{{ $ras->idras_hewan }}" {{ old('idras_hewan') == $ras->idras_hewan ? 'selected' : '' }}>
+                                    <option value="{{ $ras->idras_hewan }}" {{ old('idras_hewan', $pet->idras_hewan) == $ras->idras_hewan ? 'selected' : '' }}>
                                         {{ $ras->nama_ras }} ({{ $ras->jenisHewan->nama_jenis_hewan ?? '' }})
                                     </option>
                                 @endforeach
@@ -80,9 +80,8 @@
                                 required
                             >
                                 <option value="">-- Pilih Pemilik --</option>
-                                <!-- Populate with pemilik from database -->
                                 @foreach($pemilikList ?? [] as $owner)
-                                    <option value="{{ $owner->idpemilik }}" {{ old('idpemilik') == $owner->idpemilik ? 'selected' : '' }}>
+                                    <option value="{{ $owner->idpemilik }}" {{ old('idpemilik', $pet->idpemilik) == $owner->idpemilik ? 'selected' : '' }}>
                                         {{ $owner->user->nama ?? 'Tanpa Nama' }}
                                     </option>
                                 @endforeach
@@ -104,7 +103,7 @@
                                         name="jenis_kelamin"
                                         value="J"
                                         class="rounded-full border-gray-300 text-teal-600 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                                        {{ old('jenis_kelamin') == 'J' ? 'checked' : '' }}
+                                        {{ old('jenis_kelamin', $pet->jenis_kelamin) == 'J' ? 'checked' : '' }}
                                         required
                                     >
                                     <span class="ml-2">Jantan</span>
@@ -115,7 +114,7 @@
                                         name="jenis_kelamin"
                                         value="B"
                                         class="rounded-full border-gray-300 text-teal-600 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                                        {{ old('jenis_kelamin') == 'B' ? 'checked' : '' }}
+                                        {{ old('jenis_kelamin', $pet->jenis_kelamin) == 'B' ? 'checked' : '' }}
                                         required
                                     >
                                     <span class="ml-2">Betina</span>
@@ -135,7 +134,7 @@
                                 type="date"
                                 name="tanggal_lahir"
                                 id="tanggal_lahir"
-                                value="{{ old('tanggal_lahir') }}"
+                                value="{{ old('tanggal_lahir', $pet->tanggal_lahir ? $pet->tanggal_lahir->format('Y-m-d') : '') }}"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('tanggal_lahir') border-red-500 @enderror"
                             >
                             @error('tanggal_lahir')
@@ -153,7 +152,7 @@
                                 type="text"
                                 name="warna"
                                 id="warna"
-                                value="{{ old('warna') }}"
+                                value="{{ old('warna', $pet->warna_tanda) }}"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('warna') border-red-500 @enderror"
                                 placeholder="Contoh: Coklat, Putih, Belang"
                             >
@@ -173,7 +172,7 @@
                                 rows="3"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 @error('ciri_khas') border-red-500 @enderror"
                                 placeholder="Contoh: Ada tanda hitam di telinga kiri, ekor pendek"
-                            >{{ old('ciri_khas') }}</textarea>
+                            >{{ old('ciri_khas', $pet->ciri_khas) }}</textarea>
                             @error('ciri_khas')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -187,7 +186,7 @@
                             </a>
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-teal-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-teal-700 focus:bg-teal-700 active:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <i class="fi fi-rr-check mr-2 text-white" style="font-size: 16px;"></i>
-                                Simpan
+                                Update
                             </button>
                         </div>
                     </form>

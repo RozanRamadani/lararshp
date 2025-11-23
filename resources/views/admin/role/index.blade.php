@@ -13,6 +13,14 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="mb-6">
+                <x-breadcrumb :items="[
+                    ['name' => 'Data Management', 'url' => route('admin.data.index')],
+                    ['name' => 'Data Role']
+                ]" />
+            </div>
+
             <!-- Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

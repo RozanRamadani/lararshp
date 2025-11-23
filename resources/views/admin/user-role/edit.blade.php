@@ -13,6 +13,15 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="mb-6">
+                <x-breadcrumb :items="[
+                    ['name' => 'Data Management', 'url' => route('admin.data.index')],
+                    ['name' => 'User & Role', 'url' => route('admin.user.index')],
+                    ['name' => 'Edit User']
+                ]" />
+            </div>
+
             @if (session('success'))
                 <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
                     {{ session('success') }}

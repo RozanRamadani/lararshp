@@ -1,10 +1,12 @@
 <x-app-layout>
-    <x-slot name="header">
+            <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Data Pet') }}
-            </h2>
-            <a href="{{ route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+            <div class="flex items-center space-x-4">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{ __('Data Pet') }}
+                </h2>
+            </div>
+            <a href="{{ request()->routeIs('resepsionis.pet.*') ? route('dashboard') : route('admin.data.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
                 <i class="fi fi-rr-chart-line mr-2" style="font-size: 16px;"></i>
                 Kembali ke Dashboard
             </a>
@@ -13,6 +15,14 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="mb-6">
+                <x-breadcrumb :items="[
+                    ['name' => 'Data Management', 'url' => route('admin.data.index')],
+                    ['name' => 'Data Pet']
+                ]" />
+            </div>
+
             <!-- Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -50,7 +60,7 @@
                                 <i class="fi fi-rr-dog text-purple-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $petJantan ?? $pets->where('jenis_kelamin', 'Jantan')->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $petJantan ?? $pets->where('jenis_kelamin', 'J')->count() }}</h4>
                                 <p class="text-sm text-gray-600">Pet Jantan</p>
                             </div>
                         </div>
@@ -64,13 +74,29 @@
                                 <i class="fi fi-rr-cat text-pink-600" style="font-size: 32px;"></i>
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $petBetina ?? $pets->where('jenis_kelamin', 'Betina')->count() }}</h4>
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $petBetina ?? $pets->where('jenis_kelamin', 'B')->count() }}</h4>
                                 <p class="text-sm text-gray-600">Pet Betina</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            @if(! (request()->routeIs('perawat.pasien.*') || request()->is('perawat/pasien*')))
+            <div class="mb-4 flex justify-end">
+                @if(request()->routeIs('resepsionis.pet.*'))
+                    <a href="{{ route('resepsionis.pet.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                        <i class="fi fi-rr-plus mr-2" style="font-size: 16px;"></i>
+                        Tambah Pet
+                    </a>
+                @else
+                    <a href="{{ route('admin.pet.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                        <i class="fi fi-rr-plus mr-2" style="font-size: 16px;"></i>
+                        Tambah Pet
+                    </a>
+                @endif
+            </div>
+            @endif
 
             <!-- Data Table -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -85,6 +111,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelamin</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Umur</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -116,8 +143,8 @@
                                         <div class="text-sm text-gray-500">{{ $pet->user->email ?? '' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $pet->jenis_kelamin == 'Jantan' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
-                                            {{ $pet->jenis_kelamin }}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $pet->jenis_kelamin == 'J' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
+                                            {{ $pet->jenis_kelamin == 'J' ? 'Jantan' : 'Betina' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -128,10 +155,33 @@
                                             <span class="text-gray-400">-</span>
                                         @endif
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            @if(request()->routeIs('perawat.pasien.*') || request()->is('perawat/pasien*'))
+                                                <a href="{{ route('perawat.pasien.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                            @elseif(request()->routeIs('resepsionis.pet.*'))
+                                                <a href="{{ route('resepsionis.pet.edit', $pet->idpet) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                <a href="{{ route('resepsionis.pet.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                <form action="{{ route('resepsionis.pet.destroy', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pet ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                </form>
+                                            @else
+                                                <a href="{{ route('admin.pet.edit', $pet->idpet) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                <a href="{{ route('admin.pet.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                <form action="{{ route('admin.pet.destroy', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pet ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                    <td colspan="7" class="px-6 py-4 text-center text-gray-500">
                                         Tidak ada data pet
                                     </td>
                                 </tr>

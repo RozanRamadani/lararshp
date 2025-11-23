@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center space-x-4">
-            <x-back-button href="{{ route('admin.pemilik.index') }}" label="Kembali ke Data Pemilik" />
+            <x-back-button href="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index') }}" label="Kembali ke Data Pemilik" />
             <x-breadcrumb :items="[
-                ['name' => 'Data Pemilik', 'url' => route('admin.pemilik.index')],
+                ['name' => 'Data Pemilik', 'url' => request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index')],
                 ['name' => 'Edit Pemilik']
             ]" />
         </div>
@@ -25,7 +25,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.pemilik.update', $pemilik->idpemilik) }}" method="POST">
+                    <form action="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.update', $pemilik->idpemilik) : route('admin.pemilik.update', $pemilik->idpemilik) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -78,7 +78,7 @@
 
                         <!-- Submit Buttons -->
                         <div class="flex items-center justify-end space-x-3">
-                            <a href="{{ route('admin.pemilik.index') }}"
+                            <a href="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index') }}"
                                 class="px-6 py-2.5 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 focus:ring-4 focus:ring-gray-200 transition duration-300">
                                 Batal
                             </a>

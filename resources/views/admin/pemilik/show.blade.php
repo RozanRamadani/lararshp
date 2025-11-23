@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center space-x-4">
-            <x-back-button href="{{ route('admin.pemilik.index') }}" label="Kembali ke Data Pemilik" />
+            <x-back-button href="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index') }}" label="Kembali ke Data Pemilik" />
             <x-breadcrumb :items="[
-                ['name' => 'Data Pemilik', 'url' => route('admin.pemilik.index')],
+                ['name' => 'Data Pemilik', 'url' => request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index')],
                 ['name' => 'Detail Pemilik']
             ]" />
         </div>
@@ -31,14 +31,14 @@
                                 </span>
 
                                 <div class="w-full space-y-3">
-                                    <a href="{{ route('admin.pemilik.edit', $pemilik->idpemilik) }}"
+                                    <a href="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.edit', $pemilik->idpemilik) : route('admin.pemilik.edit', $pemilik->idpemilik) }}"
                                         class="w-full flex items-center justify-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                         Edit Profil
                                     </a>
-                                    <form action="{{ route('admin.pemilik.destroy', $pemilik->idpemilik) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
+                                    <form action="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.destroy', $pemilik->idpemilik) : route('admin.pemilik.destroy', $pemilik->idpemilik) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">

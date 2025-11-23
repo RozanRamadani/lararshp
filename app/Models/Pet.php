@@ -74,10 +74,17 @@ class Pet extends Model
         return $this->jenisHewan();
     }
 
-    // Relationship dengan rekam medis
+    // Relationship dengan rekam medis (through temu_dokter)
     public function rekamMedis()
     {
-        return $this->hasMany(RekamMedis::class, 'idpet', 'idpet');
+        return $this->hasManyThrough(
+            RekamMedis::class,
+            TemuDokter::class,
+            'idpet',              // Foreign key on temu_dokter table
+            'idreservasi_dokter', // Foreign key on rekam_medis table
+            'idpet',              // Local key on pet table
+            'idreservasi_dokter'  // Local key on temu_dokter table
+        );
     }
 
     // Alias untuk snake_case naming
@@ -120,6 +127,15 @@ class Pet extends Model
     public function getWarnaAttribute()
     {
         return $this->attributes['warna_tanda'] ?? null;
+    }
+
+    /**
+     * Accessor to display jenis_kelamin as readable text
+     * J = Jantan, B = Betina
+     */
+    public function getJenisKelaminReadableAttribute()
+    {
+        return $this->jenis_kelamin === 'J' ? 'Jantan' : 'Betina';
     }
 
     /**

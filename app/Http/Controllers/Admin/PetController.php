@@ -29,8 +29,8 @@ class PetController extends Controller
         // Count unique owners referenced by pets (unique idpemilik)
         $totalOwners = Pet::distinct('idpemilik')->count('idpemilik');
 
-        $petJantan = Pet::where('jenis_kelamin', 'Jantan')->count();
-        $petBetina = Pet::where('jenis_kelamin', 'Betina')->count();
+        $petJantan = Pet::where('jenis_kelamin', 'J')->count();
+        $petBetina = Pet::where('jenis_kelamin', 'B')->count();
 
         return view('admin.pet.index', compact('pets', 'totalPets', 'totalOwners', 'petJantan', 'petBetina'));
     }
@@ -61,7 +61,7 @@ class PetController extends Controller
     {
         return [
             'nama_pet' => 'required|string|min:2|max:255',
-            'jenis_kelamin' => 'required|in:Jantan,Betina',
+            'jenis_kelamin' => 'required|in:J,B',
             'warna' => 'nullable|string|max:255',
             'tanggal_lahir' => 'nullable|date|before_or_equal:today',
             'idras_hewan' => 'required|exists:ras_hewan,idras_hewan',
@@ -110,7 +110,8 @@ class PetController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('admin.pet.index')->with('success', 'Pet berhasil ditambahkan.');
+            $indexRoute = request()->routeIs('resepsionis.pet.*') || request()->is('resepsionis/*') ? 'resepsionis.pet.index' : 'admin.pet.index';
+            return redirect()->route($indexRoute)->with('success', 'Pet berhasil ditambahkan.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -124,7 +125,20 @@ class PetController extends Controller
      */
     public function show(Pet $pet): View
     {
-        $pet->load(['user', 'rasHewan.jenisHewan']);
+        $pet->load([
+            'user',
+            'rasHewan.jenisHewan',
+            'pemilik.user',
+            'rekamMedis' => function($query) {
+                $query->with(['detailRekamMedis'])
+                      ->orderBy('created_at', 'desc')
+                      ->limit(10);
+            },
+            'temuDokter' => function($query) {
+                $query->orderBy('waktu_daftar', 'desc')
+                      ->limit(10);
+            }
+        ]);
 
         return view('admin.pet.show', compact('pet'));
     }
@@ -161,7 +175,8 @@ class PetController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('admin.pet.index')->with('success', 'Pet berhasil diperbarui.');
+            $indexRoute = request()->routeIs('resepsionis.pet.*') || request()->is('resepsionis/*') ? 'resepsionis.pet.index' : 'admin.pet.index';
+            return redirect()->route($indexRoute)->with('success', 'Pet berhasil diperbarui.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -176,10 +191,31 @@ class PetController extends Controller
     public function destroy(Pet $pet): RedirectResponse
     {
         try {
+            DB::beginTransaction();
+
+            // Check if pet has related records
+            $hasTemuDokter = $pet->temuDokter()->exists();
+            $hasRekamMedis = $pet->rekamMedis()->exists();
+
+            if ($hasTemuDokter || $hasRekamMedis) {
+                DB::rollBack();
+                return back()->with('error', 'Tidak dapat menghapus pet karena masih memiliki data rekam medis atau temu dokter. Hapus data tersebut terlebih dahulu.');
+            }
+
             $pet->delete();
-            return redirect()->route('admin.pet.index')->with('success', 'Pet berhasil dihapus.');
+            DB::commit();
+
+            $indexRoute = request()->routeIs('resepsionis.pet.*') || request()->is('resepsionis/*') ? 'resepsionis.pet.index' : 'admin.pet.index';
+            return redirect()->route($indexRoute)->with('success', 'Pet berhasil dihapus.');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Failed to delete pet: ' . $e->getMessage());
+
+            // Specific message for foreign key constraint
+            if (str_contains($e->getMessage(), 'foreign key constraint')) {
+                return back()->with('error', 'Tidak dapat menghapus pet karena masih terkait dengan data lain di sistem.');
+            }
+
             return back()->with('error', 'Gagal menghapus pet.');
         }
     }
@@ -202,7 +238,21 @@ class PetController extends Controller
             abort(403, 'Anda tidak memiliki akses ke data pet ini.');
         }
 
-        $pet->load(['jenis_hewan', 'ras_hewan', 'pemilik.user']);
+        $pet->load([
+            'jenis_hewan',
+            'ras_hewan',
+            'pemilik.user',
+            'rekamMedis' => function($query) {
+                $query->with(['detailRekamMedis'])
+                      ->orderBy('created_at', 'desc')
+                      ->limit(10);
+            },
+            'temuDokter' => function($query) {
+                $query->where('waktu_daftar', '>=', now())
+                      ->orderBy('waktu_daftar', 'asc');
+            }
+        ]);
+
         return view('pemilik.my-pet-detail', compact('pet'));
     }
 }

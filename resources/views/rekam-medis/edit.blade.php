@@ -12,14 +12,13 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Back Button -->
+            <!-- Breadcrumb -->
             <div class="mb-6">
-                <a href="{{ route('perawat.rekam-medis.show', $rekamMedis->idrekam_medis) }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to Medical Record
-                </a>
+                <x-breadcrumb :items="[
+                    ['name' => 'Medical Records', 'url' => route('perawat.rekam-medis.index')],
+                    ['name' => 'Record #' . $rekamMedis->idrekam_medis, 'url' => route('perawat.rekam-medis.show', $rekamMedis->idrekam_medis)],
+                    ['name' => 'Edit']
+                ]" />
             </div>
 
             <form action="{{ route('perawat.rekam-medis.update', $rekamMedis->idrekam_medis) }}" method="POST">

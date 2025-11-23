@@ -2,18 +2,21 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Dashboard') }} - {{ Auth::user()->getPrimaryRoleName() ?? 'User' }}
+                Dashboard - {{ Auth::user()->getPrimaryRoleName() ?? 'User' }}
             </h2>
             <div class="flex items-center space-x-2">
                 @foreach(Auth::user()->getActiveRoleNames() as $role)
-                    <span class="px-3 py-1 text-xs font-semibold rounded-full
-                        @if($role === 'Administrator') bg-red-100 text-red-800
-                        @elseif($role === 'Dokter') bg-blue-100 text-blue-800
-                        @elseif($role === 'Perawat') bg-green-100 text-green-800
-                        @elseif($role === 'Resepsionis') bg-purple-100 text-purple-800
-                        @elseif($role === 'Pemilik') bg-yellow-100 text-yellow-800
-                        @else bg-gray-100 text-gray-800
-                        @endif">
+                    @php
+                        $badgeClasses = match($role) {
+                            'Administrator' => 'bg-red-100 text-red-800 border border-red-200',
+                            'Dokter' => 'bg-blue-100 text-blue-800 border border-blue-200',
+                            'Perawat' => 'bg-green-100 text-green-800 border border-green-200',
+                            'Resepsionis' => 'bg-purple-100 text-purple-800 border border-purple-200',
+                            'Pemilik' => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                            default => 'bg-gray-100 text-gray-800 border border-gray-200',
+                        };
+                    @endphp
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $badgeClasses }}">
                         {{ $role }}
                     </span>
                 @endforeach
@@ -23,25 +26,53 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Welcome Card -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-semibold mb-2">Selamat Datang, {{ Auth::user()->nama }}!</h3>
-                    <p class="text-gray-600">
-                        @if(Auth::user()->hasRole('Administrator'))
-                            Anda masuk sebagai Administrator dengan akses penuh ke sistem.
-                        @elseif(Auth::user()->hasRole('Dokter'))
-                            Anda masuk sebagai Dokter. Kelola rekam medis dan diagnosis hewan.
-                        @elseif(Auth::user()->hasRole('Perawat'))
-                            Anda masuk sebagai Perawat. Bantu monitoring dan perawatan hewan.
-                        @elseif(Auth::user()->hasRole('Resepsionis'))
-                            Anda masuk sebagai Resepsionis. Kelola registrasi dan data pemilik.
-                        @elseif(Auth::user()->hasRole('Pemilik'))
-                            Anda masuk sebagai Pemilik. Lihat informasi hewan peliharaan Anda.
-                        @else
-                            Anda telah berhasil masuk ke sistem Rumah Sakit Hewan UNAIR.
-                        @endif
-                    </p>
+            <!-- Breadcrumb -->
+            <div class="mb-6">
+                <x-breadcrumb :items="[
+                    ['name' => 'Dashboard']
+                ]" />
+            </div>
+
+            <!-- Welcome Card with Icon -->
+            <div class="bg-gradient-to-r from-teal-500 to-cyan-600 overflow-hidden shadow-lg sm:rounded-lg mb-6">
+                <div class="p-6 text-white">
+                    <div class="flex items-center">
+                        <div class="mr-4">
+                            <div class="h-16 w-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                @if(Auth::user()->hasRole('Administrator'))
+                                    <i class="fi fi-rr-shield-check" style="font-size: 32px;"></i>
+                                @elseif(Auth::user()->hasRole('Dokter'))
+                                    <i class="fi fi-rr-user-md" style="font-size: 32px;"></i>
+                                @elseif(Auth::user()->hasRole('Perawat'))
+                                    <i class="fi fi-rr-medkit" style="font-size: 32px;"></i>
+                                @elseif(Auth::user()->hasRole('Resepsionis'))
+                                    <i class="fi fi-rr-headset" style="font-size: 32px;"></i>
+                                @elseif(Auth::user()->hasRole('Pemilik'))
+                                    <i class="fi fi-rr-heart" style="font-size: 32px;"></i>
+                                @else
+                                    <i class="fi fi-rr-user" style="font-size: 32px;"></i>
+                                @endif
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Selamat Datang, {{ Auth::user()->nama }}!</h3>
+                            <p class="text-teal-50">
+                                @if(Auth::user()->hasRole('Administrator'))
+                                    Anda masuk sebagai Administrator dengan akses penuh ke sistem.
+                                @elseif(Auth::user()->hasRole('Dokter'))
+                                    Kelola rekam medis dan diagnosis hewan dengan profesional.
+                                @elseif(Auth::user()->hasRole('Perawat'))
+                                    Bantu monitoring dan perawatan hewan dengan teliti.
+                                @elseif(Auth::user()->hasRole('Resepsionis'))
+                                    Kelola registrasi dan data pemilik dengan efisien.
+                                @elseif(Auth::user()->hasRole('Pemilik'))
+                                    Pantau informasi kesehatan hewan peliharaan Anda.
+                                @else
+                                    Sistem Informasi Rumah Sakit Hewan UNAIR.
+                                @endif
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -49,45 +80,45 @@
             @if(Auth::user()->hasAnyRole(['Administrator', 'Resepsionis']))
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <!-- Total Pemilik -->
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                    <div class="bg-white overflow-hidden shadow-md sm:rounded-lg hover:shadow-xl transition-all duration-300 border-l-4 border-teal-500">
                         <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl shadow-sm">
-                                    <i class="fi fi-rr-user text-teal-600" style="font-size: 32px;"></i>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Total Pemilik</p>
+                                    <h4 class="text-3xl font-bold text-gray-900">{{ \App\Models\Pemilik::count() }}</h4>
                                 </div>
-                                <div class="ml-4">
-                                    <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pemilik::count() }}</h4>
-                                    <p class="text-sm text-gray-600">Total Pemilik</p>
+                                <div class="p-4 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl shadow-lg">
+                                    <i class="fi fi-rr-users text-white" style="font-size: 32px;"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Total Hewan -->
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                    <div class="bg-white overflow-hidden shadow-md sm:rounded-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500">
                         <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                    <i class="fi fi-rr-paw text-blue-600" style="font-size: 32px;"></i>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Total Hewan</p>
+                                    <h4 class="text-3xl font-bold text-gray-900">{{ \App\Models\Pet::count() }}</h4>
                                 </div>
-                                <div class="ml-4">
-                                    <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\Pet::count() }}</h4>
-                                    <p class="text-sm text-gray-600">Total Hewan</p>
+                                <div class="p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-lg">
+                                    <i class="fi fi-rr-dog text-white" style="font-size: 32px;"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Jenis Hewan -->
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                    <div class="bg-white overflow-hidden shadow-md sm:rounded-lg hover:shadow-xl transition-all duration-300 border-l-4 border-green-500">
                         <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                    <i class="fi fi-rr-chart-line text-green-600" style="font-size: 32px;"></i>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Jenis Hewan</p>
+                                    <h4 class="text-3xl font-bold text-gray-900">{{ \App\Models\JenisHewan::count() }}</h4>
                                 </div>
-                                <div class="ml-4">
-                                    <h4 class="text-lg font-semibold text-gray-900">{{ \App\Models\JenisHewan::count() }}</h4>
-                                    <p class="text-sm text-gray-600">Jenis Hewan</p>
+                                <div class="p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-xl shadow-lg">
+                                    <i class="fi fi-rr-paw text-white" style="font-size: 32px;"></i>
                                 </div>
                             </div>
                         </div>
@@ -98,29 +129,29 @@
             @if(Auth::user()->hasRole('Pemilik'))
                 <!-- Stats for Pemilik -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                    <div class="bg-white overflow-hidden shadow-md sm:rounded-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500">
                         <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl shadow-sm">
-                                    <i class="fi fi-rr-paw text-blue-600" style="font-size: 32px;"></i>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Hewan Peliharaan Saya</p>
+                                    <h4 class="text-3xl font-bold text-gray-900">{{ Auth::user()->pets()->count() }}</h4>
                                 </div>
-                                <div class="ml-4">
-                                    <h4 class="text-lg font-semibold text-gray-900">{{ Auth::user()->pets()->count() }}</h4>
-                                    <p class="text-sm text-gray-600">Hewan Peliharaan Saya</p>
+                                <div class="p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-lg">
+                                    <i class="fi fi-rr-dog text-white" style="font-size: 32px;"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg transform hover:scale-105 transition-transform duration-200">
+                    <div class="bg-white overflow-hidden shadow-md sm:rounded-lg hover:shadow-xl transition-all duration-300 border-l-4 border-green-500">
                         <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-sm">
-                                    <i class="fi fi-rr-calendar text-green-600" style="font-size: 32px;"></i>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Appointment Mendatang</p>
+                                    <h4 class="text-3xl font-bold text-gray-900">0</h4>
                                 </div>
-                                <div class="ml-4">
-                                    <h4 class="text-lg font-semibold text-gray-900">0</h4>
-                                    <p class="text-sm text-gray-600">Appointment Mendatang</p>
+                                <div class="p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-xl shadow-lg">
+                                    <i class="fi fi-rr-calendar-check text-white" style="font-size: 32px;"></i>
                                 </div>
                             </div>
                         </div>
@@ -129,76 +160,88 @@
             @endif
 
             <!-- Quick Actions -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-md sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <i class="fi fi-rr-chart-line text-teal-600 mr-2" style="font-size: 24px;"></i>
+                    <h3 class="text-lg font-semibold mb-4 flex items-center text-gray-800">
+                        <i class="fi fi-rr-rocket text-teal-600 mr-2" style="font-size: 24px;"></i>
                         Aksi Cepat
                     </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Data Management Access -->
-                        <a href="{{ route('admin.data.index') }}" class="flex items-center p-4 border-2 border-gradient-to-r from-purple-300 to-purple-400 rounded-lg bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                            <div class="p-2 bg-gradient-to-br from-purple-200 to-purple-300 rounded-lg mr-3">
-                                <i class="fi fi-rr-chart-line text-purple-700" style="font-size: 24px;"></i>
+                        <a href="{{ route('admin.data.index') }}" class="group flex flex-col items-center p-6 border-2 border-purple-200 rounded-xl bg-white hover:bg-purple-50 hover:border-purple-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                            <div class="p-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl shadow-md mb-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fi fi-rr-database text-white" style="font-size: 28px;"></i>
                             </div>
-                            <span class="text-sm font-semibold text-purple-800">Data Management</span>
+                            <span class="text-sm font-semibold text-gray-700 text-center group-hover:text-purple-700">Data Management</span>
                         </a>
-                        <a href="{{ route('admin.jenis-hewan.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
-                            <div class="p-2 bg-gradient-to-br from-teal-100 to-teal-200 rounded-lg mr-3">
-                                <i class="fi fi-rr-cat text-teal-600" style="font-size: 24px;"></i>
+
+                        <!-- Jenis Hewan -->
+                        <a href="{{ route('admin.jenis-hewan.index') }}" class="group flex flex-col items-center p-6 border-2 border-teal-200 rounded-xl bg-white hover:bg-teal-50 hover:border-teal-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                            <div class="p-3 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl shadow-md mb-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fi fi-rr-cat text-white" style="font-size: 28px;"></i>
                             </div>
-                            <span class="text-sm font-medium">Kelola Jenis Hewan</span>
+                            <span class="text-sm font-semibold text-gray-700 text-center group-hover:text-teal-700">Jenis Hewan</span>
                         </a>
-                        <a href="{{ route('resepsionis.pemilik.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
-                            <div class="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg mr-3">
-                                <i class="fi fi-rr-user text-blue-600" style="font-size: 24px;"></i>
+
+                        <!-- Data Pemilik -->
+                        <a href="{{ route('resepsionis.pemilik.index') }}" class="group flex flex-col items-center p-6 border-2 border-blue-200 rounded-xl bg-white hover:bg-blue-50 hover:border-blue-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                            <div class="p-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-md mb-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fi fi-rr-users text-white" style="font-size: 28px;"></i>
                             </div>
-                            <span class="text-sm font-medium">Kelola Data Pemilik</span>
+                            <span class="text-sm font-semibold text-gray-700 text-center group-hover:text-blue-700">Data Pemilik</span>
                         </a>
-                        <a href="#" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
-                            <div class="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-lg mr-3">
-                                <i class="fi fi-rr-chart-line text-green-600" style="font-size: 24px;"></i>
+
+                        <!-- Laporan -->
+                        <a href="#" class="group flex flex-col items-center p-6 border-2 border-green-200 rounded-xl bg-white hover:bg-green-50 hover:border-green-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                            <div class="p-3 bg-gradient-to-br from-green-400 to-green-600 rounded-xl shadow-md mb-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fi fi-rr-chart-histogram text-white" style="font-size: 28px;"></i>
                             </div>
-                            <span class="text-sm font-medium">Laporan Harian</span>
+                            <span class="text-sm font-semibold text-gray-700 text-center group-hover:text-green-700">Laporan</span>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Activity -->
-            <div class="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-md sm:rounded-lg">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <i class="fi fi-rr-calendar text-teal-600 mr-2" style="font-size: 24px;"></i>
+                    <h3 class="text-lg font-semibold mb-4 flex items-center text-gray-800">
+                        <i class="fi fi-rr-time-past text-teal-600 mr-2" style="font-size: 24px;"></i>
                         Aktivitas Terbaru
                     </h3>
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         @php
                             $recentPemilik = \App\Models\Pemilik::with('user')->latest('idpemilik')->take(5)->get();
                         @endphp
                         @forelse($recentPemilik as $pemilik)
-                        <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 transition-all duration-200 border border-gray-100">
                             <div class="flex-shrink-0">
-                                <div class="h-10 w-10 bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center shadow-sm">
-                                    <i class="fi fi-rr-user text-teal-600" style="font-size: 24px;"></i>
+                                <div class="h-12 w-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fi fi-rr-user text-white" style="font-size: 20px;"></i>
                                 </div>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">
+                                <p class="text-sm font-semibold text-gray-900 truncate">
                                     {{ $pemilik->user->nama ?? 'Nama tidak tersedia' }}
                                 </p>
-                                <p class="text-sm text-gray-500 truncate">
+                                <p class="text-xs text-gray-500 truncate mt-1">
+                                    <i class="fi fi-rr-check-circle text-green-500 mr-1"></i>
                                     Pemilik baru terdaftar di sistem
                                 </p>
                             </div>
-                            <div class="text-xs text-gray-400 bg-green-100 px-2 py-1 rounded-full">
-                                Baru
+                            <div class="flex-shrink-0">
+                                <span class="text-xs font-semibold text-green-700 bg-green-100 px-3 py-1 rounded-full border border-green-200">
+                                    Baru
+                                </span>
                             </div>
                         </div>
                         @empty
-                        <div class="text-center py-8">
-                            <i class="fi fi-rr-chart-line text-gray-300 mx-auto mb-3" style="font-size: 48px; display: block;"></i>
-                            <p class="text-gray-500 text-sm">Belum ada aktivitas terbaru</p>
+                        <div class="text-center py-12">
+                            <div class="inline-flex items-center justify-center h-20 w-20 bg-gray-100 rounded-full mb-4">
+                                <i class="fi fi-rr-inbox text-gray-400" style="font-size: 40px;"></i>
+                            </div>
+                            <p class="text-gray-500 font-medium">Belum ada aktivitas terbaru</p>
+                            <p class="text-gray-400 text-sm mt-1">Aktivitas akan muncul di sini</p>
                         </div>
                         @endforelse
                     </div>

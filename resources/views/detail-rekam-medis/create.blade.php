@@ -7,14 +7,14 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <!-- Back Button -->
+            <!-- Breadcrumb -->
             <div class="mb-6">
-                <a href="{{ route('dokter.rekam-medis.detail.index', $rekamMedis->idrekam_medis) }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Kembali ke Daftar Detail
-                </a>
+                <x-breadcrumb :items="[
+                    ['name' => 'Medical Records', 'url' => route('dokter.rekam-medis.index')],
+                    ['name' => 'Record #' . $rekamMedis->idrekam_medis, 'url' => route('dokter.rekam-medis.show', $rekamMedis->idrekam_medis)],
+                    ['name' => 'Tindakan & Terapi', 'url' => route('dokter.rekam-medis.detail.index', $rekamMedis->idrekam_medis)],
+                    ['name' => 'Tambah Detail']
+                ]" />
             </div>
 
             <!-- Patient Info Card -->

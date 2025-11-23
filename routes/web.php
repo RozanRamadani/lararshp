@@ -128,6 +128,9 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Resepsionis'])
     ->prefix('resepsionis')
     ->name('resepsionis.')
     ->group(function () {
+        // Upgrade user to pemilik (must be before resource route)
+        Route::post('pemilik/upgrade-user', [PemilikController::class, 'upgradeUser'])->name('pemilik.upgrade-user');
+
         // Manajemen Pemilik (CRUD untuk registrasi)
         Route::resource('pemilik', PemilikController::class);
 

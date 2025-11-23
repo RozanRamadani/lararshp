@@ -7,16 +7,18 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <!-- Back Button -->
-            <div class="mb-6 flex justify-between items-center">
-                <a href="{{ auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.detail.index', $detail->idrekam_medis) : route('perawat.rekam-medis.detail.index', $detail->idrekam_medis) }}"
-                   class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Kembali ke Daftar Detail
-                </a>
+            <!-- Breadcrumb -->
+            <div class="mb-6">
+                <x-breadcrumb :items="[
+                    ['name' => 'Medical Records', 'url' => auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.index') : route('perawat.rekam-medis.index')],
+                    ['name' => 'Record #' . $detail->idrekam_medis, 'url' => auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.show', $detail->idrekam_medis) : route('perawat.rekam-medis.show', $detail->idrekam_medis)],
+                    ['name' => 'Tindakan & Terapi', 'url' => auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.detail.index', $detail->idrekam_medis) : route('perawat.rekam-medis.detail.index', $detail->idrekam_medis)],
+                    ['name' => 'Detail #' . $detail->iddetail_rekam_medis]
+                ]" />
+            </div>
 
+            <!-- Action Buttons -->
+            <div class="mb-6 flex justify-end items-center">
                 @if($canEdit)
                     <div class="flex space-x-2">
                         <a href="{{ route('dokter.rekam-medis.detail.edit', [$detail->idrekam_medis, $detail->iddetail_rekam_medis]) }}"

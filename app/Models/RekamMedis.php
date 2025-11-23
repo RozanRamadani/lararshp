@@ -54,6 +54,14 @@ class RekamMedis extends Model
     }
 
     /**
+     * Alias for details relation (for consistency with views)
+     */
+    public function detailRekamMedis()
+    {
+        return $this->details();
+    }
+
+    /**
      * Accessor for "tanggal_kunjungan" convenience attribute.
      * rekam_medis doesn't have a dedicated tanggal_kunjungan column in the dump,
      * so fallback to `created_at` which exists.

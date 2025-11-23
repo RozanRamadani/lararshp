@@ -13,6 +13,15 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="mb-6">
+                <x-breadcrumb :items="[
+                    ['name' => 'Data Management', 'url' => route('admin.data.index')],
+                    ['name' => 'User & Role', 'url' => route('admin.user.index')],
+                    ['name' => 'Tambah User']
+                ]" />
+            </div>
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <form method="POST" action="{{ route('admin.user.store') }}">

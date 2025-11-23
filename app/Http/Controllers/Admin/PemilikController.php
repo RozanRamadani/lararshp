@@ -52,8 +52,16 @@ class PemilikController extends Controller
     {
         $validated = $request->validate([
             'iduser' => 'required|exists:user,iduser',
-            'no_wa' => 'required|string|regex:/^((\+?62)|0)[0-9]{9,12}$/',
+            'no_wa' => 'required|string|min:10|max:15',
             'alamat' => 'required|string|min:10|max:500',
+        ], [
+            'iduser.required' => 'User wajib dipilih.',
+            'iduser.exists' => 'User tidak ditemukan.',
+            'no_wa.required' => 'Nomor WhatsApp wajib diisi.',
+            'no_wa.min' => 'Nomor WhatsApp minimal 10 digit.',
+            'no_wa.max' => 'Nomor WhatsApp maksimal 15 digit.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'alamat.min' => 'Alamat minimal 10 karakter.',
         ]);
 
         try {
@@ -84,7 +92,12 @@ class PemilikController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('admin.pemilik.index')
+
+            $route = request()->routeIs('resepsionis.pemilik.*')
+                ? route('resepsionis.pemilik.index')
+                : route('admin.pemilik.index');
+
+            return redirect($route)
                 ->with('success', 'User berhasil di-upgrade menjadi Pemilik.');
 
         } catch (\Exception $e) {
@@ -130,7 +143,12 @@ class PemilikController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('admin.pemilik.index')->with('success', 'Data pemilik berhasil ditambahkan.');
+
+            $route = request()->routeIs('resepsionis.pemilik.*')
+                ? route('resepsionis.pemilik.index')
+                : route('admin.pemilik.index');
+
+            return redirect($route)->with('success', 'Data pemilik berhasil ditambahkan.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -179,7 +197,12 @@ class PemilikController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('admin.pemilik.index')->with('success', 'Data pemilik berhasil diperbarui.');
+
+            $route = request()->routeIs('resepsionis.pemilik.*')
+                ? route('resepsionis.pemilik.index')
+                : route('admin.pemilik.index');
+
+            return redirect($route)->with('success', 'Data pemilik berhasil diperbarui.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -204,7 +227,11 @@ class PemilikController extends Controller
             $user->delete();
             DB::commit();
 
-            return redirect()->route('admin.pemilik.index')->with('success', 'Data pemilik berhasil dihapus.');
+            $route = request()->routeIs('resepsionis.pemilik.*')
+                ? route('resepsionis.pemilik.index')
+                : route('admin.pemilik.index');
+
+            return redirect($route)->with('success', 'Data pemilik berhasil dihapus.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete pemilik: ' . $e->getMessage());
@@ -243,7 +270,7 @@ class PemilikController extends Controller
         return [
             'nama_pemilik' => 'required|string|min:3|max:255',
             'alamat' => 'required|string|min:10|max:255',
-            'no_wa' => 'required|string|regex:/^((\\+?62)|0)[0-9]{9,12}$/|unique:pemilik,no_wa',
+            'no_wa' => 'required|string|min:10|max:15|unique:pemilik,no_wa',
             'email' => 'nullable|email|max:255|unique:user,email',
         ];
     }
@@ -256,7 +283,7 @@ class PemilikController extends Controller
         return [
             'nama_pemilik' => 'required|string|min:3|max:255',
             'alamat' => 'required|string|min:10|max:255',
-            'no_wa' => 'required|string|regex:/^((\\+?62)|0)[0-9]{9,12}$/|unique:pemilik,no_wa,' . $pemilik->idpemilik . ',idpemilik',
+            'no_wa' => 'required|string|min:10|max:15|unique:pemilik,no_wa,' . $pemilik->idpemilik . ',idpemilik',
             'email' => 'nullable|email|max:255|unique:user,email,' . $pemilik->iduser . ',iduser',
         ];
     }

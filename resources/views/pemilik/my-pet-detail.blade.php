@@ -12,14 +12,12 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Back Button -->
+            <!-- Breadcrumb -->
             <div class="mb-6">
-                <a href="{{ route('pemilik.my-pets') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to My Pets
-                </a>
+                <x-breadcrumb :items="[
+                    ['name' => 'My Pets', 'url' => route('pemilik.my-pets')],
+                    ['name' => $pet->nama_hewan ?? $pet->nama]
+                ]" />
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -98,15 +96,70 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Medical History</h3>
-                            
-                            <!-- Placeholder for medical records -->
-                            <div class="text-center py-8">
-                                <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <p class="text-gray-600 mb-2">Medical history will be displayed here</p>
-                                <p class="text-sm text-gray-500">All medical records and treatment history for {{ $pet->nama_hewan ?? $pet->nama }}</p>
-                            </div>
+
+                            @if($pet->rekamMedis && $pet->rekamMedis->count() > 0)
+                                <div class="space-y-4">
+                                    @foreach($pet->rekamMedis as $rekam)
+                                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                            <div class="flex justify-between items-start mb-3">
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-900">
+                                                        {{ $rekam->created_at ? \Carbon\Carbon::parse($rekam->created_at)->format('d F Y') : '-' }}
+                                                    </h4>
+                                                    <p class="text-sm text-gray-600">
+                                                        Dokter: {{ $rekam->dokter->user->nama ?? 'Unknown' }}
+                                                    </p>
+                                                </div>
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    RM{{ str_pad($rekam->idrekam_medis, 4, '0', STR_PAD_LEFT) }}
+                                                </span>
+                                            </div>
+
+                                            @if($rekam->anamnesa)
+                                                <div class="mb-2">
+                                                    <span class="text-sm font-medium text-gray-700">Anamnesa:</span>
+                                                    <p class="text-sm text-gray-600">{{ $rekam->anamnesa }}</p>
+                                                </div>
+                                            @endif
+
+                                            @if($rekam->diagnosa)
+                                                <div class="mb-2">
+                                                    <span class="text-sm font-medium text-gray-700">Diagnosa:</span>
+                                                    <p class="text-sm text-gray-600">{{ $rekam->diagnosa }}</p>
+                                                </div>
+                                            @endif
+
+                                            @if($rekam->detailRekamMedis && $rekam->detailRekamMedis->count() > 0)
+                                                <div class="mt-3 pt-3 border-t border-gray-200">
+                                                    <span class="text-sm font-medium text-gray-700">Tindakan:</span>
+                                                    <ul class="mt-1 space-y-1">
+                                                        @foreach($rekam->detailRekamMedis as $detail)
+                                                            <li class="text-sm text-gray-600 flex items-start">
+                                                                <span class="mr-2">•</span>
+                                                                <span>{{ $detail->keterangan ?? 'Tindakan medis' }}</span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+
+                                    <div class="text-center pt-4">
+                                        <a href="{{ route('pemilik.my-pets.rekam-medis', $pet->idpet) }}" class="text-teal-600 hover:text-teal-900 text-sm font-medium">
+                                            Lihat Semua Riwayat Medis →
+                                        </a>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="text-center py-8">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    <p class="text-gray-600 mb-2">Belum ada riwayat medis</p>
+                                    <p class="text-sm text-gray-500">Riwayat medis akan muncul setelah {{ $pet->nama_hewan ?? $pet->nama }} melakukan kunjungan</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -114,15 +167,45 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Upcoming Appointments</h3>
-                            
-                            <!-- Placeholder for appointments -->
-                            <div class="text-center py-8">
-                                <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <p class="text-gray-600 mb-2">No upcoming appointments</p>
-                                <p class="text-sm text-gray-500">Contact reception to schedule an appointment</p>
-                            </div>
+
+                            @if($pet->temuDokter && $pet->temuDokter->count() > 0)
+                                <div class="space-y-3">
+                                    @foreach($pet->temuDokter as $appointment)
+                                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-900">
+                                                        {{ $appointment->waktu_daftar ? \Carbon\Carbon::parse($appointment->waktu_daftar)->format('d F Y') : '-' }}
+                                                    </h4>
+                                                    <p class="text-sm text-gray-600">
+                                                        Waktu: {{ $appointment->waktu_daftar ? \Carbon\Carbon::parse($appointment->waktu_daftar)->format('H:i') : '-' }}
+                                                    </p>
+                                                    <p class="text-sm text-gray-600">
+                                                        Dokter: {{ $appointment->dokter->user->nama ?? 'Belum ditentukan' }}
+                                                    </p>
+                                                </div>
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $appointment->status == 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                                    {{ ucfirst($appointment->status ?? 'Pending') }}
+                                                </span>
+                                            </div>
+                                            @if($appointment->keluhan)
+                                                <div class="mt-3 pt-3 border-t border-gray-200">
+                                                    <span class="text-sm font-medium text-gray-700">Keluhan:</span>
+                                                    <p class="text-sm text-gray-600">{{ $appointment->keluhan }}</p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-center py-8">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <p class="text-gray-600 mb-2">Tidak ada janji temu mendatang</p>
+                                    <p class="text-sm text-gray-500">Hubungi resepsionis untuk membuat janji temu</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -130,7 +213,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Vaccination History</h3>
-                            
+
                             <!-- Placeholder for vaccinations -->
                             <div class="text-center py-8">
                                 <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

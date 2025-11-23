@@ -3,11 +3,11 @@
         <div class="flex justify-between items-center">
             <div class="flex items-center space-x-4">
                 <!-- Back Button -->
-                <x-back-button href="{{ route('admin.pemilik.index') }}" label="Kembali" />
+                <x-back-button href="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index') }}" label="Kembali" />
 
                 <!-- Breadcrumb -->
                 <x-breadcrumb :items="[
-                    ['name' => 'Data Pemilik', 'url' => route('admin.pemilik.index')],
+                    ['name' => 'Data Pemilik', 'url' => request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index')],
                     ['name' => 'Tambah Pemilik']
                 ]" />
             </div>
@@ -35,7 +35,7 @@
             <!-- Tab Content: Create New Pemilik -->
             <div id="content-new" class="tab-content bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ route('admin.pemilik.store') }}">
+                    <form method="POST" action="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.store') : route('admin.pemilik.store') }}">
                         @csrf
 
                         <!-- Nama Pemilik -->
@@ -116,7 +116,7 @@
 
                         <!-- Action Buttons -->
                         <div class="flex items-center justify-end space-x-3 mt-6">
-                            <a href="{{ route('admin.pemilik.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <a href="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Batal
                             </a>
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-teal-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-teal-700 focus:bg-teal-700 active:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -135,7 +135,7 @@
                         <p class="text-sm">Pilih user yang sudah terdaftar untuk di-upgrade menjadi Pemilik Hewan.</p>
                     </div>
 
-                    <form method="POST" action="{{ route('admin.pemilik.upgrade-user') }}">
+                    <form method="POST" action="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.upgrade-user') : route('admin.pemilik.upgrade-user') }}">
                         @csrf
 
                         <!-- Pilih User -->
@@ -201,7 +201,7 @@
 
                         <!-- Action Buttons -->
                         <div class="flex items-center justify-end space-x-3 mt-6">
-                            <a href="{{ route('admin.pemilik.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <a href="{{ request()->routeIs('resepsionis.pemilik.*') ? route('resepsionis.pemilik.index') : route('admin.pemilik.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Batal
                             </a>
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-teal-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-teal-700 focus:bg-teal-700 active:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition ease-in-out duration-150">

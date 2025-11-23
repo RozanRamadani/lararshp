@@ -15,12 +15,14 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Data Pemilik Hewan') }}
                 </h2>
+                @unless(request()->routeIs('resepsionis.pemilik.*'))
                 <a href="{{ route('admin.pemilik.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     Tambah Pemilik
                 </a>
+                @endunless
             </div>
         </div>
     </x-slot>
@@ -127,6 +129,17 @@
                 </div>
             </div>
 
+            @if(request()->routeIs('resepsionis.pemilik.*'))
+            <div class="mb-4 flex justify-end">
+                <a href="{{ route('resepsionis.pemilik.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Tambah Pemilik
+                </a>
+            </div>
+            @endif
+
             <!-- Data Table -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -190,14 +203,25 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            <a href="{{ route('admin.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
-                                            <a href="{{ route('admin.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
-                                            <a href="{{ route('admin.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
-                                            <form action="{{ route('admin.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                            </form>
+                                            @if(request()->routeIs('resepsionis.pemilik.*'))
+                                                <a href="{{ route('resepsionis.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                <a href="{{ route('resepsionis.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                <a href="{{ route('resepsionis.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
+                                                <form action="{{ route('resepsionis.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                </form>
+                                            @else
+                                                <a href="{{ route('admin.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                <a href="{{ route('admin.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                <a href="{{ route('admin.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
+                                                <form action="{{ route('admin.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

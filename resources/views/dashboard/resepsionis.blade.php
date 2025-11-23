@@ -12,6 +12,13 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="mb-6">
+                <x-breadcrumb :items="[
+                    ['name' => 'Resepsionis Dashboard']
+                ]" />
+            </div>
+
             <!-- Welcome & Quick Appointment Card -->
             <div class="bg-gradient-to-r from-teal-500 to-teal-600 overflow-hidden shadow-lg sm:rounded-lg mb-6">
                 <div class="p-6 text-white">
