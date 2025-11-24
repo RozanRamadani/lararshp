@@ -15,12 +15,21 @@ use Illuminate\Support\Facades\Log;
 
 class PemilikController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pemilik = Pemilik::with(['user', 'pets.rasHewan.jenisHewan'])->get();
-        $totalPemilik = $pemilik->count();
+        $showDeleted = $request->get('show_deleted', false);
+
+        $query = Pemilik::with(['user', 'pets.rasHewan.jenisHewan']);
+
+        if ($showDeleted) {
+            $query->onlyTrashed();
+        }
+
+        $pemilik = $query->get();
+        $totalPemilik = Pemilik::count();
         $totalPets = Pet::count();
-        $aktivePemilik = $pemilik->count(); // Semua pemilik dianggap aktif
+        $aktivePemilik = Pemilik::count();
+        $deletedPemilik = Pemilik::onlyTrashed()->count();
         $kunjunganBulanIni = 0; // Placeholder - nanti bisa ditambahkan logic untuk hitung kunjungan
 
         return view('admin.pemilik.index', compact(
@@ -28,7 +37,9 @@ class PemilikController extends Controller
             'totalPemilik',
             'totalPets',
             'aktivePemilik',
-            'kunjunganBulanIni'
+            'deletedPemilik',
+            'kunjunganBulanIni',
+            'showDeleted'
         ));
     }
 
@@ -212,19 +223,66 @@ class PemilikController extends Controller
     }
 
     /**
+     * Restore soft deleted pemilik
+     */
+    public function restore($id)
+    {
+        try {
+            $pemilik = Pemilik::withTrashed()->findOrFail($id);
+            $pemilik->restore();
+
+            $route = request()->routeIs('resepsionis.pemilik.*')
+                ? route('resepsionis.pemilik.index')
+                : route('admin.pemilik.index');
+
+            return redirect($route)->with('success', 'Data pemilik berhasil dikembalikan.');
+        } catch (\Exception $e) {
+            Log::error('Failed to restore pemilik: ' . $e->getMessage());
+            return back()->with('error', 'Gagal mengembalikan pemilik.');
+        }
+    }
+
+    /**
+     * Permanently delete pemilik
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $pemilik = Pemilik::withTrashed()->findOrFail($id);
+
+            if ($pemilik->pets()->count() > 0) {
+                return back()->with('error', 'Tidak dapat menghapus permanen pemilik yang masih memiliki pet terdaftar.');
+            }
+
+            DB::beginTransaction();
+            $pemilik->forceDelete();
+            DB::commit();
+
+            $route = request()->routeIs('resepsionis.pemilik.*')
+                ? route('resepsionis.pemilik.index')
+                : route('admin.pemilik.index');
+
+            return redirect($route)->with('success', 'Data pemilik berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to force delete pemilik: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus permanen pemilik.');
+        }
+    }
+
+    /**
      * Remove the specified pemilik from storage.
      */
     public function destroy(Pemilik $pemilik)
     {
-        if ($pemilik->pets()->count() > 0) {
-            return back()->with('error', 'Tidak dapat menghapus pemilik yang masih memiliki pet terdaftar.');
-        }
-
+        // Untuk soft delete, kita tetap bisa hapus meskipun punya pet
+        // karena data tidak benar-benar terhapus dari database
         try {
             DB::beginTransaction();
-            $user = $pemilik->user;
+
+            // Soft delete pemilik
             $pemilik->delete();
-            $user->delete();
+
             DB::commit();
 
             $route = request()->routeIs('resepsionis.pemilik.*')
@@ -235,7 +293,7 @@ class PemilikController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete pemilik: ' . $e->getMessage());
-            return back()->with('error', 'Gagal menghapus pemilik.');
+            return back()->with('error', 'Gagal menghapus pemilik: ' . $e->getMessage());
         }
     }
 

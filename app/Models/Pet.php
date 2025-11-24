@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pet extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'pet';
     protected $primaryKey = 'idpet';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'nama',

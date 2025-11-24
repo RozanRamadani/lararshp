@@ -27,7 +27,7 @@
                         {{-- Resepsionis Menu --}}
                         @if(auth()->user()->hasRole('Resepsionis'))
                             <x-nav-link :href="route('resepsionis.temu-dokter.index')" :active="request()->routeIs('resepsionis.temu-dokter.*')">
-                                {{ __('📅 Appointments') }}
+                                {{ __(' Appointments') }}
                             </x-nav-link>
                             <x-nav-link :href="route('resepsionis.pemilik.index')" :active="request()->routeIs('resepsionis.pemilik.*')">
                                 {{ __('Owners') }}

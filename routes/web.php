@@ -62,6 +62,14 @@ Route::middleware(['auth', 'verified', 'role:Administrator'])
         // Upgrade user to pemilik
         Route::post('pemilik/upgrade-user', [PemilikController::class, 'upgradeUser'])->name('pemilik.upgrade-user');
 
+        // Soft delete operations - Pemilik
+        Route::post('pemilik/{id}/restore', [PemilikController::class, 'restore'])->name('pemilik.restore');
+        Route::delete('pemilik/{id}/force-delete', [PemilikController::class, 'forceDelete'])->name('pemilik.force-delete');
+
+        // Soft delete operations - Pet
+        Route::post('pet/{id}/restore', [PetController::class, 'restore'])->name('pet.restore');
+        Route::delete('pet/{id}/force-delete', [PetController::class, 'forceDelete'])->name('pet.force-delete');
+
         // Data Management Dashboard
         Route::get('/data', [DataManagementController::class, 'index'])->name('data.index');
     });
@@ -130,6 +138,14 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Resepsionis'])
     ->group(function () {
         // Upgrade user to pemilik (must be before resource route)
         Route::post('pemilik/upgrade-user', [PemilikController::class, 'upgradeUser'])->name('pemilik.upgrade-user');
+
+        // Soft delete operations - Pemilik
+        Route::post('pemilik/{id}/restore', [PemilikController::class, 'restore'])->name('pemilik.restore');
+        Route::delete('pemilik/{id}/force-delete', [PemilikController::class, 'forceDelete'])->name('pemilik.force-delete');
+
+        // Soft delete operations - Pet
+        Route::post('pet/{id}/restore', [PetController::class, 'restore'])->name('pet.restore');
+        Route::delete('pet/{id}/force-delete', [PetController::class, 'forceDelete'])->name('pet.force-delete');
 
         // Manajemen Pemilik (CRUD untuk registrasi)
         Route::resource('pemilik', PemilikController::class);

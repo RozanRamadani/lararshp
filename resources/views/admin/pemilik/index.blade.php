@@ -29,6 +29,19 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Success/Error Messages -->
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            @endif
+
             <!-- Search and Filter Section -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
@@ -99,6 +112,22 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">{{ $deletedPemilik ?? 0 }}</h4>
+                                <p class="text-sm text-gray-600">Terhapus</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-center">
                             <div class="p-2 bg-blue-100 rounded-lg">
                                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -111,34 +140,36 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-yellow-100 rounded-lg">
-                                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900">{{ $kunjunganBulanIni }}</h4>
-                                <p class="text-sm text-gray-600">Kunjungan Bulan Ini</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            @if(request()->routeIs('resepsionis.pemilik.*'))
-            <div class="mb-4 flex justify-end">
+            <!-- Filter Section -->
+            <div class="mb-4 flex justify-between items-center">
+                <div class="flex space-x-2">
+                    @if(request()->routeIs('admin.pemilik.*'))
+                        <a href="{{ route('admin.pemilik.index') }}" class="px-4 py-2 rounded-lg {{ !$showDeleted ? 'bg-teal-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Aktif
+                        </a>
+                        <a href="{{ route('admin.pemilik.index', ['show_deleted' => 1]) }}" class="px-4 py-2 rounded-lg {{ $showDeleted ? 'bg-red-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Terhapus ({{ $deletedPemilik ?? 0 }})
+                        </a>
+                    @else
+                        <a href="{{ route('resepsionis.pemilik.index') }}" class="px-4 py-2 rounded-lg {{ !$showDeleted ? 'bg-teal-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Aktif
+                        </a>
+                        <a href="{{ route('resepsionis.pemilik.index', ['show_deleted' => 1]) }}" class="px-4 py-2 rounded-lg {{ $showDeleted ? 'bg-red-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Terhapus ({{ $deletedPemilik ?? 0 }})
+                        </a>
+                    @endif
+                </div>
+                @if(request()->routeIs('resepsionis.pemilik.*'))
                 <a href="{{ route('resepsionis.pemilik.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     Tambah Pemilik
                 </a>
+                @endif
             </div>
-            @endif
 
             <!-- Data Table -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -197,30 +228,62 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Aktif
-                                        </span>
+                                        @if($showDeleted)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                Terhapus
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Aktif
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            @if(request()->routeIs('resepsionis.pemilik.*'))
-                                                <a href="{{ route('resepsionis.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
-                                                <a href="{{ route('resepsionis.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
-                                                <a href="{{ route('resepsionis.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
-                                                <form action="{{ route('resepsionis.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                                </form>
+                                            @if($showDeleted)
+                                                {{-- Tombol Restore --}}
+                                                @if(request()->routeIs('resepsionis.pemilik.*'))
+                                                    <form action="{{ route('resepsionis.pemilik.restore', $owner->idpemilik) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-900">Kembalikan</button>
+                                                    </form>
+                                                    <form action="{{ route('resepsionis.pemilik.force-delete', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus PERMANEN pemilik ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus Permanen</button>
+                                                    </form>
+                                                @else
+                                                    <form action="{{ route('admin.pemilik.restore', $owner->idpemilik) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-900">Kembalikan</button>
+                                                    </form>
+                                                    <form action="{{ route('admin.pemilik.force-delete', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus PERMANEN pemilik ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus Permanen</button>
+                                                    </form>
+                                                @endif
                                             @else
-                                                <a href="{{ route('admin.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
-                                                <a href="{{ route('admin.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
-                                                <a href="{{ route('admin.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
-                                                <form action="{{ route('admin.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                                </form>
+                                                {{-- Tombol Normal --}}
+                                                @if(request()->routeIs('resepsionis.pemilik.*'))
+                                                    <a href="{{ route('resepsionis.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                    <a href="{{ route('resepsionis.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                    <a href="{{ route('resepsionis.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
+                                                    <form action="{{ route('resepsionis.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                    </form>
+                                                @else
+                                                    <a href="{{ route('admin.pemilik.edit', $owner->idpemilik) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                    <a href="{{ route('admin.pemilik.show', $owner->idpemilik) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                    <a href="{{ route('admin.pet.index', ['owner_id' => $owner->idpemilik]) }}" class="text-purple-600 hover:text-purple-900">Hewan</a>
+                                                    <form action="{{ route('admin.pemilik.destroy', $owner->idpemilik) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pemilik ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                    </form>
+                                                @endif
                                             @endif
                                         </div>
                                     </td>

@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pemilik extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'pemilik';
     protected $primaryKey = 'idpemilik';
-    public $timestamps = false;
+    public $timestamps = true;
     protected $fillable = ['no_wa', 'alamat', 'iduser'];
 
     // Relationship dengan user

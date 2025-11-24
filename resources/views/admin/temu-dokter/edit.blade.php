@@ -37,8 +37,8 @@
                 <select name="idpet" id="idpet" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
                     <option value="">-- Pilih Pet --</option>
                     @foreach($pets as $pet)
-                        <option value="{{ $pet->idpet }}" {{ (old('idpet', $temuDokter->idpet) == $pet->idpet) ? 'selected' : '' }}>
-                            {{ $pet->nama_hewan }} - {{ $pet->pemilik->user->nama ?? '-' }} ({{ $pet->rasHewan->jenisHewan->nama_jenis ?? '-' }})
+                        <option value="{{ $pet->idpet }}" {{ old('idpet', $temuDokter->idpet) == $pet->idpet ? 'selected' : '' }}>
+                            {{ $pet->nama ?? 'Tidak ada nama' }} ({{ $pet->pemilik->user->nama ?? '-' }}) - {{ $pet->rasHewan->jenisHewan->nama_jenis ?? '-' }}
                         </option>
                     @endforeach
                 </select>

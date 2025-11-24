@@ -18,13 +18,21 @@ class PetController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Load pets for table
-        $pets = Pet::with(['user', 'rasHewan.jenisHewan'])->get();
+        $showDeleted = $request->get('show_deleted', false);
+
+        $query = Pet::with(['user', 'rasHewan.jenisHewan']);
+
+        if ($showDeleted) {
+            $query->onlyTrashed();
+        }
+
+        $pets = $query->get();
 
         // Compute statistics explicitly (DB queries or optimized counts)
         $totalPets = Pet::count();
+        $deletedPets = Pet::onlyTrashed()->count();
 
         // Count unique owners referenced by pets (unique idpemilik)
         $totalOwners = Pet::distinct('idpemilik')->count('idpemilik');
@@ -32,7 +40,7 @@ class PetController extends Controller
         $petJantan = Pet::where('jenis_kelamin', 'J')->count();
         $petBetina = Pet::where('jenis_kelamin', 'B')->count();
 
-        return view('admin.pet.index', compact('pets', 'totalPets', 'totalOwners', 'petJantan', 'petBetina'));
+        return view('admin.pet.index', compact('pets', 'totalPets', 'totalOwners', 'petJantan', 'petBetina', 'deletedPets', 'showDeleted'));
     }
 
     /**
@@ -186,6 +194,58 @@ class PetController extends Controller
     }
 
     /**
+     * Restore soft deleted pet
+     */
+    public function restore($id)
+    {
+        try {
+            $pet = Pet::withTrashed()->findOrFail($id);
+            $pet->restore();
+
+            $route = request()->routeIs('resepsionis.pet.*')
+                ? route('resepsionis.pet.index')
+                : route('admin.pet.index');
+
+            return redirect($route)->with('success', 'Data pet berhasil dikembalikan.');
+        } catch (\Exception $e) {
+            Log::error('Failed to restore pet: ' . $e->getMessage());
+            return back()->with('error', 'Gagal mengembalikan pet.');
+        }
+    }
+
+    /**
+     * Permanently delete pet
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $pet = Pet::withTrashed()->findOrFail($id);
+
+            // Check if pet has related records
+            $hasTemuDokter = $pet->temuDokter()->exists();
+            $hasRekamMedis = $pet->rekamMedis()->exists();
+
+            if ($hasTemuDokter || $hasRekamMedis) {
+                return back()->with('error', 'Tidak dapat menghapus permanen pet karena masih memiliki data rekam medis atau temu dokter.');
+            }
+
+            DB::beginTransaction();
+            $pet->forceDelete();
+            DB::commit();
+
+            $route = request()->routeIs('resepsionis.pet.*')
+                ? route('resepsionis.pet.index')
+                : route('admin.pet.index');
+
+            return redirect($route)->with('success', 'Data pet berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to force delete pet: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus permanen pet.');
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Pet $pet): RedirectResponse
@@ -193,15 +253,7 @@ class PetController extends Controller
         try {
             DB::beginTransaction();
 
-            // Check if pet has related records
-            $hasTemuDokter = $pet->temuDokter()->exists();
-            $hasRekamMedis = $pet->rekamMedis()->exists();
-
-            if ($hasTemuDokter || $hasRekamMedis) {
-                DB::rollBack();
-                return back()->with('error', 'Tidak dapat menghapus pet karena masih memiliki data rekam medis atau temu dokter. Hapus data tersebut terlebih dahulu.');
-            }
-
+            // Soft delete pet (data tidak benar-benar terhapus)
             $pet->delete();
             DB::commit();
 
@@ -210,13 +262,7 @@ class PetController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete pet: ' . $e->getMessage());
-
-            // Specific message for foreign key constraint
-            if (str_contains($e->getMessage(), 'foreign key constraint')) {
-                return back()->with('error', 'Tidak dapat menghapus pet karena masih terkait dengan data lain di sistem.');
-            }
-
-            return back()->with('error', 'Gagal menghapus pet.');
+            return back()->with('error', 'Gagal menghapus pet: ' . $e->getMessage());
         }
     }
 

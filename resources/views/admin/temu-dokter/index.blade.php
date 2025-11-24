@@ -109,8 +109,8 @@
                                 <div class="text-xs text-gray-500">{{ $appointment->waktu_daftar->format('H:i') }} WIB</div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm font-medium text-gray-900">{{ $appointment->pet->nama_hewan }}</div>
-                                <div class="text-xs text-gray-500">{{ $appointment->pet->rasHewan->jenisHewan->nama_jenis ?? '-' }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $appointment->pet->nama ?? 'Tidak ada nama' }}</div>
+                                <div class="text-xs text-gray-500">{{ $appointment->pet->rasHewan->nama_ras ?? '-' }} ({{ $appointment->pet->rasHewan->jenisHewan->nama_jenis ?? '-' }})</div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">{{ $appointment->pet->pemilik->user->nama ?? '-' }}</div>

@@ -15,6 +15,19 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Success/Error Messages -->
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            @endif
+
             <!-- Breadcrumb -->
             <div class="mb-6">
                 <x-breadcrumb :items="[
@@ -82,8 +95,26 @@
                 </div>
             </div>
 
-            @if(! (request()->routeIs('perawat.pasien.*') || request()->is('perawat/pasien*')))
-            <div class="mb-4 flex justify-end">
+            <!-- Filter Section -->
+            <div class="mb-4 flex justify-between items-center">
+                <div class="flex space-x-2">
+                    @if(request()->routeIs('admin.pet.*'))
+                        <a href="{{ route('admin.pet.index') }}" class="px-4 py-2 rounded-lg {{ !($showDeleted ?? false) ? 'bg-teal-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Aktif
+                        </a>
+                        <a href="{{ route('admin.pet.index', ['show_deleted' => 1]) }}" class="px-4 py-2 rounded-lg {{ ($showDeleted ?? false) ? 'bg-red-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Terhapus ({{ $deletedPets ?? 0 }})
+                        </a>
+                    @elseif(request()->routeIs('resepsionis.pet.*'))
+                        <a href="{{ route('resepsionis.pet.index') }}" class="px-4 py-2 rounded-lg {{ !($showDeleted ?? false) ? 'bg-teal-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Aktif
+                        </a>
+                        <a href="{{ route('resepsionis.pet.index', ['show_deleted' => 1]) }}" class="px-4 py-2 rounded-lg {{ ($showDeleted ?? false) ? 'bg-red-600 text-white' : 'bg-white text-gray-700 border border-gray-300' }}">
+                            Terhapus ({{ $deletedPets ?? 0 }})
+                        </a>
+                    @endif
+                </div>
+                @if(! (request()->routeIs('perawat.pasien.*') || request()->is('perawat/pasien*')))
                 @if(request()->routeIs('resepsionis.pet.*'))
                     <a href="{{ route('resepsionis.pet.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
                         <i class="fi fi-rr-plus mr-2" style="font-size: 16px;"></i>
@@ -95,8 +126,8 @@
                         Tambah Pet
                     </a>
                 @endif
+                @endif
             </div>
-            @endif
 
             <!-- Data Table -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -157,24 +188,50 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            @if(request()->routeIs('perawat.pasien.*') || request()->is('perawat/pasien*'))
-                                                <a href="{{ route('perawat.pasien.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
-                                            @elseif(request()->routeIs('resepsionis.pet.*'))
-                                                <a href="{{ route('resepsionis.pet.edit', $pet->idpet) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
-                                                <a href="{{ route('resepsionis.pet.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
-                                                <form action="{{ route('resepsionis.pet.destroy', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pet ini?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                                </form>
+                                            @if(($showDeleted ?? false))
+                                                {{-- Tombol Restore/Force Delete --}}
+                                                @if(request()->routeIs('resepsionis.pet.*'))
+                                                    <form action="{{ route('resepsionis.pet.restore', $pet->idpet) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-900">Kembalikan</button>
+                                                    </form>
+                                                    <form action="{{ route('resepsionis.pet.force-delete', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus PERMANEN pet ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus Permanen</button>
+                                                    </form>
+                                                @else
+                                                    <form action="{{ route('admin.pet.restore', $pet->idpet) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-900">Kembalikan</button>
+                                                    </form>
+                                                    <form action="{{ route('admin.pet.force-delete', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus PERMANEN pet ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus Permanen</button>
+                                                    </form>
+                                                @endif
                                             @else
-                                                <a href="{{ route('admin.pet.edit', $pet->idpet) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
-                                                <a href="{{ route('admin.pet.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
-                                                <form action="{{ route('admin.pet.destroy', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pet ini?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                                </form>
+                                                {{-- Tombol Normal --}}
+                                                @if(request()->routeIs('perawat.pasien.*') || request()->is('perawat/pasien*'))
+                                                    <a href="{{ route('perawat.pasien.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                @elseif(request()->routeIs('resepsionis.pet.*'))
+                                                    <a href="{{ route('resepsionis.pet.edit', $pet->idpet) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                    <a href="{{ route('resepsionis.pet.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                    <form action="{{ route('resepsionis.pet.destroy', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pet ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                    </form>
+                                                @else
+                                                    <a href="{{ route('admin.pet.edit', $pet->idpet) }}" class="text-teal-600 hover:text-teal-900">Edit</a>
+                                                    <a href="{{ route('admin.pet.show', $pet->idpet) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                                                    <form action="{{ route('admin.pet.destroy', $pet->idpet) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pet ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                    </form>
+                                                @endif
                                             @endif
                                         </div>
                                     </td>
