@@ -63,9 +63,27 @@ class DetailRekamMedisController extends Controller
             'detail' => $validated['detail'] ?? null,
         ]);
 
+        // Update status appointment dari "Check-in" ke "Pemeriksaan" atau "Treatment"
+        // karena dokter sudah menambahkan treatment/tindakan
+        $rekamMedis = RekamMedis::findOrFail($idrekam_medis);
+        if ($rekamMedis->temuDokter) {
+            $currentStatus = $rekamMedis->temuDokter->status;
+
+            // Jika masih Check-in, ubah ke Pemeriksaan (dokter mulai memeriksa)
+            if ($currentStatus == \App\Models\TemuDokter::STATUS_CHECKIN) {
+                $rekamMedis->temuDokter->status = \App\Models\TemuDokter::STATUS_PEMERIKSAAN;
+                $rekamMedis->temuDokter->save();
+            }
+            // Jika sudah Pemeriksaan, ubah ke Treatment (dokter memberikan treatment)
+            elseif ($currentStatus == \App\Models\TemuDokter::STATUS_PEMERIKSAAN) {
+                $rekamMedis->temuDokter->status = \App\Models\TemuDokter::STATUS_TREATMENT;
+                $rekamMedis->temuDokter->save();
+            }
+        }
+
         return redirect()
             ->route('dokter.rekam-medis.detail.index', ['rekam_medis' => $idrekam_medis])
-            ->with('success', 'Detail rekam medis berhasil ditambahkan.');
+            ->with('success', 'Detail rekam medis berhasil ditambahkan dan status appointment diupdate.');
     }
 
     /**

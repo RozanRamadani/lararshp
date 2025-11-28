@@ -69,7 +69,10 @@
                                 @forelse($rekamMedis as $record)
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $record->tanggal_kunjungan->format('d M Y') }}
+                                            @php
+                                                $visitDate = $record->tanggal_kunjungan ?? $record->temuDokter?->waktu_daftar;
+                                            @endphp
+                                            {{ $visitDate ? $visitDate->format('d M Y') : '-' }}
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm font-medium text-gray-900">{{ $record->pet->nama ?? '-' }}</div>
@@ -79,10 +82,10 @@
                                             <div class="text-sm text-gray-900">{{ Str::limit($record->diagnosis ?? '-', 50) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $record->dokter->name ?? '-' }}
+                                            {{ optional($record->dokter)->name ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $record->perawat->name ?? '-' }}
+                                            {{ optional($record->perawat)->name ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full

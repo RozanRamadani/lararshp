@@ -136,4 +136,137 @@ class RekamMedis extends Model
         return null;
     }
 
+    /**
+     * Provide status label derived from related temuDokter->status
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->temuDokter?->status_label ?? 'Tidak Diketahui';
+    }
+
+    /**
+     * Provide status color derived from related temuDokter->status_color
+     */
+    public function getStatusColorAttribute(): string
+    {
+        return $this->temuDokter?->status_color ?? 'gray';
+    }
+
+    /**
+     * Parse vital signs from anamesis field
+     * Expected format: "Keluhan: xxx | Suhu: 38.5°C | Berat: 5.2kg | Detak Jantung: 120bpm"
+     *
+     * @return array ['keluhan' => '', 'suhu' => '', 'berat_badan' => '', 'detak_jantung' => '']
+     */
+    public function parseVitalSigns(): array
+    {
+        $vitalSigns = [
+            'keluhan' => '',
+            'suhu' => '',
+            'berat_badan' => '',
+            'detak_jantung' => ''
+        ];
+
+        if (empty($this->anamesis)) {
+            return $vitalSigns;
+        }
+
+        // Split by pipe separator
+        $parts = explode('|', $this->anamesis);
+
+        foreach ($parts as $part) {
+            $part = trim($part);
+
+            if (str_starts_with($part, 'Keluhan:')) {
+                $vitalSigns['keluhan'] = trim(str_replace('Keluhan:', '', $part));
+            } elseif (str_starts_with($part, 'Suhu:')) {
+                $vitalSigns['suhu'] = trim(str_replace('Suhu:', '', $part));
+            } elseif (str_starts_with($part, 'Berat:')) {
+                $vitalSigns['berat_badan'] = trim(str_replace('Berat:', '', $part));
+            } elseif (str_starts_with($part, 'Detak Jantung:')) {
+                $vitalSigns['detak_jantung'] = trim(str_replace('Detak Jantung:', '', $part));
+            }
+        }
+
+        return $vitalSigns;
+    }
+
+    /**
+     * Get formatted vital signs for display
+     *
+     * @return string
+     */
+    public function getFormattedVitalSignsAttribute(): string
+    {
+        $vital = $this->parseVitalSigns();
+
+        $parts = [];
+        if (!empty($vital['suhu'])) $parts[] = "Suhu: {$vital['suhu']}";
+        if (!empty($vital['berat_badan'])) $parts[] = "Berat: {$vital['berat_badan']}";
+        if (!empty($vital['detak_jantung'])) $parts[] = "Detak Jantung: {$vital['detak_jantung']}";
+
+        return implode(' | ', $parts);
+    }
+
+    /**
+     * Get total biaya from all detail_rekam_medis records
+     *
+     * @return float
+     */
+    public function getTotalBiayaAttribute(): float
+    {
+        $total = 0;
+
+        foreach ($this->details as $detail) {
+            // Parse biaya from detail field
+            // Expected format: "Tindakan: xxx | Biaya: Rp 150,000"
+            if (!empty($detail->detail)) {
+                preg_match('/Biaya:\s*Rp\s*([\d,]+)/', $detail->detail, $matches);
+                if (isset($matches[1])) {
+                    // Remove comma and convert to float
+                    $biaya = (float) str_replace(',', '', $matches[1]);
+                    $total += $biaya;
+                }
+            }
+        }
+
+        return $total;
+    }
+
+    /**
+     * Get formatted total biaya
+     *
+     * @return string
+     */
+    public function getFormattedTotalBiayaAttribute(): string
+    {
+        return 'Rp ' . number_format($this->total_biaya, 0, ',', '.');
+    }
+
+    /**
+     * Format vital signs string for saving to database
+     *
+     * @param array $data ['keluhan' => '', 'suhu' => '', 'berat_badan' => '', 'detak_jantung' => '']
+     * @return string
+     */
+    public static function formatVitalSigns(array $data): string
+    {
+        $parts = [];
+
+        if (!empty($data['keluhan'])) {
+            $parts[] = "Keluhan: {$data['keluhan']}";
+        }
+        if (!empty($data['suhu'])) {
+            $parts[] = "Suhu: {$data['suhu']}";
+        }
+        if (!empty($data['berat_badan'])) {
+            $parts[] = "Berat: {$data['berat_badan']}";
+        }
+        if (!empty($data['detak_jantung'])) {
+            $parts[] = "Detak Jantung: {$data['detak_jantung']}";
+        }
+
+        return implode(' | ', $parts);
+    }
+
 }

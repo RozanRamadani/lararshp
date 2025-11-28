@@ -14,13 +14,31 @@
                 <p class="text-gray-600">Daftar jadwal appointment untuk hewan peliharaan Anda</p>
             </div>
 
+            {{-- Success Message --}}
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            {{-- Error Messages --}}
+            @if($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <ul class="list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-yellow-600">Menunggu</p>
-                    <p class="text-2xl font-bold text-yellow-700">{{ $appointments->where('status', '0')->count() }}</p>
+                    <p class="text-2xl font-bold text-yellow-700">{{ $appointments->where('status', \App\Models\TemuDokter::STATUS_MENUNGGU)->count() }}</p>
                 </div>
                 <div class="bg-yellow-200 p-3 rounded-full">
                     <i class="fas fa-clock text-yellow-700 text-xl"></i>
@@ -32,7 +50,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-blue-600">Dalam Proses</p>
-                    <p class="text-2xl font-bold text-blue-700">{{ $appointments->where('status', '1')->count() }}</p>
+                    <p class="text-2xl font-bold text-blue-700">{{ $appointments->whereIn('status', [\App\Models\TemuDokter::STATUS_CHECKIN, \App\Models\TemuDokter::STATUS_PEMERIKSAAN, \App\Models\TemuDokter::STATUS_TREATMENT])->count() }}</p>
                 </div>
                 <div class="bg-blue-200 p-3 rounded-full">
                     <i class="fas fa-user-md text-blue-700 text-xl"></i>
@@ -44,10 +62,22 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-green-600">Selesai</p>
-                    <p class="text-2xl font-bold text-green-700">{{ $appointments->where('status', '2')->count() }}</p>
+                    <p class="text-2xl font-bold text-green-700">{{ $appointments->where('status', \App\Models\TemuDokter::STATUS_SELESAI)->count() }}</p>
                 </div>
                 <div class="bg-green-200 p-3 rounded-full">
                     <i class="fas fa-check-circle text-green-700 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-red-600">Batal</p>
+                    <p class="text-2xl font-bold text-red-700">{{ $appointments->where('status', \App\Models\TemuDokter::STATUS_BATAL)->count() }}</p>
+                </div>
+                <div class="bg-red-200 p-3 rounded-full">
+                    <i class="fas fa-times-circle text-red-700 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -116,15 +146,26 @@
                     </div>
 
                     <!-- Action Button -->
-                    <div class="ml-4">
+                    <div class="ml-4 flex flex-col space-y-2">
                         <a href="{{ route('pemilik.my-pets.show', $appointment->pet->idpet) }}" class="inline-flex items-center px-4 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg transition-colors text-sm">
                             <i class="fas fa-eye mr-2"></i>Lihat Pet
                         </a>
+
+                        {{-- Cancel Button - only show if not completed or already canceled --}}
+                        @if(!in_array($appointment->status, [\App\Models\TemuDokter::STATUS_SELESAI, \App\Models\TemuDokter::STATUS_BATAL]))
+                            <form action="{{ route('pemilik.my-appointments.cancel', $appointment->idreservasi_dokter) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan appointment ini?');">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors text-sm w-full">
+                                    <i class="fas fa-times-circle mr-2"></i>Batalkan
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Additional Info -->
-                @if($appointment->status == '0')
+                @if($appointment->status == \App\Models\TemuDokter::STATUS_MENUNGGU)
                     <div class="mt-4 pt-4 border-t border-gray-200">
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
                             <p class="text-sm text-yellow-800">
@@ -133,16 +174,16 @@
                             </p>
                         </div>
                     </div>
-                @elseif($appointment->status == '1')
+                @elseif(in_array($appointment->status, [\App\Models\TemuDokter::STATUS_CHECKIN, \App\Models\TemuDokter::STATUS_PEMERIKSAAN, \App\Models\TemuDokter::STATUS_TREATMENT]))
                     <div class="mt-4 pt-4 border-t border-gray-200">
                         <div class="bg-blue-50 border-l-4 border-blue-400 p-3 rounded">
                             <p class="text-sm text-blue-800">
                                 <i class="fas fa-info-circle mr-2"></i>
-                                Hewan peliharaan Anda sedang dalam pemeriksaan. Mohon menunggu.
+                                Hewan peliharaan Anda sedang dalam {{ strtolower($appointment->status_label) }}. Mohon menunggu.
                             </p>
                         </div>
                     </div>
-                @elseif($appointment->status == '2')
+                @elseif($appointment->status == \App\Models\TemuDokter::STATUS_SELESAI)
                     <div class="mt-4 pt-4 border-t border-gray-200">
                         <div class="bg-green-50 border-l-4 border-green-400 p-3 rounded flex items-center justify-between">
                             <p class="text-sm text-green-800">
@@ -152,6 +193,15 @@
                             <a href="{{ route('pemilik.my-pets.rekam-medis', $appointment->pet->idpet) }}" class="text-green-700 hover:text-green-900 font-medium text-sm">
                                 Lihat Rekam Medis <i class="fas fa-arrow-right ml-1"></i>
                             </a>
+                        </div>
+                    </div>
+                @elseif($appointment->status == \App\Models\TemuDokter::STATUS_BATAL)
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded">
+                            <p class="text-sm text-red-800">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                Appointment ini telah dibatalkan.
+                            </p>
                         </div>
                     </div>
                 @endif

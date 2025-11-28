@@ -99,6 +99,11 @@ class RekamMedisController extends Controller
 
         RekamMedis::create($payload);
 
+        // Update status appointment dari "Menunggu" ke "Check-in"
+        // karena perawat sudah membuat rekam medis (vital signs sudah dicatat)
+        $temu->status = \App\Models\TemuDokter::STATUS_CHECKIN;
+        $temu->save();
+
         return redirect()->route('perawat.rekam-medis.index')
             ->with('success', 'Rekam medis berhasil ditambahkan.');
     }
@@ -162,6 +167,18 @@ class RekamMedisController extends Controller
         ];
 
         $rekamMedis->update($payload);
+
+        // Jika dokter mengupdate diagnosis/temuan klinis, update status ke Pemeriksaan
+        $user = Auth::user();
+        if ($user->hasRole('Dokter') && $rekamMedis->temuDokter) {
+            $currentStatus = $rekamMedis->temuDokter->status;
+
+            // Jika masih Check-in, ubah ke Pemeriksaan (dokter mulai memeriksa)
+            if ($currentStatus == \App\Models\TemuDokter::STATUS_CHECKIN) {
+                $rekamMedis->temuDokter->status = \App\Models\TemuDokter::STATUS_PEMERIKSAAN;
+                $rekamMedis->temuDokter->save();
+            }
+        }
 
         return redirect()->route('perawat.rekam-medis.index')
             ->with('success', 'Rekam medis berhasil diperbarui.');
@@ -250,5 +267,40 @@ class RekamMedisController extends Controller
     {
         // Saat ini sama dengan store
         return $this->storeValidationRules();
+    }
+
+    /**
+     * Mark appointment as complete (Selesai) - Dokter only
+     */
+    public function markAsComplete(RekamMedis $rekamMedis)
+    {
+        $user = Auth::user();
+
+        // Validate user is dokter
+        if (!$user->hasRole('Dokter')) {
+            abort(403, 'Hanya dokter yang dapat menyelesaikan rekam medis.');
+        }
+
+        $temu = $rekamMedis->temuDokter;
+
+        if (!$temu) {
+            return redirect()->back()->withErrors(['error' => 'Appointment tidak ditemukan.']);
+        }
+
+        // Validate current status is PEMERIKSAAN or TREATMENT
+        if (!in_array($temu->status, [
+            \App\Models\TemuDokter::STATUS_PEMERIKSAAN,
+            \App\Models\TemuDokter::STATUS_TREATMENT
+        ])) {
+            return redirect()->back()->withErrors([
+                'error' => 'Status appointment harus Pemeriksaan atau Treatment untuk diselesaikan.'
+            ]);
+        }
+
+        // Update status to Selesai
+        $temu->status = \App\Models\TemuDokter::STATUS_SELESAI;
+        $temu->save();
+
+        return redirect()->back()->with('success', 'Rekam medis berhasil diselesaikan.');
     }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 20, 2025 at 02:36 AM
+-- Generation Time: Nov 28, 2025 at 10:01 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.4.10
 
@@ -68,6 +68,30 @@ INSERT INTO `detail_rekam_medis` (`iddetail_rekam_medis`, `idrekam_medis`, `idko
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `dokter`
+--
+
+CREATE TABLE `dokter` (
+  `id_dokter` bigint NOT NULL,
+  `alamat` varchar(100) DEFAULT NULL,
+  `no_hp` varchar(45) DEFAULT NULL,
+  `bidang_dokter` varchar(100) DEFAULT NULL,
+  `jenis_kelamin` varchar(1) DEFAULT NULL,
+  `id_user` bigint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `dokter`
+--
+
+INSERT INTO `dokter` (`id_dokter`, `alamat`, `no_hp`, `bidang_dokter`, `jenis_kelamin`, `id_user`) VALUES
+(1, 'Jl. Kenanga', '08654526323', 'Spesialis Hewan Mamalia', 'L', 28),
+(2, 'Jl. Manggis', '0852871634', 'Umum', 'L', 37),
+(3, 'Jl. Sawo', '0867567464', 'Spesialis Hewan', 'L', 10);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `failed_jobs`
 --
 
@@ -102,7 +126,8 @@ INSERT INTO `jenis_hewan` (`idjenis_hewan`, `nama_jenis_hewan`) VALUES
 (3, 'Kelinci (Oryctolagus cuniculus)'),
 (4, 'Burung'),
 (5, 'Reptil'),
-(6, 'Rodent / Hewan Kecil');
+(6, 'Rodent / Hewan Kecil'),
+(24, 'Beruang');
 
 -- --------------------------------------------------------
 
@@ -162,7 +187,8 @@ INSERT INTO `kategori` (`idkategori`, `nama_kategori`) VALUES
 (5, 'Terapi Oral'),
 (6, 'Diagnostik'),
 (7, 'Rawat Inap'),
-(8, 'Lain-lain');
+(8, 'Lain-lain'),
+(17, 'Pedicure');
 
 -- --------------------------------------------------------
 
@@ -254,7 +280,10 @@ CREATE TABLE `migrations` (
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (1, '0001_01_01_000000_create_users_table', 1),
 (2, '0001_01_01_000001_create_cache_table', 1),
-(3, '0001_01_01_000002_create_jobs_table', 1);
+(3, '0001_01_01_000002_create_jobs_table', 1),
+(4, '2025_11_24_084138_add_deleted_at_to_pemilik_table', 2),
+(5, '2025_11_24_090114_add_timestamps_to_pemilik_table', 3),
+(6, '2025_11_24_090332_add_soft_deletes_and_timestamps_to_pet_table', 4);
 
 -- --------------------------------------------------------
 
@@ -292,18 +321,44 @@ CREATE TABLE `pemilik` (
   `idpemilik` int NOT NULL,
   `no_wa` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `alamat` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `iduser` bigint NOT NULL
+  `iduser` bigint NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pemilik`
 --
 
-INSERT INTO `pemilik` (`idpemilik`, `no_wa`, `alamat`, `iduser`) VALUES
-(5, '0865645354347', 'Jl. Durian\r\n', 9),
-(6, '08556263156356', 'Jl. Nangka', 33),
-(7, '0865645354345', 'Jl. Kenanga', 36),
-(8, '085277575645', 'Jl. Sawo', 35);
+INSERT INTO `pemilik` (`idpemilik`, `no_wa`, `alamat`, `iduser`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(5, '0865645354347', 'Jl. Durian\r\n', 9, NULL, NULL, NULL),
+(6, '08556263156356', 'Jl. Nangka', 33, NULL, NULL, NULL),
+(7, '0865645354345', 'Jl. Kenanga', 36, NULL, NULL, NULL),
+(8, '085277575645', 'Jl. Sawoo, Kota Semarang', 35, NULL, NULL, '2025-11-24 02:02:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `perawat`
+--
+
+CREATE TABLE `perawat` (
+  `id_perawat` bigint NOT NULL,
+  `alamat` varchar(100) DEFAULT NULL,
+  `no_hp` varchar(45) DEFAULT NULL,
+  `jenis_kelamin` varchar(1) DEFAULT NULL,
+  `pendidikan` varchar(100) DEFAULT NULL,
+  `id_user` bigint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `perawat`
+--
+
+INSERT INTO `perawat` (`id_perawat`, `alamat`, `no_hp`, `jenis_kelamin`, `pendidikan`, `id_user`) VALUES
+(1, 'California', '08343234234', 'L', 'S3 Keperawatan', 41),
+(2, 'New York', '0876235236723', 'L', 'S1 Kedokteran Hewan', 42);
 
 -- --------------------------------------------------------
 
@@ -318,17 +373,21 @@ CREATE TABLE `pet` (
   `warna_tanda` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `jenis_kelamin` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `idpemilik` int NOT NULL,
-  `idras_hewan` int NOT NULL
+  `idras_hewan` int NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pet`
 --
 
-INSERT INTO `pet` (`idpet`, `nama`, `tanggal_lahir`, `warna_tanda`, `jenis_kelamin`, `idpemilik`, `idras_hewan`) VALUES
-(11, 'Sumbul', '2025-06-12', 'Hitam', 'J', 6, 18),
-(12, 'Galaxy Destroyer', '2025-06-11', 'Hitam', 'J', 7, 4),
-(13, 'Cukurukuk', '2025-06-18', 'Oren', 'B', 6, 18);
+INSERT INTO `pet` (`idpet`, `nama`, `tanggal_lahir`, `warna_tanda`, `jenis_kelamin`, `idpemilik`, `idras_hewan`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(11, 'Sumbul', '2025-06-12', 'Hitam', 'J', 6, 18, NULL, NULL, NULL),
+(12, 'Galaxy Destroyer', '2025-06-11', 'Hitam', 'J', 7, 4, NULL, NULL, NULL),
+(13, 'Cukurukuk', '2025-06-18', 'Oren', 'B', 6, 18, NULL, NULL, NULL),
+(14, 'Brunooo', '2025-01-01', 'Hitam', 'J', 6, 4, NULL, NULL, '2025-11-24 02:19:25');
 
 -- --------------------------------------------------------
 
@@ -403,7 +462,8 @@ INSERT INTO `ras_hewan` (`idras_hewan`, `nama_ras`, `idjenis_hewan`) VALUES
 (41, 'Hamster (Syrian, Roborovski, Campbell, Winter White)', 6),
 (42, 'Guinea Pig (Abyssinian, Peruvian, American Shorthair)', 6),
 (43, 'Gerbil', 6),
-(44, 'Chinchilla', 6);
+(44, 'Chinchilla', 6),
+(59, 'Grizly', 24);
 
 -- --------------------------------------------------------
 
@@ -426,8 +486,7 @@ CREATE TABLE `rekam_medis` (
 --
 
 INSERT INTO `rekam_medis` (`idrekam_medis`, `idreservasi_dokter`, `created_at`, `anamesis`, `temuan_klinis`, `diagnosa`, `dokter_pemeriksa`) VALUES
-(3, 17, '2025-09-21 20:21:12', 'Anjing tidak mau makan dan muntah sejak kemarin.', 'Suhu tubuh 40°C, dehidrasi ringan, bulu kusam.', 'Gastroenteritis pada Anjing', 14),
-(18, 22, '2025-10-06 21:39:29', 'Kucinggg tidak mau makan dan muntah sejak kemarin.', 'Suhu tubuh 41°C, dehidrasi ringan, bulu kusam.', 'Gastroenteritis pada Kucingggg', 24);
+(3, 17, '2025-09-21 20:21:12', 'Anjing tidak mau makan dan muntah sejak kemarin.', 'Suhu tubuh 40°C, dehidrasi ringan, bulu kusam.', 'Gastroenteritis pada Anjing', 14);
 
 -- --------------------------------------------------------
 
@@ -474,14 +533,16 @@ INSERT INTO `role_user` (`idrole_user`, `iduser`, `idrole`, `status`) VALUES
 (24, 28, 2, 1),
 (26, 33, 5, 1),
 (27, 9, 5, 1),
-(28, 34, 3, 1),
+(28, 34, 3, 0),
 (29, 6, 1, 1),
 (30, 6, 3, 0),
 (32, 35, 5, 1),
 (33, 36, 5, 1),
 (35, 37, 2, 1),
 (38, 41, 5, 1),
-(39, 41, 3, 1);
+(39, 41, 3, 1),
+(40, 42, 3, 1),
+(41, 43, 4, 1);
 
 -- --------------------------------------------------------
 
@@ -503,7 +564,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('YI3msB7A9KBijJnaR28X85Y6PgtOce0SuAPT2rDL', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVDlRdU12UmtqaTNmVnEyMmNOVm16WFhkY2wxdFQ1c2EwQVo1d0NEcCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wZW1pbGlrIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1760927698);
+('kQLUd7nkCBXLnJaJmAAhh3xHCU1hGCebiLh1gtHW', 6, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMkltYWpadHlOcW9pSkNidzFseDNuTmdOUzNLcDVNWjNpU20zdW1TNyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9kYXRhIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1761381330);
 
 -- --------------------------------------------------------
 
@@ -530,7 +591,10 @@ INSERT INTO `temu_dokter` (`idreservasi_dokter`, `no_urut`, `waktu_daftar`, `sta
 (19, 1, '2025-10-06 06:50:54', '0', 12, 24),
 (20, 1, '2025-10-07 02:47:54', '0', 13, 24),
 (21, 2, '2025-10-07 03:43:46', '0', 12, 14),
-(22, 3, '2025-10-07 04:07:48', '0', 13, 14);
+(22, 3, '2025-10-07 04:07:48', '0', 13, 14),
+(23, 1, '2025-11-17 07:42:00', '0', 12, 35),
+(24, 1, '2025-11-24 01:44:00', '0', 11, 14),
+(25, 2, '2025-11-24 01:47:00', '0', 14, 24);
 
 -- --------------------------------------------------------
 
@@ -563,18 +627,20 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`iduser`, `nama`, `email`, `password`) VALUES
-(6, 'admin', 'admin@mail.com', '$2y$10$V8ZlMp6ICQzYc/Eb8RwPluPeK5REwS9htuCJLNTkwAXXl.L7M.3Di'),
+(6, 'admin', 'admin@mail.com', '$2y$12$j8a2.mh1.30ZqfgIil04Cu2jy0fE7Jp9RMg61vS4Z7tXt4a.R8V8.'),
 (9, 'rozan', 'rozan@gmail.com', '$2y$10$x0sTz7/GAJqLumJJR2ALTugVrF8hlKCblfghgWyXaZih./MjWAWuO'),
-(10, 'John', 'aiman@gmail.com', '$2y$10$9fXhPidL8UeqQe.zMwTDvu4GizW1lELJ4bZ//O8ke9MNSyH45gXAO'),
-(27, 'aiman', 'aiman@mail.com', '$2y$10$rpyKuHq4MFKguloYjZl6XeBJVOvLuj9B6Tkx7LuEkxrDN4qt3M/ya'),
-(28, 'James', 'james@gmail.com', '$2y$10$nJKqu2iowzb/ZvYaqPLkk.KZmvtSfx.0g0WaDWxPVx9O/oapsDmx6'),
-(33, 'Mich', 'mich@gmail.com', '$2y$10$E9.HKJploE5TiHmzRaFAIuStApv92rw63MBH6JkaeVoHnkW9lCyii'),
-(34, 'Perawat', 'perawat@gmail.com', '$2y$10$W93n.qXld4kcGAY5TFAE.uo4liVvgh8f8IntLE/7wv9fuWQkzQnpm'),
+(10, 'John Doe', 'johndoew@gmail.com', '$2y$12$APJoxo4YKp8FXaYYTqNHpOcgSlg1DlY12i1EYb.ixhURlWKj5V3nK'),
+(27, 'aiman', 'aiman@mail.com', '$2y$12$8tsqXKUudUX7EG0GheUhWuxMOSnlekMm/EAyvrpcD0UwnbdGCtaJu'),
+(28, 'James Newman', 'james@gmail.com', '$2y$12$BREvRyhOTNzFJJuXeI3mDOYagGPbTgpflySqxcnOENDYPfpwGIyHu'),
+(33, 'Mich', 'mich@gmail.com', '$2y$12$CwBOjog7db/7MKwZjEEnF.V3UVAPo7nFfcZ0dorqDAyURVOvi.wDC'),
+(34, 'Perawat', 'perawat@gmail.com', '$2y$12$6o3UWP.i5MNzwZjng2TjJumP7aPZH90.FqNn9dOKzrlr2AkAuZgOW'),
 (35, 'Oliver Sykes', 'oliver@gmail.com', '$2y$10$3I0ezyG.aTO83AcpARMGxeUMxIkIMrkWGUZMKx69gxCiKZo0.L9P.'),
 (36, 'Liam Gallagher', 'liam@gmail.com', '$2y$10$aq4KfGV3JaVzWMlJCn2f.OgxPzzZiqkMN4P8a6IGFm8R3/3ZUcvEC'),
 (37, 'Doc Hudson', 'doc@gmail.com', '$2y$10$IjMacivz1PgBOtNJ2rNgB.hPLQME9Oq4GzWAMYTp3m6S1mpOF7W.y'),
 (38, 'Bill Armstrong', 'bill@gmail.com', '$2y$10$7LcDUHmWk90eQJ3GsUatqOBci.swcs0TxMbSlhcmtuJ56lJlK3p4S'),
-(41, 'Kurt Cobain', 'kurt@gmail.com', '$2y$10$WzhULMT.JVAL3Ar9vunZveY19aiUZytVpT3GTPuja3lo7BHAdQxtS');
+(41, 'Kurt Cobain', 'kurt@gmail.com', '$2y$10$WzhULMT.JVAL3Ar9vunZveY19aiUZytVpT3GTPuja3lo7BHAdQxtS'),
+(42, 'Noel Gallagher', 'noel@gmail.com', '$2y$12$NZCW/fQqGoO.Y8s4Qw0MoeEM4xknotVELpkY0H/MKACLiwqzSVfKW'),
+(43, 'Resepsionis', 'resepsionis@gmail.com', '$2y$12$EZoZn0zVIPcA7GpwfjMgQewRfYYWvz7JyxfI3PZyFHZO9xIactaOG');
 
 -- --------------------------------------------------------
 
@@ -616,6 +682,13 @@ ALTER TABLE `detail_rekam_medis`
   ADD PRIMARY KEY (`iddetail_rekam_medis`),
   ADD KEY `fk_detail_rekam_medis_rekam_medis1_idx` (`idrekam_medis`),
   ADD KEY `idkode_tindakan_terapi` (`idkode_tindakan_terapi`);
+
+--
+-- Indexes for table `dokter`
+--
+ALTER TABLE `dokter`
+  ADD PRIMARY KEY (`id_dokter`),
+  ADD KEY `fk_dokter_user` (`id_user`);
 
 --
 -- Indexes for table `failed_jobs`
@@ -687,6 +760,13 @@ ALTER TABLE `pegawai`
 ALTER TABLE `pemilik`
   ADD PRIMARY KEY (`idpemilik`),
   ADD KEY `fk_pemilik_user1_idx` (`iduser`);
+
+--
+-- Indexes for table `perawat`
+--
+ALTER TABLE `perawat`
+  ADD PRIMARY KEY (`id_perawat`),
+  ADD KEY `fk_perawat_user` (`id_user`);
 
 --
 -- Indexes for table `pet`
@@ -776,7 +856,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `detail_rekam_medis`
 --
 ALTER TABLE `detail_rekam_medis`
-  MODIFY `iddetail_rekam_medis` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `iddetail_rekam_medis` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `dokter`
+--
+ALTER TABLE `dokter`
+  MODIFY `id_dokter` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -788,7 +874,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `jenis_hewan`
 --
 ALTER TABLE `jenis_hewan`
-  MODIFY `idjenis_hewan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `idjenis_hewan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -800,7 +886,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
-  MODIFY `idkategori` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idkategori` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `kategori_klinis`
@@ -818,7 +904,7 @@ ALTER TABLE `kode_tindakan_terapi`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `pemilik`
@@ -827,16 +913,22 @@ ALTER TABLE `pemilik`
   MODIFY `idpemilik` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
+-- AUTO_INCREMENT for table `perawat`
+--
+ALTER TABLE `perawat`
+  MODIFY `id_perawat` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `pet`
 --
 ALTER TABLE `pet`
-  MODIFY `idpet` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `idpet` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `ras_hewan`
 --
 ALTER TABLE `ras_hewan`
-  MODIFY `idras_hewan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `idras_hewan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `rekam_medis`
@@ -854,19 +946,19 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_user`
 --
 ALTER TABLE `role_user`
-  MODIFY `idrole_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `idrole_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `temu_dokter`
 --
 ALTER TABLE `temu_dokter`
-  MODIFY `idreservasi_dokter` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `idreservasi_dokter` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `iduser` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `iduser` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -886,6 +978,12 @@ ALTER TABLE `detail_rekam_medis`
   ADD CONSTRAINT `fk_detail_rekam_medis_rekam_medis1` FOREIGN KEY (`idrekam_medis`) REFERENCES `rekam_medis` (`idrekam_medis`);
 
 --
+-- Constraints for table `dokter`
+--
+ALTER TABLE `dokter`
+  ADD CONSTRAINT `fk_dokter_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`iduser`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `kode_tindakan_terapi`
 --
 ALTER TABLE `kode_tindakan_terapi`
@@ -896,6 +994,12 @@ ALTER TABLE `kode_tindakan_terapi`
 --
 ALTER TABLE `pemilik`
   ADD CONSTRAINT `fk_pemilik_user1` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`);
+
+--
+-- Constraints for table `perawat`
+--
+ALTER TABLE `perawat`
+  ADD CONSTRAINT `fk_perawat_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`iduser`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `pet`

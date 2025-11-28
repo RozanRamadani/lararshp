@@ -75,11 +75,14 @@
                                     <div class="flex items-start justify-between mb-2">
                                         <div>
                                             <h4 class="text-base font-semibold text-gray-900">
-                                                {{ $record->tanggal_kunjungan->format('d F Y') }}
+                                                @php
+                                                    $visitDate = $record->tanggal_kunjungan ?? $record->temuDokter?->waktu_daftar;
+                                                @endphp
+                                                {{ $visitDate ? $visitDate->format('d F Y') : '-' }}
                                             </h4>
                                             <p class="text-sm text-gray-600">
-                                                Doctor: {{ $record->dokter->name ?? 'Not assigned' }} |
-                                                Nurse: {{ $record->perawat->name ?? 'Not assigned' }}
+                                                Doctor: {{ optional($record->dokter)->name ?? 'Not assigned' }} |
+                                                Nurse: {{ optional($record->perawat)->name ?? 'Not assigned' }}
                                             </p>
                                         </div>
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -136,12 +139,12 @@
                                         </div>
                                     @endif
 
-                                    @if($record->tanggal_kontrol)
+                                        @if($record->tanggal_kontrol)
                                         <div class="mt-3">
                                             <p class="text-xs font-medium text-gray-500">Follow-up Date</p>
-                                            <p class="text-sm font-medium text-indigo-600">{{ $record->tanggal_kontrol->format('d F Y') }}</p>
+                                            <p class="text-sm font-medium text-indigo-600">{{ $record->tanggal_kontrol ? $record->tanggal_kontrol->format('d F Y') : '-' }}</p>
                                         </div>
-                                    @endif
+                                        @endif
 
                                     <div class="mt-4 pt-3 border-t border-gray-200">
                                         @if(auth()->user()->hasRole('Pemilik'))

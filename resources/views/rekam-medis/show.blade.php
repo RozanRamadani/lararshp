@@ -41,6 +41,20 @@
                             </button>
                         </form>
                     </div>
+                @else
+                    {{-- Dokter: Mark as Complete Button --}}
+                    @if(auth()->user()->hasRole('Dokter') && $rekamMedis->temuDokter && in_array($rekamMedis->temuDokter->status, [\App\Models\TemuDokter::STATUS_PEMERIKSAAN, \App\Models\TemuDokter::STATUS_TREATMENT]))
+                        <form action="{{ route('dokter.rekam-medis.mark-complete', $rekamMedis->idrekam_medis) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menandai rekam medis ini sebagai selesai?');">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Mark as Complete
+                            </button>
+                        </form>
+                    @endif
                 @endif
             </div>
 

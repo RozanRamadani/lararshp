@@ -29,12 +29,14 @@ class TemuDokter extends Model
     ];
 
     /**
-     * Status constants
+     * Status constants - Workflow
      */
-    const STATUS_MENUNGGU = '0';
-    const STATUS_DALAM_PROSES = '1';
-    const STATUS_SELESAI = '2';
-    const STATUS_BATAL = '3';
+    const STATUS_MENUNGGU = '0';      // Baru daftar, belum dipanggil
+    const STATUS_CHECKIN = '1';       // Check-in oleh perawat, rekam medis dibuat
+    const STATUS_PEMERIKSAAN = '2';   // Sedang diperiksa dokter
+    const STATUS_TREATMENT = '3';     // Perawat melakukan treatment sesuai instruksi dokter
+    const STATUS_SELESAI = '4';       // Selesai semua treatment
+    const STATUS_BATAL = '5';         // Dibatalkan
 
     /**
      * Get status label
@@ -43,7 +45,9 @@ class TemuDokter extends Model
     {
         return match($this->status) {
             self::STATUS_MENUNGGU => 'Menunggu',
-            self::STATUS_DALAM_PROSES => 'Dalam Proses',
+            self::STATUS_CHECKIN => 'Check-in',
+            self::STATUS_PEMERIKSAAN => 'Pemeriksaan',
+            self::STATUS_TREATMENT => 'Treatment',
             self::STATUS_SELESAI => 'Selesai',
             self::STATUS_BATAL => 'Batal',
             default => 'Tidak Diketahui',
@@ -57,11 +61,37 @@ class TemuDokter extends Model
     {
         return match($this->status) {
             self::STATUS_MENUNGGU => 'yellow',
-            self::STATUS_DALAM_PROSES => 'blue',
+            self::STATUS_CHECKIN => 'blue',
+            self::STATUS_PEMERIKSAAN => 'purple',
+            self::STATUS_TREATMENT => 'indigo',
             self::STATUS_SELESAI => 'green',
             self::STATUS_BATAL => 'red',
             default => 'gray',
         };
+    }
+
+    /**
+     * Check if appointment can be checked in by perawat
+     */
+    public function canCheckIn(): bool
+    {
+        return $this->status === self::STATUS_MENUNGGU;
+    }
+
+    /**
+     * Check if appointment can be examined by dokter
+     */
+    public function canExamine(): bool
+    {
+        return $this->status === self::STATUS_CHECKIN;
+    }
+
+    /**
+     * Check if appointment is completed
+     */
+    public function isCompleted(): bool
+    {
+        return $this->status === self::STATUS_SELESAI;
     }
 
     /**
@@ -79,6 +109,14 @@ class TemuDokter extends Model
     {
         // `temu_dokter.idrole_user` references `role_user.idrole_user` in the schema
         return $this->belongsTo(RoleUser::class, 'idrole_user', 'idrole_user');
+    }
+
+    /**
+     * Relasi ke RekamMedis
+     */
+    public function rekamMedis()
+    {
+        return $this->hasOne(RekamMedis::class, 'idreservasi_dokter', 'idreservasi_dokter');
     }
 
     /**
@@ -102,7 +140,12 @@ class TemuDokter extends Model
      */
     public function scopeUpcoming($query)
     {
-        return $query->whereIn('status', [self::STATUS_MENUNGGU, self::STATUS_DALAM_PROSES]);
+        return $query->whereIn('status', [
+            self::STATUS_MENUNGGU,
+            self::STATUS_CHECKIN,
+            self::STATUS_PEMERIKSAAN,
+            self::STATUS_TREATMENT
+        ]);
     }
 
     /**

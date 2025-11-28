@@ -22,11 +22,22 @@ class TemuDokterController extends Controller
      */
     public function index(): View
     {
+        // Paginated appointments for the table
         $appointments = TemuDokter::with(['pet.pemilik.user', 'pet.rasHewan.jenisHewan', 'roleUser'])
             ->orderBy('waktu_daftar', 'desc')
             ->paginate(15);
 
-        return view('admin.temu-dokter.index', compact('appointments'));
+        // Compute real counts from DB using the current status constants
+        $menungguCount = TemuDokter::where('status', TemuDokter::STATUS_MENUNGGU)->count();
+        $prosesCount = TemuDokter::whereIn('status', [
+            TemuDokter::STATUS_CHECKIN,
+            TemuDokter::STATUS_PEMERIKSAAN,
+            TemuDokter::STATUS_TREATMENT,
+        ])->count();
+        $selesaiCount = TemuDokter::where('status', TemuDokter::STATUS_SELESAI)->count();
+        $batalCount = TemuDokter::where('status', TemuDokter::STATUS_BATAL)->count();
+
+        return view('admin.temu-dokter.index', compact('appointments', 'menungguCount', 'prosesCount', 'selesaiCount', 'batalCount'));
     }
 
     /**
@@ -196,6 +207,36 @@ class TemuDokterController extends Controller
     }
 
     /**
+     * Cancel appointment - Pemilik only
+     */
+    public function cancelAppointment(TemuDokter $temuDokter): RedirectResponse
+    {
+        $user = Auth::user();
+        $pemilik = $user->pemilik;
+
+        if (!$pemilik) {
+            abort(403, 'Anda tidak terdaftar sebagai pemilik.');
+        }
+
+        // Verify appointment belongs to owner's pet
+        $petIds = $pemilik->pets->pluck('idpet');
+        if (!$petIds->contains($temuDokter->idpet)) {
+            abort(403, 'Appointment ini bukan milik Anda.');
+        }
+
+        // Validate appointment can be canceled (not already completed or canceled)
+        if (in_array($temuDokter->status, [TemuDokter::STATUS_SELESAI, TemuDokter::STATUS_BATAL])) {
+            return back()->withErrors(['error' => 'Appointment dengan status ' . $temuDokter->status_label . ' tidak dapat dibatalkan.']);
+        }
+
+        // Update status to canceled
+        $temuDokter->status = TemuDokter::STATUS_BATAL;
+        $temuDokter->save();
+
+        return back()->with('success', 'Appointment berhasil dibatalkan.');
+    }
+
+    /**
      * Helper: Get next queue number for today
      */
     private function getNextQueueNumber(): int
@@ -230,7 +271,8 @@ class TemuDokterController extends Controller
             'idrole_user' => 'nullable|exists:role_user,idrole_user',
             'no_urut' => 'nullable|integer|min:1',
             'waktu_daftar' => 'nullable|date',
-            'status' => 'nullable|in:0,1,2,3',
+            // include all defined statuses (0-5)
+            'status' => 'nullable|in:0,1,2,3,4,5',
         ];
     }
 
@@ -243,7 +285,8 @@ class TemuDokterController extends Controller
             'idpet' => 'required|exists:pet,idpet',
             'idrole_user' => 'nullable|exists:role_user,idrole_user',
             'waktu_daftar' => 'required|date',
-            'status' => 'required|in:0,1,2,3',
+            // include all defined statuses (0-5)
+            'status' => 'required|in:0,1,2,3,4,5',
         ];
     }
 }

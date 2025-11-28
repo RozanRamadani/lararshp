@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\RoleUser;
+use App\Models\TemuDokter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -119,11 +120,16 @@ class PerawatController extends Controller
         $completedReservations = 0;
         $pendingReservations = 0;
         if ($roleUser && !empty($roleUser->idrole_user)) {
-            $totalReservations = \App\Models\TemuDokter::where('idrole_user', $roleUser->idrole_user)->count();
-            $completedReservations = \App\Models\TemuDokter::where('idrole_user', $roleUser->idrole_user)
-                                    ->where('status', \App\Models\TemuDokter::STATUS_SELESAI)->count();
-            $pendingReservations = \App\Models\TemuDokter::where('idrole_user', $roleUser->idrole_user)
-                                    ->whereIn('status', [\App\Models\TemuDokter::STATUS_MENUNGGU, \App\Models\TemuDokter::STATUS_DALAM_PROSES])->count();
+                $totalReservations = TemuDokter::where('idrole_user', $roleUser->idrole_user)->count();
+                $completedReservations = TemuDokter::where('idrole_user', $roleUser->idrole_user)
+                                        ->where('status', TemuDokter::STATUS_SELESAI)->count();
+                $pendingReservations = TemuDokter::where('idrole_user', $roleUser->idrole_user)
+                                        ->whereIn('status', [
+                                            TemuDokter::STATUS_MENUNGGU,
+                                            TemuDokter::STATUS_CHECKIN,
+                                            TemuDokter::STATUS_PEMERIKSAAN,
+                                            TemuDokter::STATUS_TREATMENT,
+                                        ])->count();
         }
 
         $showContactFields = Schema::hasColumn('user', 'no_wa');

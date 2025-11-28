@@ -128,7 +128,12 @@ class DashboardController extends Controller
             'completed_treatments' => RekamMedis::whereHas('temuDokter', function($q) use ($roleUserIds) {
                 $q->whereIn('idrole_user', $roleUserIds);
             })->count(),
-            'pending_treatments' => TemuDokter::whereIn('idrole_user', $roleUserIds)->byStatus(TemuDokter::STATUS_DALAM_PROSES)->count(),
+            'pending_treatments' => TemuDokter::whereIn('idrole_user', $roleUserIds)
+                ->whereIn('status', [
+                    TemuDokter::STATUS_CHECKIN,
+                    TemuDokter::STATUS_PEMERIKSAAN,
+                    TemuDokter::STATUS_TREATMENT,
+                ])->count(),
         ];
 
         $monitoring_patients = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])->latest('idpet')->take(10)->get();

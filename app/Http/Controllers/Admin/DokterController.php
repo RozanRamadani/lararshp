@@ -124,7 +124,12 @@ class DokterController extends Controller
             $completedReservations = TemuDokter::where('idrole_user', $roleUser->idrole_user)
                                     ->where('status', TemuDokter::STATUS_SELESAI)->count();
             $pendingReservations = TemuDokter::where('idrole_user', $roleUser->idrole_user)
-                                    ->whereIn('status', [TemuDokter::STATUS_MENUNGGU, TemuDokter::STATUS_DALAM_PROSES])->count();
+                                    ->whereIn('status', [
+                                        TemuDokter::STATUS_MENUNGGU,
+                                        TemuDokter::STATUS_CHECKIN,
+                                        TemuDokter::STATUS_PEMERIKSAAN,
+                                        TemuDokter::STATUS_TREATMENT,
+                                    ])->count();
         }
 
         $showContactFields = Schema::hasColumn('user', 'no_wa');

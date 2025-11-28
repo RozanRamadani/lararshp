@@ -95,6 +95,9 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Dokter'])
         Route::get('rekam-medis/{rekamMedis}', [RekamMedisController::class, 'show'])->name('rekam-medis.show');
         Route::get('pasien/{pet}/rekam-medis', [RekamMedisController::class, 'petRecords'])->name('pasien.rekam-medis');
 
+        // Mark appointment as complete (Selesai)
+        Route::patch('rekam-medis/{rekamMedis}/mark-complete', [RekamMedisController::class, 'markAsComplete'])->name('rekam-medis.mark-complete');
+
         // Full CRUD Detail Rekam Medis (Dokter can add treatments/procedures)
         Route::prefix('rekam-medis/{rekam_medis}/detail')->name('rekam-medis.detail.')->group(function () {
             Route::get('/', [DetailRekamMedisController::class, 'index'])->name('index');
@@ -170,8 +173,9 @@ Route::middleware(['auth', 'verified', 'role:Pemilik'])
         // View Only - Rekam Medis Pet Sendiri
         Route::get('my-pets/{pet}/rekam-medis', [RekamMedisController::class, 'petRecords'])->name('my-pets.rekam-medis');
 
-        // View Only - Appointment Sendiri
+        // View & Cancel - Appointment Sendiri
         Route::get('my-appointments', [TemuDokterController::class, 'myAppointments'])->name('my-appointments');
+        Route::patch('my-appointments/{temuDokter}/cancel', [TemuDokterController::class, 'cancelAppointment'])->name('my-appointments.cancel');
     });
 
 Route::get('/cek-koneksi', [SiteController::class, 'cekKoneksi'])->name('cek-koneksi');

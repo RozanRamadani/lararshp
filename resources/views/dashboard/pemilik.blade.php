@@ -84,6 +84,40 @@
                 </div>
             </div>
 
+            <!-- Quick Access -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4">Quick Access</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- My Appointments Card -->
+                    <a href="{{ route('pemilik.my-appointments') }}" class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 text-white group">
+                        <div class="flex items-center justify-between mb-3">
+                            <h5 class="text-lg font-semibold">My Appointments</h5>
+                            <svg class="w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </div>
+                        <p class="text-teal-100 text-sm">Lihat dan kelola jadwal appointment untuk hewan peliharaan Anda</p>
+                        <div class="mt-4 flex items-center space-x-2">
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">{{ $stats['upcoming_appointments'] }} Upcoming</span>
+                        </div>
+                    </a>
+
+                    <!-- My Pets Card -->
+                    <a href="{{ route('pemilik.my-pets') }}" class="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 text-white group">
+                        <div class="flex items-center justify-between mb-3">
+                            <h5 class="text-lg font-semibold">My Pets</h5>
+                            <svg class="w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </div>
+                        <p class="text-indigo-100 text-sm">Kelola informasi hewan peliharaan dan lihat riwayat medis</p>
+                        <div class="mt-4 flex items-center space-x-2">
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">{{ $stats['my_pets'] }} Pets</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <!-- My Pets List -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">

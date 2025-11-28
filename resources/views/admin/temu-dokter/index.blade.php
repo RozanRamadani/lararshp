@@ -38,7 +38,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-yellow-600">Menunggu</p>
-                    <p class="text-2xl font-bold text-yellow-700">{{ $appointments->where('status', '0')->count() }}</p>
+                    <p class="text-2xl font-bold text-yellow-700">{{ $menungguCount ?? 0 }}</p>
                 </div>
                 <div class="bg-yellow-200 p-3 rounded-full">
                     <i class="fas fa-clock text-yellow-700 text-xl"></i>
@@ -50,7 +50,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-blue-600">Dalam Proses</p>
-                    <p class="text-2xl font-bold text-blue-700">{{ $appointments->where('status', '1')->count() }}</p>
+                    <p class="text-2xl font-bold text-blue-700">{{ $prosesCount ?? 0 }}</p>
                 </div>
                 <div class="bg-blue-200 p-3 rounded-full">
                     <i class="fas fa-user-md text-blue-700 text-xl"></i>
@@ -62,7 +62,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-green-600">Selesai</p>
-                    <p class="text-2xl font-bold text-green-700">{{ $appointments->where('status', '2')->count() }}</p>
+                    <p class="text-2xl font-bold text-green-700">{{ $selesaiCount ?? 0 }}</p>
                 </div>
                 <div class="bg-green-200 p-3 rounded-full">
                     <i class="fas fa-check-circle text-green-700 text-xl"></i>
@@ -74,7 +74,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-red-600">Batal</p>
-                    <p class="text-2xl font-bold text-red-700">{{ $appointments->where('status', '3')->count() }}</p>
+                    <p class="text-2xl font-bold text-red-700">{{ $batalCount ?? 0 }}</p>
                 </div>
                 <div class="bg-red-200 p-3 rounded-full">
                     <i class="fas fa-times-circle text-red-700 text-xl"></i>

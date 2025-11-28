@@ -62,6 +62,9 @@
                             <x-nav-link :href="route('pemilik.my-pets')" :active="request()->routeIs('pemilik.my-pets*')">
                                 {{ __('My Pets') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('pemilik.my-appointments')" :active="request()->routeIs('pemilik.my-appointments*')">
+                                {{ __('My Appointments') }}
+                            </x-nav-link>
                         @endif
                     @endauth
                 </div>
@@ -165,6 +168,9 @@
                 @if(auth()->user()->hasRole('Pemilik'))
                     <x-responsive-nav-link :href="route('pemilik.my-pets')" :active="request()->routeIs('pemilik.my-pets*')">
                         {{ __('My Pets') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('pemilik.my-appointments')" :active="request()->routeIs('pemilik.my-appointments*')">
+                        {{ __('My Appointments') }}
                     </x-responsive-nav-link>
                 @endif
             @endauth
