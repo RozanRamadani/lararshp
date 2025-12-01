@@ -45,12 +45,19 @@ class JenisHewanController extends Controller
     }
 
     // Menampilkan daftar jenis hewan (query builder)
-    public function index(): View
+    public function index(Request $request): View
     {
         // Mengambil semua jenis_hewan beserta jumlah pets terkait (melalui ras_hewan)
-        $jenisHewan = DB::table('jenis_hewan')
-            ->select('jenis_hewan.*', DB::raw('(select count(*) from pet join ras_hewan on pet.idras_hewan = ras_hewan.idras_hewan where ras_hewan.idjenis_hewan = jenis_hewan.idjenis_hewan) as pets_count'))
-            ->get();
+        $query = DB::table('jenis_hewan')
+            ->select('jenis_hewan.*', DB::raw('(select count(*) from pet join ras_hewan on pet.idras_hewan = ras_hewan.idras_hewan where ras_hewan.idjenis_hewan = jenis_hewan.idjenis_hewan) as pets_count'));
+
+        if ($request->query('show_trashed')) {
+            $query->whereNotNull('jenis_hewan.deleted_at');
+        } else {
+            $query->whereNull('jenis_hewan.deleted_at');
+        }
+
+        $jenisHewan = $query->get();
 
         return view('admin.jenis-hewan.index', compact('jenisHewan'));
     }
@@ -147,21 +154,54 @@ class JenisHewanController extends Controller
             ->with('success', 'Jenis hewan berhasil diperbarui.');
     }
 
-    // Menghapus jenis hewan dari database
+    // Menghapus jenis hewan dari database (soft delete)
     public function destroy($id): RedirectResponse
     {
-        // Cek apakah ada ras_hewan terkait sebelum menghapus
-        if (DB::table('ras_hewan')->where('idjenis_hewan', $id)->exists()) {
+        $jenisHewan = DB::table('jenis_hewan')->where('idjenis_hewan', $id)->first();
+
+        if (!$jenisHewan) {
             return redirect()
                 ->route('admin.jenis-hewan.index')
-                ->with('error', 'Tidak dapat menghapus jenis hewan yang masih memiliki ras hewan.');
+                ->with('error', 'Jenis hewan tidak ditemukan.');
         }
 
-        // Hapus jenis hewan
-        DB::table('jenis_hewan')->where('idjenis_hewan', $id)->delete();
+        // Soft delete jenis hewan
+        DB::table('jenis_hewan')->where('idjenis_hewan', $id)->update(['deleted_at' => now()]);
 
         return redirect()
             ->route('admin.jenis-hewan.index')
             ->with('success', 'Jenis hewan berhasil dihapus.');
+    }
+
+    /**
+     * Restore soft deleted jenis hewan
+     */
+    public function restore($id): RedirectResponse
+    {
+        DB::table('jenis_hewan')->where('idjenis_hewan', $id)->update(['deleted_at' => null]);
+
+        return redirect()
+            ->route('admin.jenis-hewan.index', ['show_trashed' => 1])
+            ->with('success', 'Jenis hewan berhasil dipulihkan.');
+    }
+
+    /**
+     * Permanently delete jenis hewan
+     */
+    public function forceDelete($id): RedirectResponse
+    {
+        // Cek apakah ada ras_hewan terkait sebelum menghapus permanen
+        if (DB::table('ras_hewan')->where('idjenis_hewan', $id)->exists()) {
+            return redirect()
+                ->route('admin.jenis-hewan.index', ['show_trashed' => 1])
+                ->with('error', 'Tidak dapat menghapus permanen jenis hewan yang masih memiliki ras hewan.');
+        }
+
+        // Hapus permanen jenis hewan
+        DB::table('jenis_hewan')->where('idjenis_hewan', $id)->delete();
+
+        return redirect()
+            ->route('admin.jenis-hewan.index', ['show_trashed' => 1])
+            ->with('success', 'Jenis hewan berhasil dihapus permanen.');
     }
 }

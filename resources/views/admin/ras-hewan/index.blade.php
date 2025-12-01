@@ -41,6 +41,28 @@
                 </div>
             @endif
 
+            <!-- Tabs Navigation -->
+            <div class="mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <a href="{{ route('admin.ras-hewan.index') }}"
+                           class="@if(!request('show_trashed')) border-indigo-500 text-indigo-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            Active Records
+                            <span class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium @if(!request('show_trashed')) bg-indigo-100 text-indigo-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ \App\Models\RasHewan::count() }}
+                            </span>
+                        </a>
+                        <a href="{{ route('admin.ras-hewan.index', ['show_trashed' => 1]) }}"
+                           class="@if(request('show_trashed')) border-red-500 text-red-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            Trash
+                            <span class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium @if(request('show_trashed')) bg-red-100 text-red-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ \App\Models\RasHewan::onlyTrashed()->count() }}
+                            </span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
             <!-- Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -144,18 +166,38 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        <div class="flex justify-center space-x-2">
-                                            <a href="{{ route('admin.ras-hewan.edit', $ras->idras_hewan) }}" class="text-blue-600 hover:text-blue-900" title="Edit">
-                                                <i class="fi fi-rr-edit " style="font-size: 20px;"></i>
-                                            </a>
-                                            <form action="{{ route('admin.ras-hewan.destroy', $ras->idras_hewan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus ras hewan ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus" {{ $ras->pets_count > 0 ? 'disabled' : '' }}>
-                                                    <i class="fi fi-rr-trash " style="font-size: 20px;"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        @if(request('show_trashed'))
+                                            {{-- Trash Actions: Restore & Force Delete --}}
+                                            <div class="flex justify-center space-x-2">
+                                                <form action="{{ route('admin.ras-hewan.restore', $ras->idras_hewan) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="text-green-600 hover:text-green-900" title="Restore">
+                                                        <i class="fas fa-undo"></i> Restore
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('admin.ras-hewan.force-delete', $ras->idras_hewan) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure? This will PERMANENTLY delete this record!');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Delete Forever">
+                                                        <i class="fas fa-trash-alt"></i> Delete Forever
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            {{-- Normal Actions: Edit/Delete --}}
+                                            <div class="flex justify-center space-x-2">
+                                                <a href="{{ route('admin.ras-hewan.edit', $ras->idras_hewan) }}" class="text-blue-600 hover:text-blue-900" title="Edit">
+                                                    <i class="fi fi-rr-edit " style="font-size: 20px;"></i>
+                                                </a>
+                                                <form action="{{ route('admin.ras-hewan.destroy', $ras->idras_hewan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus ras hewan ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                                        <i class="fi fi-rr-trash " style="font-size: 20px;"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
                                     </td>
                                 </tr>
                                 @empty

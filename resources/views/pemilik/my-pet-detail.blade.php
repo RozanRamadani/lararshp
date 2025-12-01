@@ -107,7 +107,7 @@
                                                         {{ $rekam->created_at ? \Carbon\Carbon::parse($rekam->created_at)->format('d F Y') : '-' }}
                                                     </h4>
                                                     <p class="text-sm text-gray-600">
-                                                        Dokter: {{ $rekam->dokter->user->nama ?? 'Unknown' }}
+                                                        Dokter: {{ optional($rekam->dokter)->nama ?? optional(optional($rekam->dokter)->user)->nama ?? 'Unknown' }}
                                                     </p>
                                                 </div>
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">

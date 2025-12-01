@@ -40,6 +40,28 @@
                 </div>
             @endif
 
+            <!-- Tabs Navigation -->
+            <div class="mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <a href="{{ route('admin.kode-tindakan-terapi.index') }}"
+                           class="@if(!request('show_trashed')) border-indigo-500 text-indigo-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            Active Records
+                            <span class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium @if(!request('show_trashed')) bg-indigo-100 text-indigo-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ \App\Models\KodeTindakanTerapi::count() }}
+                            </span>
+                        </a>
+                        <a href="{{ route('admin.kode-tindakan-terapi.index', ['show_trashed' => 1]) }}"
+                           class="@if(request('show_trashed')) border-red-500 text-red-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            Trash
+                            <span class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium @if(request('show_trashed')) bg-red-100 text-red-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ \App\Models\KodeTindakanTerapi::onlyTrashed()->count() }}
+                            </span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
             <!-- Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -113,7 +135,7 @@
                                 @forelse($kodeTindakan as $tindakan)
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $tindakan->kode_tindakan }}
+                                        {{ $tindakan->kode }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
@@ -123,7 +145,7 @@
                                                 </div>
                                             </div>
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $tindakan->nama_tindakan }}</div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $tindakan->deskripsi_tindakan_terapi }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -147,18 +169,38 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        <div class="flex justify-center space-x-2">
-                                            <a href="{{ route('admin.kode-tindakan-terapi.edit', $tindakan->idkode_tindakan_terapi) }}" class="text-blue-600 hover:text-blue-900" title="Edit">
-                                                <i class="fi fi-rr-edit " style="font-size: 20px;"></i>
-                                            </a>
-                                            <form action="{{ route('admin.kode-tindakan-terapi.destroy', $tindakan->idkode_tindakan_terapi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kode tindakan ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
-                                                    <i class="fi fi-rr-trash " style="font-size: 20px;"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        @if(request('show_trashed'))
+                                            {{-- Trash Actions: Restore & Force Delete --}}
+                                            <div class="flex justify-center space-x-2">
+                                                <form action="{{ route('admin.kode-tindakan-terapi.restore', $tindakan->idkode_tindakan_terapi) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="text-green-600 hover:text-green-900" title="Restore">
+                                                        <i class="fas fa-undo"></i> Restore
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('admin.kode-tindakan-terapi.force-delete', $tindakan->idkode_tindakan_terapi) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure? This will PERMANENTLY delete this record!');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Delete Forever">
+                                                        <i class="fas fa-trash-alt"></i> Delete Forever
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            {{-- Normal Actions: Edit/Delete --}}
+                                            <div class="flex justify-center space-x-2">
+                                                <a href="{{ route('admin.kode-tindakan-terapi.edit', $tindakan->idkode_tindakan_terapi) }}" class="text-blue-600 hover:text-blue-900" title="Edit">
+                                                    <i class="fi fi-rr-edit " style="font-size: 20px;"></i>
+                                                </a>
+                                                <form action="{{ route('admin.kode-tindakan-terapi.destroy', $tindakan->idkode_tindakan_terapi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kode tindakan ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                                        <i class="fi fi-rr-trash " style="font-size: 20px;"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
                                     </td>
                                 </tr>
                                 @empty

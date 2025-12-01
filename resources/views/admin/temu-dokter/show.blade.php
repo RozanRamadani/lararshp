@@ -134,7 +134,7 @@
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Aksi Cepat</h2>
 
                 <div class="space-y-2">
-                    <a href="{{ route('admin.pet.show', $temuDokter->pet->idpet) }}" class="block w-full px-4 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg transition-colors text-center">
+                    <a href="{{ route('resepsionis.pet.show', $temuDokter->pet->idpet) }}" class="block w-full px-4 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg transition-colors text-center">
                         <i class="fas fa-paw mr-2"></i>Lihat Detail Pet
                     </a>
                     <a href="{{ route('resepsionis.pemilik.show', $temuDokter->pet->pemilik->idpemilik) }}" class="block w-full px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors text-center">

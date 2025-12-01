@@ -131,17 +131,20 @@
                                 </div>
                             </div>
 
-                            @if($appointment->roleUser)
-                                <div class="mt-3 flex items-center space-x-2 text-sm">
-                                    <div class="bg-teal-100 p-2 rounded">
-                                        <i class="fas fa-user-md text-teal-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Ditangani oleh:</p>
-                                        <p class="text-gray-900 font-medium">{{ $appointment->roleUser->nama }}</p>
-                                    </div>
+                            <div class="mt-3 flex items-center space-x-2 text-sm">
+                                <div class="bg-teal-100 p-2 rounded">
+                                    <i class="fas fa-user-md text-teal-600"></i>
                                 </div>
-                            @endif
+                                <div>
+                                    <p class="text-gray-500">Ditangani oleh:</p>
+                                    @if($appointment->roleUser)
+                                        <p class="text-gray-900 font-medium">{{ $appointment->roleUser->user->nama ?? 'Unknown' }}</p>
+                                        <p class="text-xs text-gray-500">{{ $appointment->roleUser->role->nama_role ?? '' }}</p>
+                                    @else
+                                        <p class="text-gray-400 italic">Belum ditentukan</p>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
 

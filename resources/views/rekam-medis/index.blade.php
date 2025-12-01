@@ -30,6 +30,28 @@
                 </div>
             @endif
 
+            <!-- Tabs for Active/Trash -->
+            @if(auth()->user()->hasAnyRole(['Administrator', 'Perawat']))
+                <div class="mb-6 border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <a href="{{ route('perawat.rekam-medis.index') }}"
+                           class="@if(!request('show_trashed')) border-indigo-500 text-indigo-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            Active Records
+                            <span class="ml-2 py-0.5 px-2 rounded-full text-xs @if(!request('show_trashed')) bg-indigo-100 text-indigo-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ $rekamMedis->total() }}
+                            </span>
+                        </a>
+                        <a href="{{ route('perawat.rekam-medis.index', ['show_trashed' => 1]) }}"
+                           class="@if(request('show_trashed')) border-red-500 text-red-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            <i class="fas fa-trash mr-1"></i> Trash
+                            <span class="ml-2 py-0.5 px-2 rounded-full text-xs @if(request('show_trashed')) bg-red-100 text-red-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ \App\Models\RekamMedis::onlyTrashed()->count() }}
+                            </span>
+                        </a>
+                    </nav>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <!-- Filter Section -->
@@ -100,17 +122,35 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
-                                                @if(auth()->user()->hasRole('Dokter'))
-                                                    <a href="{{ route('dokter.rekam-medis.show', $record) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                                @if(request('show_trashed'))
+                                                    {{-- Trash Actions: Restore & Force Delete --}}
+                                                    <form action="{{ route('perawat.rekam-medis.restore', $record->idrekam_medis) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-900" title="Restore">
+                                                            <i class="fas fa-undo"></i> Restore
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('perawat.rekam-medis.force-delete', $record->idrekam_medis) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure? This will PERMANENTLY delete this record and cannot be recovered!');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900" title="Delete Permanently">
+                                                            <i class="fas fa-trash-alt"></i> Delete Forever
+                                                        </button>
+                                                    </form>
                                                 @else
-                                                    <a href="{{ route('perawat.rekam-medis.show', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                                    @if(auth()->user()->hasAnyRole(['Administrator', 'Perawat']))
-                                                        <a href="{{ route('perawat.rekam-medis.edit', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
-                                                        <form action="{{ route('perawat.rekam-medis.destroy', ['rekam_medi' => $record->idrekam_medis]) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this record?');">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                                                        </form>
+                                                    {{-- Normal Actions --}}
+                                                    @if(auth()->user()->hasRole('Dokter'))
+                                                        <a href="{{ route('dokter.rekam-medis.show', $record) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                                    @else
+                                                        <a href="{{ route('perawat.rekam-medis.show', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                                        @if(auth()->user()->hasAnyRole(['Administrator', 'Perawat']))
+                                                            <a href="{{ route('perawat.rekam-medis.edit', ['rekam_medi' => $record->idrekam_medis]) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
+                                                            <form action="{{ route('perawat.rekam-medis.destroy', ['rekam_medi' => $record->idrekam_medis]) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this record?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                                                            </form>
+                                                        @endif
                                                     @endif
                                                 @endif
                                             </div>

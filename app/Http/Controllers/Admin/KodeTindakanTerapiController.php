@@ -18,13 +18,13 @@ class KodeTindakanTerapiController extends Controller
     private function validationMessages(): array
     {
         return [
-            'kode_tindakan.required' => 'Kode tindakan wajib diisi.',
-            'kode_tindakan.string' => 'Kode tindakan harus berupa teks.',
-            'kode_tindakan.max' => 'Kode tindakan maksimal 50 karakter.',
-            'kode_tindakan.unique' => 'Kode tindakan sudah digunakan.',
-            'nama_tindakan.required' => 'Nama tindakan wajib diisi.',
-            'nama_tindakan.string' => 'Nama tindakan harus berupa teks.',
-            'nama_tindakan.max' => 'Nama tindakan maksimal 255 karakter.',
+            'kode.required' => 'Kode tindakan wajib diisi.',
+            'kode.string' => 'Kode tindakan harus berupa teks.',
+            'kode.max' => 'Kode tindakan maksimal 50 karakter.',
+            'kode.unique' => 'Kode tindakan sudah digunakan.',
+            'deskripsi_tindakan_terapi.required' => 'Nama tindakan wajib diisi.',
+            'deskripsi_tindakan_terapi.string' => 'Nama tindakan harus berupa teks.',
+            'deskripsi_tindakan_terapi.max' => 'Nama tindakan maksimal 255 karakter.',
             'tarif.required' => 'Tarif wajib diisi.',
             'tarif.numeric' => 'Tarif harus berupa angka.',
             'tarif.min' => 'Tarif minimal 0.',
@@ -41,8 +41,8 @@ class KodeTindakanTerapiController extends Controller
     private function storeValidationRules(): array
     {
         return [
-            'kode_tindakan' => 'required|string|max:50|unique:kode_tindakan_terapi,kode_tindakan',
-            'nama_tindakan' => 'required|string|max:255',
+            'kode' => 'required|string|max:50|unique:kode_tindakan_terapi,kode',
+            'deskripsi_tindakan_terapi' => 'required|string|max:255',
             'tarif' => 'required|numeric|min:0',
             'idkategori' => 'required|exists:kategori,idkategori',
             'idkategori_klinis' => 'required|exists:kategori_klinis,idkategori_klinis',
@@ -55,8 +55,8 @@ class KodeTindakanTerapiController extends Controller
     private function updateValidationRules(KodeTindakanTerapi $kodeTindakanTerapi): array
     {
         return [
-            'kode_tindakan' => 'required|string|max:50|unique:kode_tindakan_terapi,kode_tindakan,' . $kodeTindakanTerapi->idkode_tindakan_terapi . ',idkode_tindakan_terapi',
-            'nama_tindakan' => 'required|string|max:255',
+            'kode' => 'required|string|max:50|unique:kode_tindakan_terapi,kode,' . $kodeTindakanTerapi->idkode_tindakan_terapi . ',idkode_tindakan_terapi',
+            'deskripsi_tindakan_terapi' => 'required|string|max:255',
             'tarif' => 'required|numeric|min:0',
             'idkategori' => 'required|exists:kategori,idkategori',
             'idkategori_klinis' => 'required|exists:kategori_klinis,idkategori_klinis',
@@ -66,9 +66,15 @@ class KodeTindakanTerapiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $kodeTindakan = KodeTindakanTerapi::with(['kategori', 'kategoriKlinis'])->get();
+        $query = KodeTindakanTerapi::with(['kategori', 'kategoriKlinis']);
+
+        if ($request->query('show_trashed')) {
+            $query->onlyTrashed();
+        }
+
+        $kodeTindakan = $query->get();
 
         return view('admin.kode-tindakan-terapi.index', compact('kodeTindakan'));
     }
@@ -149,5 +155,31 @@ class KodeTindakanTerapiController extends Controller
         return redirect()
             ->route('admin.kode-tindakan-terapi.index')
             ->with('success', 'Kode tindakan terapi berhasil dihapus.');
+    }
+
+    /**
+     * Restore soft deleted kode tindakan terapi
+     */
+    public function restore($id): RedirectResponse
+    {
+        $kodeTindakan = KodeTindakanTerapi::withTrashed()->findOrFail($id);
+        $kodeTindakan->restore();
+
+        return redirect()
+            ->route('admin.kode-tindakan-terapi.index', ['show_trashed' => 1])
+            ->with('success', 'Kode tindakan terapi berhasil dipulihkan.');
+    }
+
+    /**
+     * Permanently delete kode tindakan terapi
+     */
+    public function forceDelete($id): RedirectResponse
+    {
+        $kodeTindakan = KodeTindakanTerapi::withTrashed()->findOrFail($id);
+        $kodeTindakan->forceDelete();
+
+        return redirect()
+            ->route('admin.kode-tindakan-terapi.index', ['show_trashed' => 1])
+            ->with('success', 'Kode tindakan terapi berhasil dihapus permanen.');
     }
 }

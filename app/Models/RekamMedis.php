@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\RoleUser;
 
 class RekamMedis extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'rekam_medis';
     protected $primaryKey = 'idrekam_medis';
     // The `rekam_medis` table in the SQL dump contains only a subset of fields.

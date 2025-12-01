@@ -15,14 +15,19 @@ class DetailRekamMedisController extends Controller
      * Display a listing of detail rekam medis for a specific rekam medis.
      * Accessible by Dokter (full CRUD) and Perawat (view only)
      */
-    public function index($idrekam_medis)
+    public function index(Request $request, $idrekam_medis)
     {
         $rekamMedis = RekamMedis::with(['temuDokter.pet', 'temuDokter.roleUser'])->findOrFail($idrekam_medis);
 
-        $details = DetailRekamMedis::with(['kodeTindakanTerapi'])
-            ->where('idrekam_medis', $idrekam_medis)
-            ->orderBy('iddetail_rekam_medis', 'desc')
-            ->paginate(10);
+        // Handle trash view
+        $query = DetailRekamMedis::with(['kodeTindakanTerapi'])
+            ->where('idrekam_medis', $idrekam_medis);
+
+        if ($request->query('show_trashed')) {
+            $query->onlyTrashed();
+        }
+
+        $details = $query->orderBy('iddetail_rekam_medis', 'desc')->paginate(10);
 
         $user = Auth::user();
         $canEdit = $user->hasRole('Dokter') || $user->hasRole('Administrator');
@@ -154,7 +159,7 @@ class DetailRekamMedisController extends Controller
     }
 
     /**
-     * Remove the specified detail rekam medis.
+     * Remove the specified detail rekam medis (soft delete).
      * Only for Dokter
      */
     public function destroy($idrekam_medis, DetailRekamMedis $detail)
@@ -169,5 +174,43 @@ class DetailRekamMedisController extends Controller
         return redirect()
             ->route('dokter.rekam-medis.detail.index', ['rekam_medis' => $idrekam_medis])
             ->with('success', 'Detail rekam medis berhasil dihapus.');
+    }
+
+    /**
+     * Restore soft deleted detail rekam medis
+     */
+    public function restore($idrekam_medis, $id)
+    {
+        $detail = DetailRekamMedis::withTrashed()->findOrFail($id);
+
+        // Verify the detail belongs to the specified rekam_medis
+        if ($detail->idrekam_medis != $idrekam_medis) {
+            abort(404);
+        }
+
+        $detail->restore();
+
+        return redirect()
+            ->route('dokter.rekam-medis.detail.index', ['rekam_medis' => $idrekam_medis])
+            ->with('success', 'Detail rekam medis berhasil dipulihkan.');
+    }
+
+    /**
+     * Permanently delete detail rekam medis
+     */
+    public function forceDelete($idrekam_medis, $id)
+    {
+        $detail = DetailRekamMedis::withTrashed()->findOrFail($id);
+
+        // Verify the detail belongs to the specified rekam_medis
+        if ($detail->idrekam_medis != $idrekam_medis) {
+            abort(404);
+        }
+
+        $detail->forceDelete();
+
+        return redirect()
+            ->route('dokter.rekam-medis.detail.index', ['rekam_medis' => $idrekam_medis])
+            ->with('success', 'Detail rekam medis berhasil dihapus permanen.');
     }
 }

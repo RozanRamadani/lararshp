@@ -70,6 +70,18 @@ Route::middleware(['auth', 'verified', 'role:Administrator'])
         Route::post('pet/{id}/restore', [PetController::class, 'restore'])->name('pet.restore');
         Route::delete('pet/{id}/force-delete', [PetController::class, 'forceDelete'])->name('pet.force-delete');
 
+        // Soft delete operations - Jenis Hewan
+        Route::post('jenis-hewan/{id}/restore', [JenisHewanController::class, 'restore'])->name('jenis-hewan.restore');
+        Route::delete('jenis-hewan/{id}/force-delete', [JenisHewanController::class, 'forceDelete'])->name('jenis-hewan.force-delete');
+
+        // Soft delete operations - Ras Hewan
+        Route::post('ras-hewan/{id}/restore', [RasHewanController::class, 'restore'])->name('ras-hewan.restore');
+        Route::delete('ras-hewan/{id}/force-delete', [RasHewanController::class, 'forceDelete'])->name('ras-hewan.force-delete');
+
+        // Soft delete operations - Kode Tindakan Terapi
+        Route::post('kode-tindakan-terapi/{id}/restore', [KodeTindakanTerapiController::class, 'restore'])->name('kode-tindakan-terapi.restore');
+        Route::delete('kode-tindakan-terapi/{id}/force-delete', [KodeTindakanTerapiController::class, 'forceDelete'])->name('kode-tindakan-terapi.force-delete');
+
         // Data Management Dashboard
         Route::get('/data', [DataManagementController::class, 'index'])->name('data.index');
     });
@@ -107,6 +119,9 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Dokter'])
             Route::get('{detail}/edit', [DetailRekamMedisController::class, 'edit'])->name('edit');
             Route::put('{detail}', [DetailRekamMedisController::class, 'update'])->name('update');
             Route::delete('{detail}', [DetailRekamMedisController::class, 'destroy'])->name('destroy');
+            // Soft delete operations
+            Route::post('{id}/restore', [DetailRekamMedisController::class, 'restore'])->name('restore');
+            Route::delete('{id}/force-delete', [DetailRekamMedisController::class, 'forceDelete'])->name('force-delete');
         });
     });
 
@@ -122,6 +137,9 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Perawat'])
 
         // Full CRUD Rekam Medis
         Route::resource('rekam-medis', RekamMedisController::class);
+        // Soft delete operations for Rekam Medis
+        Route::post('rekam-medis/{id}/restore', [RekamMedisController::class, 'restore'])->name('rekam-medis.restore');
+        Route::delete('rekam-medis/{id}/force-delete', [RekamMedisController::class, 'forceDelete'])->name('rekam-medis.force-delete');
         // Transactional endpoint to complete an appointment and create RekamMedis
         Route::post('rekam-medis/{idreservasi}/complete', [AppointmentTransactionController::class, 'complete'])->name('rekam-medis.complete');
         Route::get('pasien/{pet}/rekam-medis', [RekamMedisController::class, 'petRecords'])->name('pasien.rekam-medis');
@@ -158,6 +176,9 @@ Route::middleware(['auth', 'verified', 'role:Administrator,Resepsionis'])
 
         // Manajemen Appointment/Reservasi
         Route::resource('temu-dokter', TemuDokterController::class);
+        // Soft delete operations for Appointments
+        Route::post('temu-dokter/{id}/restore', [TemuDokterController::class, 'restore'])->name('temu-dokter.restore');
+        Route::delete('temu-dokter/{id}/force-delete', [TemuDokterController::class, 'forceDelete'])->name('temu-dokter.force-delete');
     });
 
 // 5. PEMILIK/OWNER ROUTES (Role ID: 5)

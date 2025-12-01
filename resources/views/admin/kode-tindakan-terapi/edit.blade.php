@@ -29,19 +29,19 @@
 
                         <!-- Kode Tindakan -->
                         <div class="mb-6">
-                            <label for="kode_tindakan" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="kode" class="block text-sm font-medium text-gray-700 mb-2">
                                 Kode Tindakan <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                name="kode_tindakan"
-                                id="kode_tindakan"
-                                value="{{ old('kode_tindakan', $kodeTindakanTerapi->kode_tindakan) }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 @error('kode_tindakan') border-red-500 @enderror"
+                                name="kode"
+                                id="kode"
+                                value="{{ old('kode', $kodeTindakanTerapi->kode) }}"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 @error('kode') border-red-500 @enderror"
                                 placeholder="Contoh: KT001, VKS-001"
                                 required
                             >
-                            @error('kode_tindakan')
+                            @error('kode')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                             <p class="mt-1 text-sm text-gray-500">Masukkan kode unik tindakan terapi (max 50 karakter)</p>
@@ -49,19 +49,19 @@
 
                         <!-- Nama Tindakan -->
                         <div class="mb-6">
-                            <label for="nama_tindakan" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="deskripsi_tindakan_terapi" class="block text-sm font-medium text-gray-700 mb-2">
                                 Nama Tindakan <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                name="nama_tindakan"
-                                id="nama_tindakan"
-                                value="{{ old('nama_tindakan', $kodeTindakanTerapi->nama_tindakan) }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 @error('nama_tindakan') border-red-500 @enderror"
+                                name="deskripsi_tindakan_terapi"
+                                id="deskripsi_tindakan_terapi"
+                                value="{{ old('deskripsi_tindakan_terapi', $kodeTindakanTerapi->deskripsi_tindakan_terapi) }}"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 @error('deskripsi_tindakan_terapi') border-red-500 @enderror"
                                 placeholder="Contoh: Vaksinasi Rabies, Sterilisasi Kucing"
                                 required
                             >
-                            @error('nama_tindakan')
+                            @error('deskripsi_tindakan_terapi')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                             <p class="mt-1 text-sm text-gray-500">Masukkan nama lengkap tindakan terapi</p>

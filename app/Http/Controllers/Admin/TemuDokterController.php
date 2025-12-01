@@ -20,12 +20,17 @@ class TemuDokterController extends Controller
      * Untuk Resepsionis: Semua appointment
      * Untuk Dokter/Perawat: View only
      */
-    public function index(): View
+    public function index(Request $request): View
     {
+        // Handle trash view
+        $query = TemuDokter::with(['pet.pemilik.user', 'pet.rasHewan.jenisHewan', 'roleUser']);
+
+        if ($request->query('show_trashed')) {
+            $query->onlyTrashed();
+        }
+
         // Paginated appointments for the table
-        $appointments = TemuDokter::with(['pet.pemilik.user', 'pet.rasHewan.jenisHewan', 'roleUser'])
-            ->orderBy('waktu_daftar', 'desc')
-            ->paginate(15);
+        $appointments = $query->orderBy('waktu_daftar', 'desc')->paginate(15);
 
         // Compute real counts from DB using the current status constants
         $menungguCount = TemuDokter::where('status', TemuDokter::STATUS_MENUNGGU)->count();
@@ -166,18 +171,77 @@ class TemuDokterController extends Controller
     }
 
     /**
-     * Remove the specified appointment
+     * Remove the specified appointment (soft delete)
      */
     public function destroy(TemuDokter $temuDokter): RedirectResponse
     {
         try {
+            // Soft delete appointment and related rekam medis if exists
+            if ($temuDokter->rekamMedis) {
+                $temuDokter->rekamMedis->details()->delete();
+                $temuDokter->rekamMedis->delete();
+            }
+
             $temuDokter->delete();
+
             return redirect()
                 ->route('resepsionis.temu-dokter.index')
                 ->with('success', 'Appointment berhasil dihapus.');
         } catch (\Exception $e) {
             Log::error('Failed to delete appointment: ' . $e->getMessage());
             return back()->with('error', 'Gagal menghapus appointment.');
+        }
+    }
+
+    /**
+     * Restore soft deleted appointment
+     */
+    public function restore($id): RedirectResponse
+    {
+        try {
+            $temuDokter = TemuDokter::withTrashed()->findOrFail($id);
+
+            // Restore related rekam medis if exists
+            if ($temuDokter->rekamMedis()->withTrashed()->exists()) {
+                $rekamMedis = $temuDokter->rekamMedis()->withTrashed()->first();
+                $rekamMedis->details()->withTrashed()->restore();
+                $rekamMedis->restore();
+            }
+
+            $temuDokter->restore();
+
+            return redirect()
+                ->route('resepsionis.temu-dokter.index')
+                ->with('success', 'Appointment berhasil dipulihkan.');
+        } catch (\Exception $e) {
+            Log::error('Failed to restore appointment: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memulihkan appointment.');
+        }
+    }
+
+    /**
+     * Permanently delete appointment
+     */
+    public function forceDelete($id): RedirectResponse
+    {
+        try {
+            $temuDokter = TemuDokter::withTrashed()->findOrFail($id);
+
+            // Force delete related rekam medis if exists
+            if ($temuDokter->rekamMedis()->withTrashed()->exists()) {
+                $rekamMedis = $temuDokter->rekamMedis()->withTrashed()->first();
+                $rekamMedis->details()->withTrashed()->forceDelete();
+                $rekamMedis->forceDelete();
+            }
+
+            $temuDokter->forceDelete();
+
+            return redirect()
+                ->route('resepsionis.temu-dokter.index')
+                ->with('success', 'Appointment berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            Log::error('Failed to force delete appointment: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus permanen appointment.');
         }
     }
 
@@ -198,7 +262,7 @@ class TemuDokterController extends Controller
         // Get semua pet milik pemilik ini
         $petIds = $pemilik->pets->pluck('idpet');
 
-        $appointments = TemuDokter::with(['pet.rasHewan.jenisHewan', 'roleUser'])
+        $appointments = TemuDokter::with(['pet.rasHewan.jenisHewan', 'roleUser.user', 'roleUser.role'])
             ->whereIn('idpet', $petIds)
             ->orderBy('waktu_daftar', 'desc')
             ->paginate(10);

@@ -16,15 +16,21 @@ class RekamMedisController extends Controller
      * Untuk Dokter: Read-only
      * Untuk Perawat: Full access
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
-        // Sementara tampilkan semua data untuk testing
-        // TODO: Filter berdasarkan dokter setelah tahu struktur kolom yang benar
-        $rekamMedis = RekamMedis::with(['temuDokter.pet.pemilik', 'temuDokter.roleUser'])
-            ->orderBy('idrekam_medis', 'desc') // Using primary key instead of tanggal_kunjungan
-            ->paginate(15);
+        // Check if showing trashed records
+        if ($request->get('show_trashed')) {
+            $rekamMedis = RekamMedis::onlyTrashed()
+                ->with(['temuDokter.pet.pemilik', 'temuDokter.roleUser'])
+                ->orderBy('idrekam_medis', 'desc')
+                ->paginate(15);
+        } else {
+            $rekamMedis = RekamMedis::with(['temuDokter.pet.pemilik', 'temuDokter.roleUser'])
+                ->orderBy('idrekam_medis', 'desc')
+                ->paginate(15);
+        }
 
         return view('rekam-medis.index', compact('rekamMedis'));
     }
@@ -192,14 +198,48 @@ class RekamMedisController extends Controller
     {
         $rekamMedis = RekamMedis::findOrFail($rekam_medi);
 
-        // Delete all related detail_rekam_medis first
+        // Delete all related detail_rekam_medis first (soft delete)
         $rekamMedis->details()->delete();
 
-        // Then delete the main record
+        // Then delete the main record (soft delete)
         $rekamMedis->delete();
 
         return redirect()->route('perawat.rekam-medis.index')
             ->with('success', 'Rekam medis berhasil dihapus.');
+    }
+
+    /**
+     * Restore soft deleted rekam medis
+     */
+    public function restore($id)
+    {
+        $rekamMedis = RekamMedis::withTrashed()->findOrFail($id);
+
+        // Restore related details first
+        $rekamMedis->details()->withTrashed()->restore();
+
+        // Restore main record
+        $rekamMedis->restore();
+
+        return redirect()->route('perawat.rekam-medis.index')
+            ->with('success', 'Rekam medis berhasil dipulihkan.');
+    }
+
+    /**
+     * Permanently delete rekam medis
+     */
+    public function forceDelete($id)
+    {
+        $rekamMedis = RekamMedis::withTrashed()->findOrFail($id);
+
+        // Force delete all related details first
+        $rekamMedis->details()->withTrashed()->forceDelete();
+
+        // Force delete main record
+        $rekamMedis->forceDelete();
+
+        return redirect()->route('perawat.rekam-medis.index')
+            ->with('success', 'Rekam medis berhasil dihapus permanen.');
     }
 
     /**

@@ -27,6 +27,28 @@
                 ]" />
             </div>
 
+            <!-- Tabs Navigation -->
+            <div class="mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <a href="{{ auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.detail.index', $rekamMedis->idrekam_medis) : route('perawat.rekam-medis.detail.index', $rekamMedis->idrekam_medis) }}"
+                           class="@if(!request('show_trashed')) border-indigo-500 text-indigo-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            Active Details
+                            <span class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium @if(!request('show_trashed')) bg-indigo-100 text-indigo-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ \App\Models\DetailRekamMedis::where('idrekam_medis', $rekamMedis->idrekam_medis)->count() }}
+                            </span>
+                        </a>
+                        <a href="{{ auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.detail.index', ['rekam_medis' => $rekamMedis->idrekam_medis, 'show_trashed' => 1]) : route('perawat.rekam-medis.detail.index', ['rekam_medis' => $rekamMedis->idrekam_medis, 'show_trashed' => 1]) }}"
+                           class="@if(request('show_trashed')) border-red-500 text-red-600 @else border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            Trash
+                            <span class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium @if(request('show_trashed')) bg-red-100 text-red-600 @else bg-gray-100 text-gray-600 @endif">
+                                {{ \App\Models\DetailRekamMedis::where('idrekam_medis', $rekamMedis->idrekam_medis)->onlyTrashed()->count() }}
+                            </span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
             <!-- Patient Info Card -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
@@ -85,21 +107,43 @@
                                                 {{ $detail->detail ? Str::limit($detail->detail, 50) : '-' }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <a href="{{ auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.detail.show', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) : route('perawat.rekam-medis.detail.show', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}"
-                                                   class="text-indigo-600 hover:text-indigo-900 mr-3">View</a>
+                                                @if(request('show_trashed'))
+                                                    {{-- Trash Actions: Restore & Force Delete --}}
+                                                    @if($canEdit)
+                                                        <form action="{{ route('dokter.rekam-medis.detail.restore', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}" method="POST" class="inline">
+                                                            @csrf
+                                                            <button type="submit" class="text-green-600 hover:text-green-900 mx-1" title="Restore">
+                                                                <i class="fas fa-undo"></i> Restore
+                                                            </button>
+                                                        </form>
+                                                        <form action="{{ route('dokter.rekam-medis.detail.force-delete', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure? This will PERMANENTLY delete this detail!');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-red-600 hover:text-red-900 mx-1" title="Delete Forever">
+                                                                <i class="fas fa-trash-alt"></i> Delete Forever
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <span class="text-gray-400">View Only</span>
+                                                    @endif
+                                                @else
+                                                    {{-- Normal Actions: View/Edit/Delete --}}
+                                                    <a href="{{ auth()->user()->hasRole('Dokter') ? route('dokter.rekam-medis.detail.show', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) : route('perawat.rekam-medis.detail.show', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}"
+                                                       class="text-indigo-600 hover:text-indigo-900 mr-3">View</a>
 
-                                                @if($canEdit)
-                                                    <a href="{{ route('dokter.rekam-medis.detail.edit', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}"
-                                                       class="text-yellow-600 hover:text-yellow-900 mr-3">Edit</a>
+                                                    @if($canEdit)
+                                                        <a href="{{ route('dokter.rekam-medis.detail.edit', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}"
+                                                           class="text-yellow-600 hover:text-yellow-900 mr-3">Edit</a>
 
-                                                    <form action="{{ route('dokter.rekam-medis.detail.destroy', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}"
-                                                          method="POST"
-                                                          class="inline"
-                                                          onsubmit="return confirm('Yakin ingin menghapus detail ini?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                                    </form>
+                                                        <form action="{{ route('dokter.rekam-medis.detail.destroy', [$rekamMedis->idrekam_medis, $detail->iddetail_rekam_medis]) }}"
+                                                              method="POST"
+                                                              class="inline"
+                                                              onsubmit="return confirm('Yakin ingin menghapus detail ini?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                                        </form>
+                                                    @endif
                                                 @endif
                                             </td>
                                         </tr>

@@ -50,9 +50,15 @@ class RasHewanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $rasHewan = RasHewan::with(['jenisHewan'])->withCount('pets')->get();
+        $query = RasHewan::with(['jenisHewan'])->withCount('pets');
+
+        if ($request->query('show_trashed')) {
+            $query->onlyTrashed();
+        }
+
+        $rasHewan = $query->get();
 
         return view('admin.ras-hewan.index', compact('rasHewan'));
     }
@@ -126,17 +132,44 @@ class RasHewanController extends Controller
      */
     public function destroy(RasHewan $rasHewan): RedirectResponse
     {
-        // Check if there are any related pets
-        if ($rasHewan->pets()->exists()) {
-            return redirect()
-                ->route('admin.ras-hewan.index')
-                ->with('error', 'Tidak dapat menghapus ras hewan yang masih memiliki pets.');
-        }
-
         $rasHewan->delete();
 
         return redirect()
             ->route('admin.ras-hewan.index')
             ->with('success', 'Ras hewan berhasil dihapus.');
+    }
+
+    /**
+     * Restore soft deleted ras hewan
+     */
+    public function restore($id): RedirectResponse
+    {
+        $rasHewan = RasHewan::withTrashed()->findOrFail($id);
+        $rasHewan->restore();
+
+        return redirect()
+            ->route('admin.ras-hewan.index', ['show_trashed' => 1])
+            ->with('success', 'Ras hewan berhasil dipulihkan.');
+    }
+
+    /**
+     * Permanently delete ras hewan
+     */
+    public function forceDelete($id): RedirectResponse
+    {
+        $rasHewan = RasHewan::withTrashed()->findOrFail($id);
+
+        // Check if there are any related pets
+        if ($rasHewan->pets()->exists()) {
+            return redirect()
+                ->route('admin.ras-hewan.index', ['show_trashed' => 1])
+                ->with('error', 'Tidak dapat menghapus permanen ras hewan yang masih memiliki pets.');
+        }
+
+        $rasHewan->forceDelete();
+
+        return redirect()
+            ->route('admin.ras-hewan.index', ['show_trashed' => 1])
+            ->with('success', 'Ras hewan berhasil dihapus permanen.');
     }
 }

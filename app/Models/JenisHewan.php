@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class JenisHewan extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'jenis_hewan';
     protected $primaryKey = 'idjenis_hewan';
     public $timestamps = false;
@@ -27,12 +30,12 @@ class JenisHewan extends Model
     public function pets()
     {
         return $this->hasManyThrough(
-            Pet::class,          
-            RasHewan::class,      
-            'idjenis_hewan',      
-            'idras_hewan',        
-            'idjenis_hewan',      
-            'idras_hewan'  
+            Pet::class,
+            RasHewan::class,
+            'idjenis_hewan',
+            'idras_hewan',
+            'idjenis_hewan',
+            'idras_hewan'
         );
     }
 }
