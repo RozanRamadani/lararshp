@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('temu_dokter', function (Blueprint $table) {
-            $table->softDeletes();
+            if (!Schema::hasColumn('temu_dokter', 'deleted_at')) {
+                $table->softDeletes();
+            }
+            if (!Schema::hasColumn('temu_dokter', 'deleted_by')) {
+                $table->unsignedBigInteger('deleted_by')->nullable()->after('deleted_at');
+            }
         });
     }
 
@@ -22,7 +27,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('temu_dokter', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+            if (Schema::hasColumn('temu_dokter', 'deleted_by')) {
+                $table->dropColumn('deleted_by');
+            }
+            if (Schema::hasColumn('temu_dokter', 'deleted_at')) {
+                $table->dropSoftDeletes();
+            }
         });
     }
 };

@@ -178,10 +178,15 @@ class TemuDokterController extends Controller
         try {
             // Soft delete appointment and related rekam medis if exists
             if ($temuDokter->rekamMedis) {
+                $temuDokter->rekamMedis->details()->update(['deleted_by' => auth()->id()]);
                 $temuDokter->rekamMedis->details()->delete();
+                $temuDokter->rekamMedis->deleted_by = auth()->id();
+                $temuDokter->rekamMedis->save();
                 $temuDokter->rekamMedis->delete();
             }
 
+            $temuDokter->deleted_by = auth()->id();
+            $temuDokter->save();
             $temuDokter->delete();
 
             return redirect()

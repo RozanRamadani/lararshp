@@ -107,55 +107,14 @@
                     <!-- Filter Tabs -->
                     <div class="mb-6">
                         <div class="border-b border-gray-200">
-                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                                <a href="{{ route('admin.user.index', ['status' => 'all']) }}"
-                                    class="
-                                        {{ request()->get('status', 'all') === 'all'
-                                            ? 'border-blue-500 text-blue-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }}
-                                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center
-                                    ">
+                            <nav class="-mb-px flex" aria-label="Tabs">
+                                <a href="{{ route('admin.user.index') }}"
+                                    class="border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center">
                                     <i class="fi fi-rr-list mr-2" style="font-size: 14px;"></i>
                                     Semua User
-                                    <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-semibold
-                                        {{ request()->get('status', 'all') === 'all' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600' }}">
+                                    <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">
                                         {{ $users->total() }}
                                     </span>
-                                </a>
-
-                                <a href="{{ route('admin.user.index', ['status' => 'active']) }}"
-                                    class="
-                                        {{ request()->get('status') === 'active'
-                                            ? 'border-green-500 text-green-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }}
-                                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center
-                                    ">
-                                    <i class="fi fi-rr-check-circle mr-2" style="font-size: 14px;"></i>
-                                    Aktif
-                                    @if(request()->get('status') === 'active')
-                                        <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-semibold bg-green-100 text-green-600">
-                                            {{ $users->total() }}
-                                        </span>
-                                    @endif
-                                </a>
-
-                                <a href="{{ route('admin.user.index', ['status' => 'inactive']) }}"
-                                    class="
-                                        {{ request()->get('status') === 'inactive'
-                                            ? 'border-red-500 text-red-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }}
-                                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center
-                                    ">
-                                    <i class="fi fi-rr-cross-circle mr-2" style="font-size: 14px;"></i>
-                                    Nonaktif
-                                    @if(request()->get('status') === 'inactive')
-                                        <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-semibold bg-red-100 text-red-600">
-                                            {{ $users->total() }}
-                                        </span>
-                                    @endif
                                 </a>
                             </nav>
                         </div>

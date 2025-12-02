@@ -199,9 +199,12 @@ class RekamMedisController extends Controller
         $rekamMedis = RekamMedis::findOrFail($rekam_medi);
 
         // Delete all related detail_rekam_medis first (soft delete)
+        $rekamMedis->details()->update(['deleted_by' => auth()->id()]);
         $rekamMedis->details()->delete();
 
         // Then delete the main record (soft delete)
+        $rekamMedis->deleted_by = auth()->id();
+        $rekamMedis->save();
         $rekamMedis->delete();
 
         return redirect()->route('perawat.rekam-medis.index')

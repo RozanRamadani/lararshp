@@ -29,4 +29,9 @@ class RasHewan extends Model
     {
         return $this->hasMany(Pet::class, 'idras_hewan', 'idras_hewan');
     }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by', 'iduser');
+    }
 }

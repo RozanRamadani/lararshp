@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pet', function (Blueprint $table) {
-            $table->softDeletes();
-            $table->timestamps();
+            if (!Schema::hasColumn('pet', 'deleted_at')) {
+                $table->softDeletes();
+            }
+            if (!Schema::hasColumn('pet', 'deleted_by')) {
+                $table->unsignedBigInteger('deleted_by')->nullable()->after('deleted_at');
+            }
+            if (!Schema::hasColumn('pet', 'created_at')) {
+                $table->timestamps();
+            }
         });
     }
 
@@ -23,8 +30,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pet', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-            $table->dropTimestamps();
+            if (Schema::hasColumn('pet', 'deleted_by')) {
+                $table->dropColumn('deleted_by');
+            }
+            if (Schema::hasColumn('pet', 'deleted_at')) {
+                $table->dropSoftDeletes();
+            }
+            if (Schema::hasColumn('pet', 'created_at')) {
+                $table->dropTimestamps();
+            }
         });
     }
 };

@@ -150,6 +150,8 @@ class KodeTindakanTerapiController extends Controller
      */
     public function destroy(KodeTindakanTerapi $kodeTindakanTerapi): RedirectResponse
     {
+        $kodeTindakanTerapi->deleted_by = auth()->id();
+        $kodeTindakanTerapi->save();
         $kodeTindakanTerapi->delete();
 
         return redirect()

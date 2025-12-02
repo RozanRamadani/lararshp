@@ -166,7 +166,10 @@ class JenisHewanController extends Controller
         }
 
         // Soft delete jenis hewan
-        DB::table('jenis_hewan')->where('idjenis_hewan', $id)->update(['deleted_at' => now()]);
+        DB::table('jenis_hewan')->where('idjenis_hewan', $id)->update([
+            'deleted_at' => now(),
+            'deleted_by' => auth()->id()
+        ]);
 
         return redirect()
             ->route('admin.jenis-hewan.index')

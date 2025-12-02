@@ -31,4 +31,9 @@ class KodeTindakanTerapi extends Model
     {
         return $this->belongsTo(KategoriKlinis::class, 'idkategori_klinis', 'idkategori_klinis');
     }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by', 'iduser');
+    }
 }

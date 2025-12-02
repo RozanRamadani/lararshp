@@ -254,6 +254,8 @@ class PetController extends Controller
             DB::beginTransaction();
 
             // Soft delete pet (data tidak benar-benar terhapus)
+            $pet->deleted_by = auth()->id();
+            $pet->save();
             $pet->delete();
             DB::commit();
 

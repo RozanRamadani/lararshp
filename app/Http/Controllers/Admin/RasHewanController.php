@@ -132,6 +132,8 @@ class RasHewanController extends Controller
      */
     public function destroy(RasHewan $rasHewan): RedirectResponse
     {
+        $rasHewan->deleted_by = auth()->id();
+        $rasHewan->save();
         $rasHewan->delete();
 
         return redirect()

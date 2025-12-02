@@ -281,6 +281,8 @@ class PemilikController extends Controller
             DB::beginTransaction();
 
             // Soft delete pemilik
+            $pemilik->deleted_by = auth()->id();
+            $pemilik->save();
             $pemilik->delete();
 
             DB::commit();
